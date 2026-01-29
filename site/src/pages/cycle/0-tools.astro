@@ -1,0 +1,306 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import Checklist from '../../components/Checklist';
+
+const toolsChecklist = [
+  { id: 'editor', label: '코드 에디터 설치', description: 'VS Code 또는 Cursor' },
+  { id: 'nodejs', label: 'Node.js 설치', description: 'LTS 버전 (v20+)' },
+  { id: 'git', label: 'Git 설치', description: '버전 관리 도구' },
+  { id: 'terminal', label: '터미널 사용법 익히기', description: '기본 명령어 실행' },
+  { id: 'github', label: 'GitHub 계정 생성', description: '코드 저장소' },
+];
+---
+
+<DocsLayout
+  title="Cycle 0: 도구 설치 - 개발 환경 세팅"
+  description="개발에 필요한 도구들을 설치하고 설정합니다"
+  currentPath="/cycle/0-tools"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/cycle" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 0: 도구</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        예상 소요시간: 30분
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        개발 도구 설치하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        코드를 작성하고 실행하기 위한 도구들을 설치합니다.
+        모두 무료이며, 설치 후 바로 사용할 수 있습니다.
+      </p>
+    </header>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 1. 코드 에디터 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          코드 에디터 설치
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          코드를 작성하는 프로그램입니다. 메모장으로도 가능하지만,
+          전용 에디터를 사용하면 훨씬 편리합니다.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <a
+            href="https://cursor.sh"
+            target="_blank"
+            rel="noopener"
+            class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">추천</span>
+              <h3 class="text-white font-bold">Cursor</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">AI가 내장된 코드 에디터</p>
+            <span class="text-primary text-sm">cursor.sh →</span>
+          </a>
+
+          <a
+            href="https://code.visualstudio.com"
+            target="_blank"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">VS Code</h3>
+            <p class="text-text-secondary text-sm mb-2">가장 널리 사용되는 무료 에디터</p>
+            <span class="text-primary text-sm">code.visualstudio.com →</span>
+          </a>
+        </div>
+
+        <Callout client:load variant="tip" title="Cursor를 추천하는 이유">
+          <p class="mt-2">
+            Cursor는 VS Code 기반이라 기능이 거의 같지만, AI가 내장되어 있어서
+            코드 작성 중 바로 도움을 받을 수 있습니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 2. Node.js -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          Node.js 설치
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          JavaScript를 실행하기 위한 환경입니다.
+          웹 개발에서 거의 필수적으로 사용됩니다.
+        </p>
+
+        <a
+          href="https://nodejs.org"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors no-underline mb-4"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M11.998 24c-.321 0-.641-.084-.922-.247L8.14 22.016c-.438-.245-.224-.332-.08-.383.657-.229.79-.281 1.49-.681.074-.041.17-.025.245.019l2.255 1.339c.082.045.198.045.275 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.19-.137-.242l-8.791-5.072c-.081-.047-.189-.047-.271 0L3.264 6.68c-.087.051-.139.146-.139.243v10.074c0 .095.052.19.134.236l2.409 1.392c1.307.653 2.108-.116 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.111.255.253v9.948c0 1.744-.95 2.745-2.604 2.745-.509 0-.909 0-2.026-.551l-2.306-1.327C1.571 18.027 1 17.13 1 16.163V6.089c0-.966.571-1.864 1.461-2.341l8.795-5.082c.868-.493 2.021-.493 2.886 0l8.795 5.082c.891.477 1.462 1.375 1.462 2.341v10.074c0 .966-.571 1.864-1.462 2.341l-8.795 5.082c-.281.163-.601.247-.922.247h-.002z"/>
+          </svg>
+          Node.js 다운로드 (LTS)
+        </a>
+
+        <p class="text-text-secondary text-sm mb-4">
+          <strong class="text-white">LTS 버전</strong>을 다운로드하세요. Current 버전은 불안정할 수 있습니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">설치 확인</h3>
+        <CodeBlock
+          client:load
+          code={`node --version
+npm --version`}
+          filename="터미널"
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          버전 번호가 출력되면 성공입니다.
+        </p>
+      </section>
+
+      <!-- 3. Git -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          Git 설치
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          코드의 변경 이력을 관리하는 도구입니다.
+          GitHub와 함께 사용하면 코드를 안전하게 저장하고 공유할 수 있습니다.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <a
+            href="https://git-scm.com/download/mac"
+            target="_blank"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">🍎 macOS</h3>
+            <p class="text-text-secondary text-sm">Xcode Command Line Tools와 함께 설치됨</p>
+          </a>
+
+          <a
+            href="https://git-scm.com/download/win"
+            target="_blank"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">🪟 Windows</h3>
+            <p class="text-text-secondary text-sm">Git for Windows 설치</p>
+          </a>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">설치 확인</h3>
+        <CodeBlock
+          client:load
+          code="git --version"
+          filename="터미널"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">초기 설정</h3>
+        <CodeBlock
+          client:load
+          code={`git config --global user.name "내 이름"
+git config --global user.email "my@email.com"`}
+          filename="터미널"
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          GitHub 가입할 때 사용할 이메일과 동일하게 설정하세요.
+        </p>
+      </section>
+
+      <!-- 4. 터미널 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          터미널 사용법
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          터미널(또는 명령 프롬프트)은 텍스트로 컴퓨터에게 명령을 내리는 도구입니다.
+          처음엔 어색하지만 금방 익숙해집니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">터미널 열기</h3>
+        <ul class="list-disc list-inside text-text-secondary space-y-2 mb-4">
+          <li><strong class="text-white">macOS:</strong> Spotlight(⌘+Space) → "Terminal" 검색</li>
+          <li><strong class="text-white">Windows:</strong> 시작 메뉴 → "PowerShell" 검색</li>
+          <li><strong class="text-white">VS Code/Cursor:</strong> 메뉴에서 Terminal → New Terminal (또는 Ctrl+`)</li>
+        </ul>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">자주 쓰는 명령어</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">명령어</th>
+                <th class="text-left py-2 px-3 text-white">설명</th>
+                <th class="text-left py-2 px-3 text-white">예시</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">cd</td>
+                <td class="py-2 px-3">디렉토리 이동</td>
+                <td class="py-2 px-3 font-mono">cd Documents</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">ls</td>
+                <td class="py-2 px-3">파일 목록 보기</td>
+                <td class="py-2 px-3 font-mono">ls -la</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">mkdir</td>
+                <td class="py-2 px-3">폴더 만들기</td>
+                <td class="py-2 px-3 font-mono">mkdir my-project</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">pwd</td>
+                <td class="py-2 px-3">현재 위치 확인</td>
+                <td class="py-2 px-3 font-mono">pwd</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. GitHub -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          GitHub 계정 생성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          코드를 저장하고 공유하는 플랫폼입니다.
+          무료로 사용할 수 있으며, 대부분의 개발자가 사용합니다.
+        </p>
+
+        <a
+          href="https://github.com/signup"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-surface border border-border hover:border-primary/50 text-white rounded-lg font-medium transition-colors no-underline"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          GitHub 가입하기
+        </a>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="cycle-0-tools"
+          title="Cycle 0 완료 체크리스트"
+          items={toolsChecklist}
+        />
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/cycle/0-overview"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cycle 0: 개요</span>
+        </div>
+      </a>
+
+      <a
+        href="/start/60min"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">60분 완주 시작!</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 문서 사이트 (VitePress/Astro)
+  site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./site:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host 0.0.0.0
+
+  # 예시 프로젝트 - API (FastAPI)
+  api:
+    build:
+      context: ./examples/b2b-admin/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./examples/b2b-admin/api:/app
+    environment:
+      - ENV=development
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+  # 예시 프로젝트 - Web (React + Vite)
+  web:
+    build:
+      context: ./examples/b2b-admin/web
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./examples/b2b-admin/web:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - api

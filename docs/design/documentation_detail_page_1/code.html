@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Choorai Documentation - Deploy Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#57abff",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0D1117", // Requested GitHub dark theme base
+                        "surface-dark": "#161B22",     // Slightly lighter for panels
+                        "border-dark": "#30363d",      // Subtle borders
+                        "text-primary": "#e6edf3",
+                        "text-secondary": "#8b949e",
+                        "info-bg": "rgba(56, 139, 253, 0.15)",
+                        "info-border": "rgba(56, 139, 253, 0.4)",
+                        "info-text": "#58a6ff",
+                        "warning-bg": "rgba(187, 128, 9, 0.15)",
+                        "warning-border": "rgba(187, 128, 9, 0.4)",
+                        "warning-text": "#d29922",
+                        "success-bg": "rgba(46, 160, 67, 0.15)",
+                        "success-border": "rgba(46, 160, 67, 0.4)",
+                        "success-text": "#3fb950",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "SF Mono", "Menlo", "Consolas", "Liberation Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px", "md": "0.375rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b949e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-text-primary h-full min-h-screen flex flex-col antialiased selection:bg-primary/30 selection:text-primary">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-border-dark bg-white/80 dark:bg-[#161B22]/80 backdrop-blur-md">
+<div class="flex h-16 items-center justify-between px-4 lg:px-8 max-w-[1600px] mx-auto">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-3 text-slate-900 dark:text-white group" href="#">
+<div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined !text-[20px]">bolt</span>
+</div>
+<span class="text-lg font-bold tracking-tight">Choorai Docs</span>
+</a>
+<div class="hidden md:flex items-center gap-1 rounded-md border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0D1117] px-2 py-1.5 min-w-[320px] focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-gray-400 dark:text-text-secondary !text-[18px]">search</span>
+<input class="bg-transparent border-none text-sm w-full focus:ring-0 placeholder:text-gray-400 dark:placeholder:text-text-secondary text-slate-900 dark:text-white h-5 p-0 ml-2" placeholder="Search documentation..." type="text"/>
+<div class="hidden lg:flex items-center gap-1">
+<kbd class="hidden sm:inline-block rounded border border-gray-200 dark:border-border-dark bg-gray-100 dark:bg-[#161B22] px-1.5 py-0.5 text-[10px] font-mono font-medium text-gray-500 dark:text-text-secondary">Ctrl</kbd>
+<kbd class="hidden sm:inline-block rounded border border-gray-200 dark:border-border-dark bg-gray-100 dark:bg-[#161B22] px-1.5 py-0.5 text-[10px] font-mono font-medium text-gray-500 dark:text-text-secondary">K</kbd>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-600 dark:text-text-secondary hover:text-primary transition-colors" href="#">Guides</a>
+<a class="text-sm font-medium text-slate-600 dark:text-text-secondary hover:text-primary transition-colors" href="#">API Reference</a>
+<a class="text-sm font-medium text-slate-600 dark:text-text-secondary hover:text-primary transition-colors" href="#">Community</a>
+</nav>
+<div class="h-5 w-px bg-gray-200 dark:bg-border-dark hidden md:block"></div>
+<div class="flex items-center gap-3">
+<a class="text-slate-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined !text-[24px]">social_leaderboard</span>
+</a> <!-- GitHub placeholder icon -->
+<button class="flex items-center gap-2 rounded-md bg-primary hover:bg-blue-500 text-white dark:text-[#0f1a24] px-4 py-1.5 text-sm font-semibold shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        Log In
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 w-full max-w-[1600px] mx-auto flex items-start">
+<!-- Left Sidebar Navigation -->
+<aside class="hidden lg:block w-72 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 dark:border-border-dark bg-gray-50/50 dark:bg-[#0D1117] pt-8 pb-10 pr-6 pl-8 scroll-smooth">
+<div class="flex flex-col gap-8">
+<!-- Section 1 -->
+<div class="flex flex-col gap-3">
+<h3 class="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white mb-1">Getting Started</h3>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">home</span>
+                        Introduction
+                    </a>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">rocket_launch</span>
+                        Quickstart Guide
+                    </a>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">key</span>
+                        Authentication
+                    </a>
+</div>
+<!-- Section 2 -->
+<div class="flex flex-col gap-3">
+<h3 class="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white mb-1">Core Concepts</h3>
+<a class="flex items-center justify-between text-sm font-medium text-primary bg-primary/10 -mx-3 px-3 py-2 rounded-md transition-colors" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined !text-[18px] text-primary">cloud_upload</span>
+                            Deploying Services
+                        </div>
+</a>
+<div class="pl-4 border-l border-gray-200 dark:border-border-dark flex flex-col gap-3 my-1">
+<a class="text-sm text-primary font-medium block" href="#">Chatbot Deployment</a>
+<a class="text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors block" href="#">Image Generation</a>
+<a class="text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors block" href="#">Data Processing</a>
+</div>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">settings</span>
+                        Configuration
+                    </a>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">database</span>
+                        Storage
+                    </a>
+</div>
+<!-- Section 3 -->
+<div class="flex flex-col gap-3">
+<h3 class="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white mb-1">Resources</h3>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">code</span>
+                        SDKs &amp; Libraries
+                    </a>
+<a class="flex items-center gap-2 text-sm text-slate-600 dark:text-text-secondary hover:text-primary transition-colors py-1" href="#">
+<span class="material-symbols-outlined !text-[18px]">help</span>
+                        Troubleshooting
+                    </a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 min-w-0 py-8 px-4 lg:px-12 xl:px-16">
+<div class="max-w-4xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center text-sm text-slate-500 dark:text-text-secondary mb-6">
+<a class="hover:text-primary transition-colors" href="#">Docs</a>
+<span class="mx-2 text-slate-400 dark:text-gray-600">/</span>
+<a class="hover:text-primary transition-colors" href="#">Core Concepts</a>
+<span class="mx-2 text-slate-400 dark:text-gray-600">/</span>
+<span class="text-slate-900 dark:text-text-primary font-medium">Deploying Services</span>
+</nav>
+<!-- Page Header -->
+<div class="mb-10 border-b border-gray-200 dark:border-border-dark pb-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v2.4.0</span>
+<span class="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-500 ring-1 ring-inset ring-green-500/20">Stable</span>
+</div>
+<h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">How to Deploy a Chatbot Service</h1>
+<p class="text-lg text-slate-600 dark:text-text-secondary leading-relaxed max-w-2xl">
+                        Learn how to build, configure, and deploy an AI-powered chatbot service in minutes using Choorai's managed infrastructure.
+                    </p>
+</div>
+<!-- Article Body -->
+<div class="prose prose-slate dark:prose-invert max-w-none">
+<p class="text-base text-slate-600 dark:text-text-primary leading-7 mb-8">
+                        Choorai makes it effortless to deploy web services. This guide covers the essential steps to get your chatbot up and running. By leveraging our pre-built models, you can focus on the conversation logic rather than managing servers.
+                    </p>
+<!-- Info Callout -->
+<div class="my-8 rounded-md border border-l-4 border-l-info-text border-info-border bg-info-bg p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-info-text mt-0.5">info</span>
+<div>
+<h5 class="text-sm font-semibold text-info-text mb-1">Managed Infrastructure</h5>
+<p class="text-sm text-slate-700 dark:text-text-primary m-0">
+                                Choorai AI handles all the underlying infrastructure scaling. You just provide the conversation logic and configuration parameters.
+                            </p>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-12 mb-6 scroll-mt-24" id="prerequisites">Prerequisites</h2>
+<ul class="space-y-3 mb-8 list-disc list-inside text-slate-600 dark:text-text-primary">
+<li class="pl-2"><span class="font-medium text-slate-900 dark:text-white">Choorai Account:</span> Ensure you have an active account with billing enabled.</li>
+<li class="pl-2"><span class="font-medium text-slate-900 dark:text-white">API Keys:</span> Generate your project API keys from the <a class="text-primary hover:underline" href="#">dashboard settings</a>.</li>
+<li class="pl-2"><span class="font-medium text-slate-900 dark:text-white">CLI Tool:</span> Install the latest version of Choorai CLI.</li>
+</ul>
+<!-- Code Block -->
+<div class="rounded-md border border-gray-200 dark:border-border-dark overflow-hidden bg-white dark:bg-[#161B22] mb-8 shadow-sm">
+<div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0D1117]">
+<span class="text-xs font-mono text-slate-500 dark:text-text-secondary">Terminal</span>
+<button class="text-slate-500 hover:text-primary dark:text-text-secondary dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="p-4 overflow-x-auto">
+<pre class="font-mono text-sm text-slate-800 dark:text-text-primary leading-relaxed"><code><span class="text-purple-600 dark:text-[#d2a8ff]">npm</span> install -g @choorai/cli
+choorai init my-chatbot</code></pre>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-12 mb-6 scroll-mt-24" id="configuration">Configuration</h2>
+<p class="text-base text-slate-600 dark:text-text-primary leading-7 mb-6">
+                        The <code class="bg-gray-100 dark:bg-[#161B22] px-1.5 py-0.5 rounded text-sm border border-gray-200 dark:border-border-dark font-mono text-slate-800 dark:text-text-primary">choorai.config.json</code> file is where you define your service parameters. You can specify the model type, memory allocation, and custom behavior prompts here.
+                    </p>
+<!-- Warning Callout -->
+<div class="my-8 rounded-md border border-l-4 border-l-warning-text border-warning-border bg-warning-bg p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-warning-text mt-0.5">warning</span>
+<div>
+<h5 class="text-sm font-semibold text-warning-text mb-1">Security Notice</h5>
+<p class="text-sm text-slate-700 dark:text-text-primary m-0">
+                                Never commit your API keys directly into the configuration file. Always use Environment Variables or the Secrets Manager.
+                            </p>
+</div>
+</div>
+<!-- Code Block JSON -->
+<div class="rounded-md border border-gray-200 dark:border-border-dark overflow-hidden bg-white dark:bg-[#161B22] mb-8 shadow-sm">
+<div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0D1117]">
+<span class="text-xs font-mono text-slate-500 dark:text-text-secondary">choorai.config.json</span>
+<button class="text-slate-500 hover:text-primary dark:text-text-secondary dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="p-4 overflow-x-auto">
+<pre class="font-mono text-sm leading-relaxed"><code class="language-json"><span class="text-slate-800 dark:text-text-primary">{</span>
+  <span class="text-green-600 dark:text-[#7ee787]">"name"</span>: <span class="text-blue-600 dark:text-[#a5d6ff]">"customer-support-bot"</span><span class="text-slate-800 dark:text-text-primary">,</span>
+  <span class="text-green-600 dark:text-[#7ee787]">"model"</span>: <span class="text-blue-600 dark:text-[#a5d6ff]">"gpt-4-turbo"</span><span class="text-slate-800 dark:text-text-primary">,</span>
+  <span class="text-green-600 dark:text-[#7ee787]">"memory"</span>: <span class="text-blue-600 dark:text-[#79c0ff]">512</span><span class="text-slate-800 dark:text-text-primary">,</span>
+  <span class="text-green-600 dark:text-[#7ee787]">"env"</span>: <span class="text-slate-800 dark:text-text-primary">{</span>
+    <span class="text-green-600 dark:text-[#7ee787]">"OPENAI_API_KEY"</span>: <span class="text-blue-600 dark:text-[#a5d6ff]">"${SECRETS.OPENAI_KEY}"</span>
+  <span class="text-slate-800 dark:text-text-primary">}</span>
+<span class="text-slate-800 dark:text-text-primary">}</span></code></pre>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-12 mb-6 scroll-mt-24" id="deployment">Deployment</h2>
+<p class="text-base text-slate-600 dark:text-text-primary leading-7 mb-6">
+                        Once configured, deployment is a single command. The system will package your configuration, validate your credentials, and provision a scalable endpoint.
+                    </p>
+<div class="rounded-md border border-gray-200 dark:border-border-dark overflow-hidden bg-white dark:bg-[#161B22] mb-8 shadow-sm">
+<div class="p-4">
+<pre class="font-mono text-sm text-slate-800 dark:text-text-primary"><code>choorai deploy --prod</code></pre>
+</div>
+</div>
+<!-- Success Callout -->
+<div class="my-8 rounded-md border border-l-4 border-l-success-text border-success-border bg-success-bg p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-success-text mt-0.5">check_circle</span>
+<div>
+<h5 class="text-sm font-semibold text-success-text mb-1">Deployment Successful</h5>
+<p class="text-sm text-slate-700 dark:text-text-primary m-0">
+                                Your service is live! You can now view analytics and logs in the <a class="underline hover:text-success-text/80" href="#">Choorai Dashboard</a>.
+                            </p>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-12 mb-6 scroll-mt-24" id="testing">Testing Your Service</h2>
+<p class="text-base text-slate-600 dark:text-text-primary leading-7 mb-6">
+                        You can test your deployed chatbot immediately using `curl` or our built-in test client.
+                    </p>
+<!-- Tabs for Request/Response -->
+<div class="rounded-md border border-gray-200 dark:border-border-dark bg-white dark:bg-[#161B22] shadow-sm mb-12">
+<div class="flex border-b border-gray-200 dark:border-border-dark">
+<button class="px-4 py-2.5 text-sm font-medium text-primary border-b-2 border-primary bg-primary/5 dark:bg-transparent">Request</button>
+<button class="px-4 py-2.5 text-sm font-medium text-slate-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-text-primary transition-colors">Response</button>
+</div>
+<div class="p-4 overflow-x-auto">
+<pre class="font-mono text-sm leading-relaxed"><code class="language-bash"><span class="text-purple-600 dark:text-[#d2a8ff]">curl</span> -X POST https://api.choorai.app/v1/chat \
+  -H <span class="text-blue-600 dark:text-[#a5d6ff]">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -d <span class="text-blue-600 dark:text-[#a5d6ff]">'{"message": "Hello, how can I reset my password?"}'</span></code></pre>
+</div>
+</div>
+</div>
+<!-- Feedback Footer -->
+<div class="mt-16 pt-8 border-t border-gray-200 dark:border-border-dark flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<span class="text-sm font-medium text-slate-600 dark:text-text-secondary">Was this page helpful?</span>
+<div class="flex gap-2">
+<button class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-border-dark text-slate-400 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[20px]">thumb_up</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-border-dark text-slate-400 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-[20px]">thumb_down</span>
+</button>
+</div>
+</div>
+<div class="text-xs text-slate-400 dark:text-text-secondary">
+                        Last updated on March 14, 2024
+                    </div>
+</div>
+<!-- Next/Prev Navigation -->
+<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<a class="group block p-4 rounded-lg border border-gray-200 dark:border-border-dark hover:border-primary/50 hover:ring-1 hover:ring-primary/50 transition-all bg-white dark:bg-[#161B22]" href="#">
+<div class="text-xs text-slate-500 dark:text-text-secondary mb-1">Previous</div>
+<div class="text-sm font-semibold text-slate-900 dark:text-text-primary group-hover:text-primary">Getting Started</div>
+</a>
+<a class="group block p-4 rounded-lg border border-gray-200 dark:border-border-dark hover:border-primary/50 hover:ring-1 hover:ring-primary/50 transition-all bg-white dark:bg-[#161B22] text-right" href="#">
+<div class="text-xs text-slate-500 dark:text-text-secondary mb-1">Next</div>
+<div class="text-sm font-semibold text-slate-900 dark:text-text-primary group-hover:text-primary">Image Generation Services</div>
+</a>
+</div>
+</div>
+</main>
+<!-- Right TOC Sidebar -->
+<aside class="hidden xl:block w-64 sticky top-16 h-[calc(100vh-4rem)] pt-8 pb-10 pr-8 overflow-y-auto">
+<h5 class="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white mb-4 pl-3">On this page</h5>
+<nav class="flex flex-col relative">
+<!-- Active indicator line -->
+<div class="absolute left-0 top-0 bottom-0 w-px bg-gray-200 dark:bg-border-dark"></div>
+<a class="block pl-3 py-1.5 text-sm border-l-2 border-transparent text-slate-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all" href="#prerequisites">Prerequisites</a>
+<a class="block pl-3 py-1.5 text-sm border-l-2 border-primary text-primary font-medium transition-all" href="#configuration">Configuration</a>
+<a class="block pl-3 py-1.5 text-sm border-l-2 border-transparent text-slate-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all" href="#deployment">Deployment</a>
+<a class="block pl-3 py-1.5 text-sm border-l-2 border-transparent text-slate-500 dark:text-text-secondary hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all" href="#testing">Testing Your Service</a>
+</nav>
+<div class="mt-8 pt-8 border-t border-gray-200 dark:border-border-dark">
+<a class="flex items-center gap-2 text-xs text-slate-500 dark:text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined !text-[16px]">edit</span>
+                    Edit this page on GitHub
+                </a>
+</div>
+</aside>
+</div>
+</body></html>

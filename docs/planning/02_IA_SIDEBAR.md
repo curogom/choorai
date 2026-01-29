@@ -1,0 +1,64 @@
+# Information Architecture & Sidebar
+
+## 원칙
+- 1차 축: **Cycle(학습자 원 사이클)**
+- 2차 축: **Stack 분기**(각 단계에서만 필요한 차이를 보여줌)
+- 공통 문서 중복 최소화
+
+## Sidebar(초안)
+- **Start**
+  - 60분 완주
+  - 준비물(계정/도메인/툴)
+- **Cycle 0: Overview**
+  - 한 사이클이 뭔가
+  - 산출물(DoD) 예시
+  - 스택 선택(초기는 FastAPI+React, 추후 Go 추가)
+  - 비용 0원 원칙
+- **Cycle 0: AI Tools**
+  - Antigravity(무료 시작)
+  - Codex(고도화)
+  - Claude Code(고도화)
+  - Cursor(고도화)
+  - 공통 프롬프트 템플릿 v1
+- **Cycle 1: DNS**
+  - Common
+  - FastAPI + React(Vite)
+  - (추가) Go / Node / Spring
+- **Cycle 2: Frontend 배포**
+  - Common(정적배포/SPA 404/ENV)
+  - React(Vite)
+  - (추가) Next.js(선택)
+- **Cycle 3: Backend 배포**
+  - Common(컨테이너/헬스/로그/CORS)
+  - FastAPI
+  - (추가) Go / Node / Spring
+- **Cycle 4: DB**
+  - Common(왜 필요한가/비용/마이그)
+  - Postgres(공통)
+  - (추가) 스택별 ORM
+- **Cycle 5: Runtime**
+  - Common(docker compose vs 클라우드)
+  - Cloud Run
+  - (추가) 다른 런타임
+- **Cycle 6: Ops**
+  - Common(staging/prod, 롤백, 비용가드레일)
+  - 스택별 CI 차이
+- **Reference Projects**
+  - B2B Admin Console
+- **Deploy**
+  - Cloudflare Pages
+  - Cloud Run
+- **Troubleshooting**
+  - CORS
+  - ENV
+  - SPA 404
+  - Build Fail
+  - Auth/Cookie
+- **Agent Recipes**
+  - Core Pack(공통)
+  - FastAPI Pack
+  - (추가) Go Pack
+- **SEO / Writing Rules**
+  - 문서 템플릿
+  - robots/sitemap/structured data
+  - 제목 패턴

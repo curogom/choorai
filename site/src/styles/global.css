@@ -1,0 +1,167 @@
+/* Google Fonts - must be first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for design tokens */
+:root {
+  /* 배경 */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+
+  /* 텍스트 */
+  --text-primary: #ffffff;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+
+  /* 액센트 */
+  --accent-primary: #57abff;
+  --accent-purple: #a855f7;
+  --accent-success: #238636;
+  --accent-warning: #9e6a03;
+  --accent-error: #da3633;
+
+  /* 테두리 */
+  --border-default: #30363d;
+  --border-focus: #57abff;
+
+  /* 그림자 */
+  --shadow-glow: 0 0 20px rgba(87, 171, 255, 0.4);
+  --shadow-glow-lg: 0 0 35px rgba(87, 171, 255, 0.6);
+}
+
+/* Base styles */
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-text-primary font-body;
+    @apply min-h-screen overflow-x-hidden;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/30 text-primary;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+
+  /* Focus styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary hover:text-primary-hover transition-colors;
+  }
+
+  /* Code */
+  code {
+    @apply font-mono text-sm bg-surface px-1.5 py-0.5 rounded border border-border;
+  }
+
+  pre code {
+    @apply bg-transparent border-0 p-0;
+  }
+}
+
+/* Component utilities */
+@layer components {
+  /* Glass effect */
+  .glass {
+    @apply bg-background/80 backdrop-blur-md;
+  }
+
+  /* Card base */
+  .card {
+    @apply bg-surface border border-border rounded-xl;
+  }
+
+  /* Glow effect */
+  .glow {
+    @apply shadow-glow;
+  }
+
+  .glow-lg {
+    @apply shadow-glow-lg;
+  }
+
+  /* Grid background pattern */
+  .bg-grid-pattern {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, var(--border-default) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border-default) 1px, transparent 1px);
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400;
+  }
+
+  /* Animate glow */
+  .animate-glow {
+    animation: subtle-pulse 3s infinite;
+  }
+
+  @keyframes subtle-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(87, 171, 255, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 35px rgba(87, 171, 255, 0.6);
+    }
+  }
+}

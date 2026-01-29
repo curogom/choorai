@@ -1,0 +1,210 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+---
+
+<DocsLayout
+  title="인증/쿠키 문제 해결하기"
+  description="로그인 후 쿠키가 저장되지 않거나 인증이 유지되지 않는 문제 해결"
+  currentPath="/troubleshooting/auth-cookie"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/troubleshooting" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">인증/쿠키</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        보안 관련 주의 필요
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        인증/쿠키 문제 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        로그인했는데 새로고침하면 로그아웃되나요?
+        쿠키 설정이나 CORS 관련 문제일 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) <code class="bg-surface px-1 rounded">credentials: 'include'</code> 설정
+          2) 서버의 CORS에서 <code class="bg-surface px-1 rounded">allow_credentials=True</code>
+          3) 쿠키에 <code class="bg-surface px-1 rounded">SameSite=None; Secure</code> 속성 추가
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="쿠키가 저장되지 않음 / 로그인이 유지되지 않음"
+        severity="warning"
+        cause="프론트엔드와 백엔드가 다른 도메인에 있을 때 쿠키 전송을 위한 설정이 누락되었습니다."
+        solution={[
+          "프론트엔드: fetch/axios에서 credentials: 'include' 설정",
+          "백엔드: CORS에서 allow_credentials=True, allow_origins에 정확한 도메인 지정",
+          "쿠키: SameSite=None, Secure=True 설정 (HTTPS 필수)"
+        ]}
+        aiPrompt="React와 FastAPI로 로그인을 구현했는데, 로그인 후 쿠키가 저장되지 않아. CORS 설정은 했어."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">프론트엔드 설정</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Fetch API</h3>
+        <CodeBlock
+          client:load
+          filename="api.js"
+          code={`// 쿠키를 포함해서 요청 보내기
+fetch('https://api.example.com/login', {
+  method: 'POST',
+  credentials: 'include',  // 중요!
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ email, password }),
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Axios</h3>
+        <CodeBlock
+          client:load
+          filename="api.js"
+          code={`import axios from 'axios';
+
+// 전역 설정
+axios.defaults.withCredentials = true;
+
+// 또는 개별 요청에서
+axios.post('https://api.example.com/login', data, {
+  withCredentials: true  // 중요!
+});`}
+        />
+      </section>
+
+      <h2 class="text-2xl font-bold text-white mb-4 mt-10">백엔드 설정</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Python</span>
+          FastAPI
+        </h3>
+        <CodeBlock
+          client:load
+          filename="main.py"
+          code={`from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://your-frontend.com"],  # * 사용 불가!
+    allow_credentials=True,  # 중요!
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/login")
+async def login(response: Response):
+    # 쿠키 설정
+    response.set_cookie(
+        key="session",
+        value="token-value",
+        httponly=True,
+        secure=True,        # HTTPS 필수
+        samesite="none",    # 크로스 사이트 허용
+        max_age=3600 * 24 * 7  # 7일
+    )
+    return {"message": "로그인 성공"}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">Node.js</span>
+          Express
+        </h3>
+        <CodeBlock
+          client:load
+          filename="server.js"
+          code={`const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+app.use(cors({
+  origin: 'https://your-frontend.com',
+  credentials: true  // 중요!
+}));
+
+app.post('/login', (req, res) => {
+  res.cookie('session', 'token-value', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000  // 7일
+  });
+  res.json({ message: '로그인 성공' });
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="HTTPS 필수!">
+          <p class="mt-2">
+            <code class="bg-surface px-1 rounded">SameSite=None</code>은 <code class="bg-surface px-1 rounded">Secure=True</code>와 함께 사용해야 합니다.
+            즉, HTTPS 환경에서만 동작합니다.
+            개발 중에는 localhost가 예외적으로 허용됩니다.
+          </p>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="error" title="절대 하지 마세요!">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li><code class="bg-surface px-1 rounded">allow_origins=["*"]</code>와 <code class="bg-surface px-1 rounded">allow_credentials=True</code>를 함께 사용</li>
+            <li>민감한 토큰을 localStorage에 저장</li>
+            <li>httpOnly 없이 세션 쿠키 설정</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-bold text-white mb-4">디버깅 방법</h2>
+        <ol class="list-decimal list-inside text-text-secondary space-y-2">
+          <li>브라우저 개발자 도구(F12) → Application → Cookies 확인</li>
+          <li>Network 탭에서 요청 헤더에 Cookie가 포함되는지 확인</li>
+          <li>응답 헤더에 Set-Cookie가 있는지 확인</li>
+          <li>Console에 CORS 관련 에러가 없는지 확인</li>
+        </ol>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/troubleshooting/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS 에러</h4>
+          <p class="text-text-secondary text-sm">API 호출 시 CORS 문제</p>
+        </a>
+        <a href="/troubleshooting/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">환경 변수 에러</h4>
+          <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

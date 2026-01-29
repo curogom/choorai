@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Troubleshooting Guide - Choorai Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#57abff",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+              "card-dark": "#16202a",
+              "error-red": "#DA3633",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden flex flex-col min-h-screen">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#20364b] px-6 py-3 bg-[#0f1a24] sticky top-0 z-50">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 text-primary">
+<svg class="h-full w-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M39.5563 34.1455V13.8546C39.5563 15.708 36.8773 17.3437 32.7927 18.3189C30.2914 18.916 27.263 19.2655 24 19.2655C20.737 19.2655 17.7086 18.916 15.2073 18.3189C11.1227 17.3437 8.44365 15.708 8.44365 13.8546V34.1455C8.44365 35.9988 11.1227 37.6346 15.2073 38.6098C17.7086 39.2069 20.737 39.5564 24 39.5564C27.263 39.5564 30.2914 39.2069 32.7927 38.6098C36.8773 37.6346 39.5563 35.9988 39.5563 34.1455Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M10.4485 13.8519C10.4749 13.9271 10.6203 14.246 11.379 14.7361C12.298 15.3298 13.7492 15.9145 15.6717 16.3735C18.0007 16.9296 20.8712 17.2655 24 17.2655C27.1288 17.2655 29.9993 16.9296 32.3283 16.3735C34.2508 15.9145 35.702 15.3298 36.621 14.7361C37.3796 14.246 37.5251 13.9271 37.5515 13.8519C37.5287 13.7876 37.4333 13.5973 37.0635 13.2931C36.5266 12.8516 35.6288 12.3647 34.343 11.9175C31.79 11.0295 28.1333 10.4437 24 10.4437C19.8667 10.4437 16.2099 11.0295 13.657 11.9175C12.3712 12.3647 11.4734 12.8516 10.9365 13.2931C10.5667 13.5973 10.4713 13.7876 10.4485 13.8519ZM37.5563 18.7877C36.3176 19.3925 34.8502 19.8839 33.2571 20.2642C30.5836 20.9025 27.3973 21.2655 24 21.2655C20.6027 21.2655 17.4164 20.9025 14.7429 20.2642C13.1498 19.8839 11.6824 19.3925 10.4436 18.7877V34.1275C10.4515 34.1545 10.5427 34.4867 11.379 35.027C12.298 35.6207 13.7492 36.2054 15.6717 36.6644C18.0007 37.2205 20.8712 37.5564 24 37.5564C27.1288 37.5564 29.9993 37.2205 32.3283 36.6644C34.2508 36.2054 35.702 35.6207 36.621 35.027C37.4573 34.4867 37.5485 34.1546 37.5563 34.1275V18.7877ZM41.5563 13.8546V34.1455C41.5563 36.1078 40.158 37.5042 38.7915 38.3869C37.3498 39.3182 35.4192 40.0389 33.2571 40.5551C30.5836 41.1934 27.3973 41.5564 24 41.5564C20.6027 41.5564 17.4164 41.1934 14.7429 40.5551C12.5808 40.0389 10.6502 39.3182 9.20848 38.3869C7.84205 37.5042 6.44365 36.1078 6.44365 34.1455L6.44365 13.8546C6.44365 12.2684 7.37223 11.0454 8.39581 10.2036C9.43325 9.3505 10.8137 8.67141 12.343 8.13948C15.4203 7.06909 19.5418 6.44366 24 6.44366C28.4582 6.44366 32.5797 7.06909 35.657 8.13948C37.1863 8.67141 38.5667 9.3505 39.6042 10.2036C40.6278 11.0454 41.5563 12.2684 41.5563 13.8546Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Choorai Platform</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex gap-2">
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-[#20364b] hover:bg-[#2a455f] transition-colors text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-[#20364b] hover:bg-[#2a455f] transition-colors text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-[#20364b]" data-alt="User profile avatar gradient" style="background-image: linear-gradient(135deg, #57abff 0%, #a855f7 100%);"></div>
+</div>
+</header>
+<!-- Main Layout -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-[280px] bg-[#0f1a24] border-r border-[#20364b] hidden md:flex flex-col h-full sticky top-[65px]">
+<div class="flex flex-col justify-between h-full p-4">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col px-3 pt-2">
+<h1 class="text-white text-base font-medium leading-normal">Troubleshooting</h1>
+<p class="text-[#8dadce] text-sm font-normal leading-normal">Choorai Docs v2.4</p>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Navigation Item: Active -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#20364b] border-l-4 border-primary cursor-pointer hover:bg-[#2a455f] transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">list</span>
+<p class="text-white text-sm font-medium leading-normal">All Errors</p>
+</div>
+<!-- Navigation Item -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#20364b] cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-[#8dadce] group-hover:text-white transition-colors">wifi_off</span>
+<p class="text-[#8dadce] group-hover:text-white text-sm font-medium leading-normal transition-colors">CORS Issues</p>
+</div>
+<!-- Navigation Item -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#20364b] cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-[#8dadce] group-hover:text-white transition-colors">code</span>
+<p class="text-[#8dadce] group-hover:text-white text-sm font-medium leading-normal transition-colors">Environment Variables</p>
+</div>
+<!-- Navigation Item -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#20364b] cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-[#8dadce] group-hover:text-white transition-colors">build</span>
+<p class="text-[#8dadce] group-hover:text-white text-sm font-medium leading-normal transition-colors">Build Failures</p>
+</div>
+<!-- Navigation Item -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#20364b] cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-[#8dadce] group-hover:text-white transition-colors">cloud_upload</span>
+<p class="text-[#8dadce] group-hover:text-white text-sm font-medium leading-normal transition-colors">Deployment</p>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-400 transition-colors text-[#0f1a24] text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Contact Human Support</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Content Area -->
+<main class="flex-1 overflow-y-auto bg-[#0f1923]">
+<div class="max-w-[1000px] mx-auto p-6 md:p-8 flex flex-col gap-8">
+<!-- Breadcrumbs & Heading -->
+<div class="flex flex-col gap-4">
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-[#8dadce] hover:text-white transition-colors font-medium" href="#">Home</a>
+<span class="text-[#8dadce] font-medium">/</span>
+<a class="text-[#8dadce] hover:text-white transition-colors font-medium" href="#">Docs</a>
+<span class="text-[#8dadce] font-medium">/</span>
+<span class="text-white font-medium">Troubleshooting Guide</span>
+</div>
+<div class="flex flex-col gap-2">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Troubleshooting &amp; Solutions</h1>
+<p class="text-[#8dadce] text-lg font-normal leading-normal">Find solutions for common build and deployment errors instantly.</p>
+</div>
+</div>
+<!-- Large Search Bar -->
+<div class="w-full">
+<label class="flex flex-col w-full group">
+<div class="flex w-full items-stretch rounded-xl h-14 bg-[#1e293b] border border-[#20364b] focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all shadow-lg">
+<div class="text-[#8dadce] flex items-center justify-center pl-5 pr-2">
+<span class="material-symbols-outlined text-[28px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none bg-transparent border-none text-white focus:ring-0 placeholder:text-[#64748b] px-2 text-lg font-normal leading-normal" placeholder="Paste your error log here (e.g., Error: 502 Bad Gateway)..." value=""/>
+<div class="flex items-center pr-2">
+<button class="text-[#8dadce] hover:text-white p-2 rounded-lg hover:bg-[#20364b] transition-colors" title="Clear">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+</label>
+<div class="flex gap-3 mt-3 ml-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-[#50657a]">Trending:</span>
+<button class="text-xs text-primary hover:text-white hover:underline transition-colors">CORS Policy</button>
+<button class="text-xs text-primary hover:text-white hover:underline transition-colors">npm install fail</button>
+<button class="text-xs text-primary hover:text-white hover:underline transition-colors">Env Vars</button>
+</div>
+</div>
+<!-- Error Cards List -->
+<div class="flex flex-col gap-6">
+<!-- Card 1: CORS Error -->
+<div class="flex flex-col bg-card-dark rounded-xl border border-[#20364b] overflow-hidden shadow-lg hover:border-[#304b66] transition-colors group">
+<div class="flex flex-col md:flex-row md:items-start gap-4 p-6 border-l-4 border-l-error-red">
+<div class="flex-1 flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-error-red/20 text-error-red uppercase tracking-wider">Critical</span>
+<span class="text-[#8dadce] text-xs font-mono">CODE: 403</span>
+</div>
+<h3 class="text-error-red text-xl font-bold font-mono tracking-tight">Access to XMLHttpRequest blocked by CORS policy</h3>
+</div>
+</div>
+<div class="grid md:grid-cols-[1fr_2fr] gap-6 mt-2">
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-yellow-500">info</span>
+                                            The Cause
+                                        </span>
+<p class="text-[#8dadce] text-sm leading-relaxed">
+                                            Your frontend is trying to request data from a backend hosted on a different domain, and the browser blocked it for security reasons.
+                                        </p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">check_circle</span>
+                                            The Solution
+                                        </span>
+<div class="bg-[#0f1a24] rounded-lg p-3 border border-[#20364b] font-mono text-xs text-green-400 overflow-x-auto">
+                                            // In your backend configuration<br/>
+                                            Access-Control-Allow-Origin: "https://your-frontend.com"
+                                        </div>
+<p class="text-[#8dadce] text-xs mt-1">Or navigate to <a class="text-primary hover:underline" href="#">Settings &gt; Security &gt; Allowed Origins</a> to add your domain.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#111922] px-6 py-3 flex justify-between items-center border-t border-[#20364b]">
+<button class="text-[#8dadce] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+                                Copy Solution
+                            </button>
+<button class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-all transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                                Ask AI for help
+                            </button>
+</div>
+</div>
+<!-- Card 2: Env Var Error -->
+<div class="flex flex-col bg-card-dark rounded-xl border border-[#20364b] overflow-hidden shadow-lg hover:border-[#304b66] transition-colors group">
+<div class="flex flex-col md:flex-row md:items-start gap-4 p-6 border-l-4 border-l-error-red">
+<div class="flex-1 flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-500 uppercase tracking-wider">Warning</span>
+<span class="text-[#8dadce] text-xs font-mono">Runtime</span>
+</div>
+<h3 class="text-error-red text-xl font-bold font-mono tracking-tight">process.env.API_KEY is undefined</h3>
+</div>
+</div>
+<div class="grid md:grid-cols-[1fr_2fr] gap-6 mt-2">
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-yellow-500">info</span>
+                                            The Cause
+                                        </span>
+<p class="text-[#8dadce] text-sm leading-relaxed">
+                                            The application cannot read the `API_KEY` environment variable. This usually happens when the variable is not set in the cloud dashboard.
+                                        </p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">check_circle</span>
+                                            The Solution
+                                        </span>
+<ol class="list-decimal list-inside text-[#8dadce] text-sm space-y-1 ml-1">
+<li>Go to your Project Dashboard.</li>
+<li>Navigate to <strong class="text-white">Settings &gt; Environment Variables</strong>.</li>
+<li>Add Key: <code class="bg-[#20364b] px-1 rounded text-primary">API_KEY</code> and your value.</li>
+<li>Redeploy the application.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#111922] px-6 py-3 flex justify-between items-center border-t border-[#20364b]">
+<button class="text-[#8dadce] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+                                Read Docs
+                            </button>
+<button class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-all transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                                Ask AI for help
+                            </button>
+</div>
+</div>
+<!-- Card 3: Build Error -->
+<div class="flex flex-col bg-card-dark rounded-xl border border-[#20364b] overflow-hidden shadow-lg hover:border-[#304b66] transition-colors group">
+<div class="flex flex-col md:flex-row md:items-start gap-4 p-6 border-l-4 border-l-error-red">
+<div class="flex-1 flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-error-red/20 text-error-red uppercase tracking-wider">Critical</span>
+<span class="text-[#8dadce] text-xs font-mono">Build</span>
+</div>
+<h3 class="text-error-red text-xl font-bold font-mono tracking-tight">Error: Command "npm run build" exited with 1</h3>
+</div>
+</div>
+<div class="grid md:grid-cols-[1fr_2fr] gap-6 mt-2">
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-yellow-500">info</span>
+                                            The Cause
+                                        </span>
+<p class="text-[#8dadce] text-sm leading-relaxed">
+                                            The build script failed. This is often caused by syntax errors in your code, missing dependencies, or type errors in TypeScript.
+                                        </p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-white font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">check_circle</span>
+                                            The Solution
+                                        </span>
+<div class="bg-[#0f1a24] rounded-lg p-3 border border-[#20364b] font-mono text-xs text-[#8dadce] overflow-x-auto">
+<span class="text-yellow-500">Step 1:</span> Check the logs immediately above this error line.<br/>
+<span class="text-yellow-500">Step 2:</span> Look for "Module not found" or "SyntaxError".<br/>
+<span class="text-yellow-500">Step 3:</span> Run <code class="text-white">npm install</code> locally to ensure dependencies are correct.
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#111922] px-6 py-3 flex justify-between items-center border-t border-[#20364b]">
+<button class="text-[#8dadce] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                                View Build Logs
+                            </button>
+<button class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-all transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                                Ask AI for help
+                            </button>
+</div>
+</div>
+</div>
+<!-- Load More / Empty State Placeholder -->
+<div class="flex flex-col items-center justify-center py-12 text-center gap-3">
+<p class="text-[#8dadce] text-sm">Can't find your error?</p>
+<button class="text-white bg-[#20364b] hover:bg-[#2a455f] px-6 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Load more common errors
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

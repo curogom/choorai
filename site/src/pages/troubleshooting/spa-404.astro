@@ -1,0 +1,161 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+---
+
+<DocsLayout
+  title="SPA 404 에러 해결하기"
+  description="새로고침 시 404 Page Not Found 에러 해결 방법"
+  currentPath="/troubleshooting/spa-404"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/troubleshooting" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SPA 404</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        배포 후 자주 발생
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        SPA 404 에러 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        React/Vue 앱 배포 후 새로고침하면 404가 뜨나요?
+        SPA(Single Page Application)의 라우팅 설정 문제입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          모든 경로를 <code class="bg-surface px-1 rounded">index.html</code>로 리다이렉트하도록 설정하세요.
+          호스팅 서비스마다 설정 방법이 다릅니다.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="404 Page Not Found"
+        severity="critical"
+        cause="SPA는 클라이언트 사이드 라우팅을 사용합니다. 서버는 /about, /dashboard 같은 경로를 모르기 때문에 404를 반환합니다."
+        solution={[
+          "호스팅 서비스 설정에서 모든 경로를 index.html로 리다이렉트",
+          "Cloudflare Pages: _redirects 파일 생성",
+          "Vercel: vercel.json rewrites 설정",
+          "Nginx: try_files 설정"
+        ]}
+        aiPrompt="React 앱을 Cloudflare Pages에 배포했는데 /about 페이지에서 새로고침하면 404가 떠. 어떻게 해결해?"
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">호스팅별 해결 방법</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-xs font-bold">Cloudflare</span>
+          Cloudflare Pages
+        </h3>
+        <p class="text-text-secondary mb-3">
+          프로젝트 루트 또는 <code class="bg-surface px-1 rounded">public</code> 폴더에 <code class="bg-surface px-1 rounded">_redirects</code> 파일을 생성하세요.
+        </p>
+        <CodeBlock
+          client:load
+          filename="public/_redirects"
+          code={`/* /index.html 200`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-black text-white text-xs font-bold">Vercel</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="vercel.json"
+          code={`{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Netlify</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="public/_redirects"
+          code={`/*    /index.html   200`}
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          또는 <code class="bg-surface px-1 rounded">netlify.toml</code> 파일:
+        </p>
+        <CodeBlock
+          client:load
+          filename="netlify.toml"
+          code={`[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">Nginx</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="nginx.conf"
+          code={`server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="info" title="왜 이런 문제가 발생하나요?">
+          <p class="mt-2">
+            SPA는 JavaScript가 브라우저에서 URL을 처리합니다.
+            하지만 새로고침하면 브라우저가 서버에 해당 경로를 요청하고,
+            서버는 그 경로에 실제 파일이 없으니 404를 반환합니다.
+            해결책은 모든 요청을 index.html로 보내서 JS가 라우팅을 처리하게 하는 것입니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/troubleshooting/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">빌드 실패</h4>
+          <p class="text-text-secondary text-sm">npm run build 에러</p>
+        </a>
+        <a href="/troubleshooting/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS 에러</h4>
+          <p class="text-text-secondary text-sm">API 호출 시 CORS 문제</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
