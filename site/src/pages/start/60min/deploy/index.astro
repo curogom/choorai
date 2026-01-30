@@ -1,0 +1,343 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Checklist from '../../../../components/Checklist';
+import CodeBlock from '../../../../components/CodeBlock';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'completed' as const },
+  { label: '백엔드', status: 'completed' as const },
+  { label: '연결', status: 'completed' as const },
+  { label: '배포', status: 'current' as const },
+  { label: '완료', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'github', label: 'GitHub 저장소 생성', description: '코드 올리기' },
+  { id: 'cloudflare', label: 'Cloudflare Pages 연결', description: '프론트엔드 배포' },
+  { id: 'env', label: '환경변수 설정', description: 'VITE_API_URL' },
+  { id: 'deploy', label: '배포 확인', description: '실제 URL 접속' },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - 배포하기"
+  description="만든 서비스를 인터넷에 배포해봅시다"
+  currentPath="/start/60min/deploy"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 브레드크럼 -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <span>/</span>
+      <span class="text-primary font-medium">배포</span>
+    </nav>
+
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={83}
+        label="60분 완주 챌린지"
+        sublabel="Step 5/6"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 페이지 제목 -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        10분
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        배포: Cloudflare Pages
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        드디어 마지막 단계입니다! 만든 서비스를 인터넷에 공개하고
+        친구들에게 자랑할 URL을 받아봅시다.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3줄 요약)">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>GitHub에 코드 push</li>
+          <li>Cloudflare Pages에서 저장소 연결</li>
+          <li>자동 배포 완료! URL 공유</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- 메인 콘텐츠 -->
+    <article class="prose prose-invert max-w-none">
+      <!-- 섹션 1: GitHub 저장소 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          GitHub에 코드 올리기
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          먼저 프론트엔드 코드를 GitHub에 올립니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">1.1 GitHub 저장소 생성</h3>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-2 mb-4">
+          <li><a href="https://github.com/new" class="text-primary hover:underline">github.com/new</a>로 이동</li>
+          <li>Repository name: <code>my-admin</code> 입력</li>
+          <li>Public 선택 (무료 호스팅 위해)</li>
+          <li>"Create repository" 클릭</li>
+        </ol>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">1.2 코드 Push</h3>
+
+        <p class="text-text-secondary mb-4">
+          프론트엔드 폴더(<code>my-admin</code>)에서 실행:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Git 초기화
+git init
+
+# .gitignore 확인 (node_modules 제외되어야 함)
+cat .gitignore
+
+# 모든 파일 추가
+git add .
+
+# 첫 커밋
+git commit -m "Initial commit"
+
+# GitHub 연결 (YOUR_USERNAME을 본인 계정으로 변경)
+git remote add origin https://github.com/YOUR_USERNAME/my-admin.git
+
+# Push
+git branch -M main
+git push -u origin main`}
+          filename="터미널"
+        />
+
+        <Callout client:load variant="info" title="Git이 처음이라면?">
+          <p class="text-sm">
+            위 명령어를 그대로 복사해서 실행하면 됩니다.
+            <code>YOUR_USERNAME</code> 부분만 본인의 GitHub 사용자명으로 바꾸세요.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 섹션 2: Cloudflare Pages -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          Cloudflare Pages 배포
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          Cloudflare Pages는 무료로 정적 사이트를 호스팅해줍니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2.1 Cloudflare 대시보드</h3>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-2 mb-4">
+          <li><a href="https://dash.cloudflare.com" class="text-primary hover:underline">dash.cloudflare.com</a> 로그인</li>
+          <li>좌측 메뉴에서 "Workers & Pages" 클릭</li>
+          <li>"Create" 버튼 클릭</li>
+          <li>"Pages" 탭 선택</li>
+          <li>"Connect to Git" 클릭</li>
+        </ol>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2.2 GitHub 연결</h3>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-2 mb-4">
+          <li>"Add account" → GitHub 계정 연결</li>
+          <li>방금 만든 <code>my-admin</code> 저장소 선택</li>
+          <li>"Begin setup" 클릭</li>
+        </ol>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2.3 빌드 설정</h3>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-4">
+          <div class="space-y-4">
+            <div>
+              <span class="text-gray-400 text-sm">Project name</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 text-white">my-admin</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Production branch</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 text-white">main</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Framework preset</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 text-white">Vite</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Build command</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 font-mono text-green-400">npm run build</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Build output directory</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 font-mono text-green-400">dist</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2.4 환경변수 설정</h3>
+
+        <p class="text-text-secondary mb-4">
+          "Environment variables" 섹션에서 API URL을 설정합니다.
+          지금은 로컬 백엔드를 사용하므로 일단 비워둡니다.
+        </p>
+
+        <Callout client:load variant="info" title="백엔드 배포 후">
+          <p class="text-sm">
+            백엔드를 Cloud Run 등에 배포한 후, <code>VITE_API_URL</code> 환경변수를
+            백엔드 URL로 설정하면 됩니다.
+          </p>
+        </Callout>
+
+        <p class="text-text-secondary mt-4 mb-4">
+          "Save and Deploy" 버튼을 클릭하면 빌드가 시작됩니다.
+        </p>
+      </section>
+
+      <!-- 섹션 3: 배포 확인 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          배포 확인
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          빌드가 완료되면 URL이 생성됩니다:
+        </p>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 text-center">
+          <p class="text-gray-400 text-sm mb-2">Your site is live at</p>
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-2xl font-bold text-primary">https://my-admin.pages.dev</span>
+            <button class="p-2 hover:bg-gray-700 rounded transition-colors">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </button>
+          </div>
+          <p class="text-gray-500 text-xs mt-2">(실제 URL은 다를 수 있습니다)</p>
+        </div>
+
+        <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            배포 성공!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            이제 이 URL을 친구들에게 공유할 수 있습니다!
+          </p>
+        </div>
+      </section>
+
+      <!-- 섹션 4: 백엔드 배포 (간략) -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          백엔드 배포 (다음 단계)
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          현재 프론트엔드만 배포된 상태입니다.
+          백엔드는 아직 로컬(<code>localhost:8000</code>)에서만 동작합니다.
+        </p>
+
+        <Callout client:load variant="info" title="백엔드 배포 옵션">
+          <p class="text-sm mb-2">백엔드를 배포하려면 다음 중 하나를 선택하세요:</p>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Google Cloud Run</strong> - 무료 티어 제공, 자동 스케일링</li>
+            <li><strong>Railway</strong> - 간편한 배포, 월 $5부터</li>
+            <li><strong>Render</strong> - 무료 티어 제공, 느린 콜드 스타트</li>
+          </ul>
+          <p class="text-sm mt-2">
+            자세한 가이드는 <a href="/deploy/cloud-run" class="text-primary hover:underline">Cloud Run 배포 가이드</a>를 참고하세요.
+          </p>
+        </Callout>
+
+        <p class="text-text-secondary mt-4">
+          지금은 로컬에서 백엔드를 실행하면서 프론트엔드 배포를 테스트해보세요.
+          백엔드 배포는 다음 학습 사이클에서 다룹니다.
+        </p>
+      </section>
+
+      <!-- SPA 404 해결 -->
+      <section class="mb-10">
+        <Callout client:load variant="warning" title="새로고침 시 404 에러?">
+          <p class="text-sm mb-2">
+            React Router를 사용하면 새로고침 시 404가 발생할 수 있습니다.
+          </p>
+          <p class="text-sm">
+            <code>public/_redirects</code> 파일을 만들고 아래 내용을 추가하세요:
+          </p>
+          <div class="mt-2 bg-gray-900 rounded px-3 py-2 font-mono text-sm">
+            /* /index.html 200
+          </div>
+          <p class="text-sm mt-2">
+            자세한 해결 방법은 <a href="/troubleshooting/spa-404" class="text-primary hover:underline">SPA 404 트러블슈팅</a>을 참고하세요.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-deploy"
+          title="배포 완료 체크리스트"
+          items={checklist}
+        />
+      </section>
+
+      <!-- 네비게이션 -->
+      <nav class="flex items-center justify-between pt-8 border-t border-border">
+        <a
+          href="/start/60min/connect"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+        >
+          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div class="text-left">
+            <span class="text-xs text-text-secondary">이전</span>
+            <span class="block text-sm text-white font-medium">프론트-백 연결</span>
+          </div>
+        </a>
+
+        <a
+          href="/start/60min/complete"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+        >
+          <div class="text-right">
+            <span class="text-xs opacity-70">다음 단계</span>
+            <span class="block text-sm font-bold">완료!</span>
+          </div>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    </article>
+  </div>
+</DocsLayout>
