@@ -32,7 +32,7 @@ dev-site:
 	cd site && npm run dev
 
 dev-api:
-	cd examples/b2b-admin/api && uvicorn main:app --reload --port 8000
+	cd examples/b2b-admin/api && uvicorn app.main:app --reload --port 8000
 
 dev-web:
 	cd examples/b2b-admin/web && npm run dev
