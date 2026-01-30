@@ -84,11 +84,11 @@ class TestTodosAPI:
         assert response.status_code == 404
 
     def test_update_todo(self, client):
-        """PUT /api/v1/todos/{id} - 수정"""
+        """PATCH /api/v1/todos/{id} - 수정"""
         create_resp = client.post("/api/v1/todos", json={"title": "Original"})
         todo_id = create_resp.json()["id"]
 
-        response = client.put(
+        response = client.patch(
             f"/api/v1/todos/{todo_id}",
             json={"title": "Updated"},
         )
@@ -97,12 +97,12 @@ class TestTodosAPI:
         assert response.json()["title"] == "Updated"
 
     def test_update_todo_toggle_completion(self, client):
-        """PUT /api/v1/todos/{id} - 완료 상태 토글"""
+        """PATCH /api/v1/todos/{id} - 완료 상태 토글"""
         create_resp = client.post("/api/v1/todos", json={"title": "Test"})
         todo_id = create_resp.json()["id"]
         assert create_resp.json()["is_completed"] is False
 
-        response = client.put(
+        response = client.patch(
             f"/api/v1/todos/{todo_id}",
             json={"is_completed": True},
         )
@@ -111,8 +111,8 @@ class TestTodosAPI:
         assert response.json()["is_completed"] is True
 
     def test_update_todo_not_found(self, client):
-        """PUT /api/v1/todos/{id} - 404"""
-        response = client.put(
+        """PATCH /api/v1/todos/{id} - 404"""
+        response = client.patch(
             "/api/v1/todos/nonexistent",
             json={"title": "Test"},
         )

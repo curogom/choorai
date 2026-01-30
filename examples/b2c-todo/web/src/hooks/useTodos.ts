@@ -42,7 +42,7 @@ export function useUpdateTodo() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: TodoUpdate }) =>
-      apiClient.put<Todo, TodoUpdate>(`/api/v1/todos/${id}`, data),
+      apiClient.patch<Todo, TodoUpdate>(`/api/v1/todos/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TODOS_KEY });
     },

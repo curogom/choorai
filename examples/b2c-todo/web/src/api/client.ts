@@ -39,6 +39,18 @@ class ApiClient {
     return response.json() as Promise<T>;
   }
 
+  async patch<T, D>(path: string, data: D): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+    return response.json() as Promise<T>;
+  }
+
   async delete(path: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'DELETE',

@@ -44,7 +44,7 @@ def get_todo(todo_id: str) -> TodoResponse:
     return todo
 
 
-@router.put("/{todo_id}", response_model=TodoResponse)
+@router.patch("/{todo_id}", response_model=TodoResponse)
 def update_todo(todo_id: str, data: TodoUpdate) -> TodoResponse:
     """Todo 수정"""
     todo = todo_storage.update(todo_id, data)

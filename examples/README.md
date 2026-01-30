@@ -68,11 +68,11 @@ cd web && npm test
 
 ## 학습 경로
 
-1. **60분 완주** - https://choorai.com/start/60min
+1. [**60분 완주**](https://choorai.com/start/60min)
    - 프론트엔드 (React + Vite)
    - 백엔드 (FastAPI)
    - API 연결 (TanStack Query)
    - 배포 (Cloudflare Pages)
 
-2. **학습 사이클** - https://choorai.com/cycle/0-overview
+2. [**학습 사이클**](https://choorai.com/cycle/0-overview)
    - 심화 학습 콘텐츠

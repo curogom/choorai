@@ -15,8 +15,11 @@ function createWrapper() {
     createElement(QueryClientProvider, { client: queryClient }, children);
 }
 
+const originalFetch = global.fetch;
+
 afterEach(() => {
   vi.restoreAllMocks();
+  global.fetch = originalFetch;
 });
 
 describe('useTodos', () => {
