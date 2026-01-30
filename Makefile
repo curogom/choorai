@@ -1,4 +1,4 @@
-.PHONY: help dev dev-site dev-api dev-web build clean install lint test
+.PHONY: help dev dev-site dev-api dev-web build clean install lint test test-api test-web
 
 # 기본 타겟
 help:
@@ -20,7 +20,9 @@ help:
 	@echo "유틸:"
 	@echo "  install      의존성 설치"
 	@echo "  lint         린트 실행"
-	@echo "  test         테스트 실행"
+	@echo "  test         전체 테스트 실행"
+	@echo "  test-api     API 테스트만 실행"
+	@echo "  test-web     Web 테스트만 실행"
 	@echo "  clean        빌드 결과물 삭제"
 
 # === 개발 환경 ===
@@ -65,8 +67,13 @@ install-api:
 lint:
 	@echo "TODO: 린트 설정 필요"
 
-test:
-	@echo "TODO: 테스트 설정 필요"
+test: test-api test-web
+
+test-api:
+	cd examples/b2b-admin/api && pytest -v
+
+test-web:
+	cd examples/b2b-admin/web && npm run test:run
 
 # === 정리 ===
 

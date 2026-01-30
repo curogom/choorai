@@ -1,36 +1,83 @@
-# B2B Admin Console (예시 프로젝트)
+# B2B Admin Console
 
-> choorai.com 문서에서 가르치는 샘플 프로젝트
+> choorai.com "60분 완주" 튜토리얼 예제 프로젝트
 
 ## 구조
 
 ```
 b2b-admin/
-├── web/          # React + Vite 프론트엔드
-├── api/          # Python + FastAPI 백엔드
-└── api-go/       # Go 백엔드 (추후 추가)
+├── api/          # FastAPI 백엔드
+│   ├── app/      # 애플리케이션 코드
+│   └── tests/    # pytest 테스트 (19 tests)
+└── web/          # React + Vite 프론트엔드
+    └── src/      # 소스 코드 + 테스트 (11 tests)
 ```
 
-## 기능 범위 (MVP)
+## 기능
 
-- [x] Health Check (`GET /health`)
-- [ ] 프로젝트 목록 조회 (`GET /api/v1/projects`)
-- [ ] 프로젝트 생성 (`POST /api/v1/projects`)
-- [ ] 프로젝트 상세 조회 (`GET /api/v1/projects/:id`)
-- [ ] 프로젝트 수정 (`PUT /api/v1/projects/:id`)
-- [ ] 프로젝트 삭제 (`DELETE /api/v1/projects/:id`)
-
-## API 스펙
-
-[contracts/openapi.yaml](../../contracts/openapi.yaml) 참조
+| 기능 | API | Web |
+|------|-----|-----|
+| Health Check | ✅ | ✅ |
+| 프로젝트 목록 | ✅ | ✅ |
+| 프로젝트 생성 | ✅ | ✅ |
+| 프로젝트 상세 | ✅ | ✅ |
+| 프로젝트 수정 | ✅ | ✅ |
+| 프로젝트 삭제 | ✅ | ✅ |
 
 ## 개발
 
-```bash
-# 전체 실행 (루트에서)
-make dev
+### API (FastAPI)
 
-# 또는 개별 실행
-make dev-api  # API만
-make dev-web  # Web만
+```bash
+cd api
+
+# 가상환경 설정
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 서버 실행 (포트 8000)
+uvicorn app.main:app --reload
+
+# 테스트
+pytest -v
 ```
+
+### Web (React + Vite)
+
+```bash
+cd web
+
+# 의존성 설치
+npm install
+
+# 개발 서버 (포트 5173)
+npm run dev
+
+# 테스트
+npm test
+
+# 빌드
+npm run build
+```
+
+## API 문서
+
+서버 실행 후:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+## 기술 스택
+
+### API
+- FastAPI 0.115
+- Pydantic 2.9
+- pytest
+
+### Web
+- React 18
+- TypeScript 5
+- TanStack Query 5
+- React Router 6
+- Tailwind CSS 3
+- Vitest
