@@ -28,9 +28,9 @@ const prerequisites = [
     description: 'cloudflare.com에서 무료 계정을 만드세요',
   },
   {
-    id: 'vscode',
-    label: 'VS Code 설치',
-    description: '또는 Cursor, WebStorm 등 선호하는 에디터',
+    id: 'editor',
+    label: '코드 에디터 설치',
+    description: 'Antigravity 추천, 또는 VS Code',
   },
 ];
 ---
@@ -87,7 +87,7 @@ const prerequisites = [
       <Callout client:load variant="tip" title="TL;DR (5줄 요약)">
         <ul class="list-disc list-inside space-y-1 mt-2">
           <li>GitHub, Cloudflare 계정 생성 (무료)</li>
-          <li>VS Code 또는 Cursor 설치</li>
+          <li>Antigravity 또는 VS Code 설치</li>
           <li>Node.js 설치</li>
           <li>터미널 사용법 익히기</li>
           <li>AI 채팅 준비 (ChatGPT, Claude 등)</li>
@@ -155,18 +155,18 @@ const prerequisites = [
 
         <h3 class="text-lg font-bold text-white mt-6 mb-3">코드 에디터</h3>
         <p class="text-text-secondary mb-4">
-          아래 중 하나를 설치하세요. <strong class="text-white">Cursor</strong>를 추천합니다 (AI 기능 내장).
+          아래 중 하나를 설치하세요. <strong class="text-white">Antigravity</strong>를 추천합니다 (무료 + Gemini AI 내장).
         </p>
 
-        <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
           <div class="p-4 bg-surface border border-primary/50 rounded-xl">
             <div class="flex items-center gap-2 mb-2">
               <span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">추천</span>
-              <h4 class="text-white font-bold">Cursor</h4>
+              <h4 class="text-white font-bold">Antigravity</h4>
             </div>
-            <p class="text-text-secondary text-sm mb-3">AI가 내장된 코드 에디터</p>
-            <a href="https://cursor.sh" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
-              cursor.sh →
+            <p class="text-text-secondary text-sm mb-3">Google의 무료 AI 에디터</p>
+            <a href="https://antigravity.google" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
+              antigravity.google →
             </a>
           </div>
 
@@ -175,6 +175,14 @@ const prerequisites = [
             <p class="text-text-secondary text-sm mb-3">가장 널리 사용되는 무료 에디터</p>
             <a href="https://code.visualstudio.com" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
               code.visualstudio.com →
+            </a>
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Cursor</h4>
+            <p class="text-text-secondary text-sm mb-3">AI 내장 에디터 (유료)</p>
+            <a href="https://cursor.sh" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
+              cursor.sh →
             </a>
           </div>
         </div>
@@ -247,7 +255,7 @@ python3 --version`}
         <ul class="list-disc list-inside text-text-secondary space-y-2 mb-6">
           <li><a href="https://chat.openai.com" class="text-primary hover:underline">ChatGPT</a> (무료/유료)</li>
           <li><a href="https://claude.ai" class="text-primary hover:underline">Claude</a> (무료/유료)</li>
-          <li>Cursor 내장 AI (에디터 설치 시 포함)</li>
+          <li>Antigravity 내장 AI (에디터 설치 시 포함, Gemini 기반)</li>
         </ul>
 
         <PromptBox

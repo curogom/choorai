@@ -5,7 +5,7 @@ import CodeBlock from '../../components/CodeBlock';
 import Checklist from '../../components/Checklist';
 
 const toolsChecklist = [
-  { id: 'editor', label: '코드 에디터 설치', description: 'VS Code 또는 Cursor' },
+  { id: 'editor', label: '코드 에디터 설치', description: 'Antigravity, VS Code, 또는 Cursor' },
   { id: 'nodejs', label: 'Node.js 설치', description: 'LTS 버전 (v20+)' },
   { id: 'git', label: 'Git 설치', description: '버전 관리 도구' },
   { id: 'terminal', label: '터미널 사용법 익히기', description: '기본 명령어 실행' },
@@ -56,19 +56,19 @@ const toolsChecklist = [
           전용 에디터를 사용하면 훨씬 편리합니다.
         </p>
 
-        <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
           <a
-            href="https://cursor.sh"
+            href="https://antigravity.google"
             target="_blank"
             rel="noopener"
             class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline"
           >
             <div class="flex items-center gap-2 mb-2">
               <span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">추천</span>
-              <h3 class="text-white font-bold">Cursor</h3>
+              <h3 class="text-white font-bold">Antigravity</h3>
             </div>
-            <p class="text-text-secondary text-sm mb-2">AI가 내장된 코드 에디터</p>
-            <span class="text-primary text-sm">cursor.sh →</span>
+            <p class="text-text-secondary text-sm mb-2">Google의 무료 AI 에디터</p>
+            <span class="text-primary text-sm">antigravity.google →</span>
           </a>
 
           <a
@@ -81,12 +81,26 @@ const toolsChecklist = [
             <p class="text-text-secondary text-sm mb-2">가장 널리 사용되는 무료 에디터</p>
             <span class="text-primary text-sm">code.visualstudio.com →</span>
           </a>
+
+          <a
+            href="https://cursor.sh"
+            target="_blank"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">Cursor</h3>
+            <p class="text-text-secondary text-sm mb-2">AI 내장 에디터 (유료)</p>
+            <span class="text-primary text-sm">cursor.sh →</span>
+          </a>
         </div>
 
-        <Callout client:load variant="tip" title="Cursor를 추천하는 이유">
+        <Callout client:load variant="tip" title="Antigravity를 추천하는 이유">
           <p class="mt-2">
-            Cursor는 VS Code 기반이라 기능이 거의 같지만, AI가 내장되어 있어서
-            코드 작성 중 바로 도움을 받을 수 있습니다.
+            Antigravity는 Google이 만든 VS Code 기반 에디터로, Gemini AI가 내장되어 있습니다.
+            개인 사용자는 무료이며, AI 기능의 성능도 뛰어납니다.
+          </p>
+          <p class="mt-2 text-sm">
+            <strong>주요 단축키:</strong> <code>Cmd+L</code> 에이전트 패널, <code>Cmd+I</code> 인라인 AI
           </p>
         </Callout>
       </section>
@@ -200,7 +214,7 @@ git config --global user.email "my@email.com"`}
         <ul class="list-disc list-inside text-text-secondary space-y-2 mb-4">
           <li><strong class="text-white">macOS:</strong> Spotlight(⌘+Space) → "Terminal" 검색</li>
           <li><strong class="text-white">Windows:</strong> 시작 메뉴 → "PowerShell" 검색</li>
-          <li><strong class="text-white">VS Code/Cursor:</strong> 메뉴에서 Terminal → New Terminal (또는 Ctrl+`)</li>
+          <li><strong class="text-white">Antigravity/VS Code:</strong> 메뉴에서 Terminal → New Terminal (또는 Ctrl+`)</li>
         </ul>
 
         <h3 class="text-lg font-bold text-white mt-6 mb-3">자주 쓰는 명령어</h3>
