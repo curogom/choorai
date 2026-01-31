@@ -13,38 +13,43 @@ const navigation = [
   {
     title: '시작하기',
     items: [
-      { label: '60분 완주', href: '/start/60min', icon: 'rocket' },
-      { label: '→ 프론트엔드 (React)', href: '/start/60min/frontend/react', icon: 'code' },
-      { label: '→ 백엔드 (FastAPI)', href: '/start/60min/backend/fastapi', icon: 'server' },
-      { label: '→ 연결', href: '/start/60min/connect', icon: 'link' },
-      { label: '→ 배포', href: '/start/60min/deploy', icon: 'cloud' },
-      { label: '→ 완료', href: '/start/60min/complete', icon: 'check' },
+      { label: '60분 완주 (React + FastAPI)', href: '/start/60min' },
+      { label: '→ 프론트엔드', href: '/start/60min/frontend/react' },
+      { label: '→ 백엔드', href: '/start/60min/backend/fastapi' },
+      { label: '→ 연결', href: '/start/60min/connect' },
+      { label: '→ 배포', href: '/start/60min/deploy' },
+      { label: '→ 완료', href: '/start/60min/complete' },
     ],
   },
   {
     title: '학습 사이클',
     items: [
-      { label: 'Cycle 0: 개요', href: '/cycle/0-overview', icon: 'school' },
-      { label: 'Cycle 0: 도구', href: '/cycle/0-tools', icon: 'build' },
-      { label: 'Cycle 4: 데이터베이스', href: '/cycle/4-database', icon: 'database' },
-      { label: '인증 가이드', href: '/cycle/auth', icon: 'lock' },
+      { label: 'Cycle 0: 개요', href: '/cycle/0-overview' },
+      { label: 'Cycle 0: 도구', href: '/cycle/0-tools' },
+      { label: 'Cycle 1: DNS', href: '#', disabled: true },
+      { label: 'Cycle 2: Frontend', href: '#', disabled: true },
+      { label: 'Cycle 3: Backend', href: '#', disabled: true },
+      { label: 'Cycle 4: 데이터베이스', href: '/cycle/4-database' },
+      { label: 'Cycle 5: Runtime', href: '#', disabled: true },
+      { label: 'Cycle 6: Ops', href: '#', disabled: true },
+      { label: '인증 가이드', href: '/cycle/auth' },
     ],
   },
   {
-    title: '배포',
+    title: '배포 레퍼런스',
     items: [
-      { label: 'Cloudflare Pages', href: '/deploy/cloudflare-pages', icon: 'cloud' },
-      { label: 'Cloud Run', href: '/deploy/cloud-run', icon: 'server' },
+      { label: 'Cloudflare Pages', href: '/deploy/cloudflare-pages' },
+      { label: 'Cloud Run', href: '/deploy/cloud-run' },
     ],
   },
   {
     title: '트러블슈팅',
     items: [
-      { label: 'CORS 에러', href: '/troubleshooting/cors', icon: 'error' },
-      { label: '환경 변수', href: '/troubleshooting/env', icon: 'code' },
-      { label: 'SPA 404', href: '/troubleshooting/spa-404', icon: 'link_off' },
-      { label: '빌드 실패', href: '/troubleshooting/build-fail', icon: 'build' },
-      { label: '인증/쿠키', href: '/troubleshooting/auth-cookie', icon: 'lock' },
+      { label: 'CORS 에러', href: '/troubleshooting/cors' },
+      { label: '환경 변수', href: '/troubleshooting/env' },
+      { label: 'SPA 404', href: '/troubleshooting/spa-404' },
+      { label: '빌드 실패', href: '/troubleshooting/build-fail' },
+      { label: '인증/쿠키', href: '/troubleshooting/auth-cookie' },
     ],
   },
 ];
@@ -105,19 +110,26 @@ const navigation = [
               <ul class="space-y-1">
                 {section.items.map((item) => (
                   <li>
-                    <a
-                      href={item.href}
-                      class={`
-                        flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-                        transition-colors
-                        ${currentPath === item.href
-                          ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                          : 'text-text-secondary hover:text-white hover:bg-surface'
-                        }
-                      `}
-                    >
-                      {item.label}
-                    </a>
+                    {item.disabled ? (
+                      <span class="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-text-secondary/40 cursor-not-allowed">
+                        <span>{item.label}</span>
+                        <span class="text-[10px] bg-surface/50 px-1.5 py-0.5 rounded text-text-secondary/60">준비 중</span>
+                      </span>
+                    ) : (
+                      <a
+                        href={item.href}
+                        class={`
+                          flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                          transition-colors
+                          ${currentPath === item.href
+                            ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
+                            : 'text-text-secondary hover:text-white hover:bg-surface'
+                          }
+                        `}
+                      >
+                        {item.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
