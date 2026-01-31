@@ -60,10 +60,15 @@ const iconColors: Record<string, string> = {
               문서 보기
             </a>
             <a
-              href="/login"
-              class="flex items-center justify-center rounded-lg bg-surface border border-border px-4 py-2 text-sm font-bold text-white hover:bg-surface-elevated transition-colors"
+              href="https://github.com/curogom/choorai"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-2 rounded-lg bg-surface border border-border px-4 py-2 text-sm font-bold text-white hover:bg-surface-elevated transition-colors"
             >
-              로그인
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              GitHub
             </a>
           </div>
         </div>
@@ -103,6 +108,7 @@ const iconColors: Record<string, string> = {
               glow={true}
               fullWidth={true}
               icon="play"
+              href="/start/60min"
             >
               60분 완주 시작하기
             </Button>
@@ -112,6 +118,7 @@ const iconColors: Record<string, string> = {
               size="lg"
               fullWidth={true}
               icon="book"
+              href="/cycle/0-overview"
             >
               둘러보기
             </Button>
@@ -124,7 +131,6 @@ const iconColors: Record<string, string> = {
               client:load
               value={0}
               label="첫 배포 챌린지"
-              sublabel="현재 1,204명이 도전 중!"
             />
           </div>
         </div>
@@ -238,15 +244,15 @@ const iconColors: Record<string, string> = {
             <span class="text-white font-bold text-lg">Choorai</span>
           </div>
           <div class="flex items-center gap-8">
-            <a href="#" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">블로그</a>
-            <a href="https://github.com" class="text-text-secondary hover:text-white transition-colors text-sm font-medium flex items-center gap-2">
+            <a href="https://www.keyflow.me/ko/@curogom" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">블로그</a>
+            <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium flex items-center gap-2">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
               GitHub
             </a>
-            <a href="#" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">이용약관</a>
-            <a href="#" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">개인정보처리방침</a>
+            <a href="/terms" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">이용약관</a>
+            <a href="/privacy" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">개인정보처리방침</a>
           </div>
         </div>
         <div class="mt-8 pt-8 border-t border-border text-center md:text-left">
