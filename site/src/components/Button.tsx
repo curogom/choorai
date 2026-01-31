@@ -1,10 +1,10 @@
-import type { ReactNode, ButtonHTMLAttributes } from 'react';
+import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 type IconType = 'play' | 'book' | 'copy' | 'check' | 'arrow-right' | 'arrow-left' | 'none';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type BaseProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: IconType;
@@ -12,7 +12,20 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   glow?: boolean;
   fullWidth?: boolean;
   children: ReactNode;
-}
+  className?: string;
+};
+
+type ButtonAsButton = BaseProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> & {
+    href?: never;
+  };
+
+type ButtonAsLink = BaseProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps> & {
+    href: string;
+  };
+
+type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: `
@@ -100,17 +113,19 @@ function Icon({ type }: { type: IconType }) {
   }
 }
 
-export default function Button({
-  variant = 'primary',
-  size = 'md',
-  icon = 'none',
-  iconPosition = 'left',
-  glow = false,
-  fullWidth = false,
-  children,
-  className = '',
-  ...props
-}: ButtonProps) {
+export default function Button(props: ButtonProps) {
+  const {
+    variant = 'primary',
+    size = 'md',
+    icon = 'none',
+    iconPosition = 'left',
+    glow = false,
+    fullWidth = false,
+    children,
+    className = '',
+    ...rest
+  } = props;
+
   const baseStyles = `
     inline-flex items-center justify-center
     focus:outline-none focus-visible:ring-2
@@ -122,18 +137,17 @@ export default function Button({
   const glowStyles = glow && variant === 'primary' ? 'animate-glow' : '';
   const widthStyles = fullWidth ? 'w-full' : '';
 
-  return (
-    <button
-      className={`
-        ${baseStyles}
-        ${variantStyles[variant]}
-        ${sizeStyles[size]}
-        ${glowStyles}
-        ${widthStyles}
-        ${className}
-      `}
-      {...props}
-    >
+  const combinedClassName = `
+    ${baseStyles}
+    ${variantStyles[variant]}
+    ${sizeStyles[size]}
+    ${glowStyles}
+    ${widthStyles}
+    ${className}
+  `;
+
+  const content = (
+    <>
       {icon !== 'none' && iconPosition === 'left' && (
         <span className="flex-shrink-0">
           <Icon type={icon} />
@@ -145,6 +159,22 @@ export default function Button({
           <Icon type={icon} />
         </span>
       )}
+    </>
+  );
+
+  if ('href' in props && props.href) {
+    const { href, ...linkProps } = rest as Omit<ButtonAsLink, keyof BaseProps>;
+    return (
+      <a href={href} className={combinedClassName} {...linkProps}>
+        {content}
+      </a>
+    );
+  }
+
+  const buttonProps = rest as Omit<ButtonAsButton, keyof BaseProps>;
+  return (
+    <button className={combinedClassName} {...buttonProps}>
+      {content}
     </button>
   );
 }
