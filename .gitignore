@@ -18,7 +18,9 @@ dist/
 site/.vitepress/dist/
 site/dist/
 examples/b2b-admin/web/dist/
+examples/b2c-todo/web/dist/
 *.log
+*.tsbuildinfo
 
 # === IDE ===
 .idea/

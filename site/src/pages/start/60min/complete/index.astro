@@ -1,0 +1,240 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'completed' as const },
+  { label: '백엔드', status: 'completed' as const },
+  { label: '연결', status: 'completed' as const },
+  { label: '배포', status: 'completed' as const },
+  { label: '완료', status: 'current' as const },
+];
+
+const achievements = [
+  { icon: '🎨', title: 'React 프론트엔드', description: 'Vite + Tailwind로 현대적인 UI' },
+  { icon: '⚡', title: 'FastAPI 백엔드', description: 'Python으로 REST API 구축' },
+  { icon: '🔗', title: 'API 연동', description: 'TanStack Query로 상태 관리' },
+  { icon: '🚀', title: '배포 완료', description: 'Cloudflare Pages에 공개' },
+];
+
+const nextSteps = [
+  {
+    title: '백엔드 배포하기',
+    description: 'Cloud Run으로 API 서버를 인터넷에 배포하세요',
+    href: '/deploy/cloud-run',
+    icon: 'cloud',
+  },
+  {
+    title: '데이터베이스 연결',
+    description: 'PostgreSQL로 데이터를 영구 저장하세요',
+    href: '/cycle/4-database',
+    icon: 'database',
+  },
+  {
+    title: '사용자 인증 추가',
+    description: '로그인/회원가입 기능을 구현하세요',
+    href: '/cycle/auth',
+    icon: 'lock',
+  },
+  {
+    title: '학습 사이클 계속하기',
+    description: '더 깊이 있는 개발 지식을 쌓으세요',
+    href: '/cycle/0-overview',
+    icon: 'school',
+  },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - 축하합니다!"
+  description="첫 번째 웹서비스 배포를 완료했습니다"
+  currentPath="/start/60min/complete"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={100}
+        label="60분 완주 챌린지"
+        sublabel="완료!"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 축하 헤더 -->
+    <header class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent-purple mb-6">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-white mb-4">
+        축하합니다!
+      </h1>
+      <p class="text-xl text-text-secondary max-w-2xl mx-auto">
+        코딩을 전혀 몰랐던 당신이 AI의 도움을 받아
+        <strong class="text-primary">첫 번째 웹서비스</strong>를 만들고 배포했습니다.
+      </p>
+    </header>
+
+    <!-- 달성 카드 -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-white mb-6 text-center">오늘 당신이 만든 것</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {achievements.map((item) => (
+          <div class="bg-surface border border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors">
+            <div class="text-3xl mb-2">{item.icon}</div>
+            <h3 class="font-bold text-white text-sm mb-1">{item.title}</h3>
+            <p class="text-text-secondary text-xs">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 통계 -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-r from-primary/10 to-accent-purple/10 rounded-2xl border border-primary/20 p-8">
+        <div class="grid grid-cols-3 gap-6 text-center">
+          <div>
+            <div class="text-4xl font-black text-primary">6</div>
+            <div class="text-sm text-text-secondary">완료한 단계</div>
+          </div>
+          <div>
+            <div class="text-4xl font-black text-primary">2</div>
+            <div class="text-sm text-text-secondary">만든 서비스</div>
+          </div>
+          <div>
+            <div class="text-4xl font-black text-primary">1</div>
+            <div class="text-sm text-text-secondary">배포한 URL</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 다음 단계 -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-white mb-6">다음 단계</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {nextSteps.map((step) => (
+          <a
+            href={step.href}
+            class="group flex items-start gap-4 p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 no-underline"
+          >
+            <div class="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+              {step.icon === 'cloud' && (
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                </svg>
+              )}
+              {step.icon === 'database' && (
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                </svg>
+              )}
+              {step.icon === 'lock' && (
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              )}
+              {step.icon === 'school' && (
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <h3 class="font-bold text-white group-hover:text-primary transition-colors">{step.title}</h3>
+              <p class="text-sm text-text-secondary mt-1">{step.description}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-secondary ml-auto self-center group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 공유하기 -->
+    <section class="mb-12">
+      <div class="bg-surface border border-border rounded-2xl p-8 text-center">
+        <h2 class="text-xl font-bold text-white mb-4">성취를 공유하세요!</h2>
+        <p class="text-text-secondary mb-6">
+          첫 웹서비스 배포를 완료한 것을 자랑해보세요. 당신의 이야기가 다른 사람에게 영감이 됩니다.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a
+            href="https://twitter.com/intent/tweet?text=코딩을 전혀 몰랐지만 AI의 도움을 받아 첫 웹서비스를 배포했습니다! 🚀%0A%0A@choorai_com 60분 완주 챌린지 완료!&url=https://choorai.com/start/60min"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[#1DA1F2] text-white rounded-lg font-medium hover:bg-[#1a8cd8] transition-colors no-underline"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+            Twitter로 공유
+          </a>
+          <a
+            href="https://github.com/choorai/examples"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors no-underline"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            예제 코드 보기
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 피드백 -->
+    <section class="mb-12">
+      <Callout client:load variant="info" title="피드백을 남겨주세요">
+        <p class="text-sm">
+          60분 완주 튜토리얼이 도움이 되었나요? 개선할 점이 있다면 알려주세요.
+          <br />
+          <a href="https://github.com/choorai/choorai/issues" class="text-primary hover:underline">GitHub Issues</a>에서
+          피드백을 남기거나 질문할 수 있습니다.
+        </p>
+      </Callout>
+    </section>
+
+    <!-- 네비게이션 -->
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/start/60min/deploy"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">배포하기</span>
+        </div>
+      </a>
+
+      <a
+        href="/cycle/0-overview"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음 학습</span>
+          <span class="block text-sm font-bold">학습 사이클 시작</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

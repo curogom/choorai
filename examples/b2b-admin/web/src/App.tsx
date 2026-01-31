@@ -1,5 +1,8 @@
+import { Routes, Route, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useHealth } from './hooks/useHealth';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -27,36 +30,36 @@ function HealthStatus() {
   return (
     <div className="flex items-center gap-2">
       <div className="w-3 h-3 bg-green-500 rounded-full" />
-      <span className="text-green-600">
-        서버 정상 (v{data?.version})
-      </span>
+      <span className="text-green-600">서버 정상 (v{data?.version})</span>
+    </div>
+  );
+}
+
+function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link to="/" className="text-xl font-bold text-gray-900 hover:text-blue-600">
+            B2B Admin
+          </Link>
+          <HealthStatus />
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
     </div>
   );
 }
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-900">
-            B2B Admin
-          </h1>
-          <HealthStatus />
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            환영합니다!
-          </h2>
-          <p className="text-gray-600">
-            B2B Admin Console 예시 프로젝트입니다.
-          </p>
-        </div>
-      </main>
-    </div>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetailPage />} />
+      </Routes>
+    </Layout>
   );
 }
 

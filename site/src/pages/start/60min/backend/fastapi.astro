@@ -1,0 +1,366 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Checklist from '../../../../components/Checklist';
+import CodeBlock from '../../../../components/CodeBlock';
+import PromptBox from '../../../../components/PromptBox';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'completed' as const },
+  { label: '백엔드', status: 'current' as const },
+  { label: '연결', status: 'upcoming' as const },
+  { label: '배포', status: 'upcoming' as const },
+  { label: '완료', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'venv', label: 'Python 가상환경 생성', description: 'python -m venv' },
+  { id: 'fastapi', label: 'FastAPI 설치', description: 'pip install fastapi uvicorn' },
+  { id: 'server', label: '서버 실행', description: 'uvicorn main:app --reload' },
+  { id: 'api', label: 'API 엔드포인트 생성', description: 'CRUD 구현' },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - FastAPI 백엔드"
+  description="FastAPI로 백엔드를 만들어봅시다"
+  currentPath="/start/60min/backend/fastapi"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 브레드크럼 -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <span>/</span>
+      <span class="text-text-secondary">백엔드</span>
+      <span>/</span>
+      <span class="text-primary font-medium">FastAPI</span>
+    </nav>
+
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={33}
+        label="60분 완주 챌린지"
+        sublabel="Step 3/6"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 페이지 제목 -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          15분
+        </div>
+        <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">FastAPI</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        백엔드: FastAPI
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Python FastAPI로 API 서버를 만듭니다.
+        데이터베이스 없이 메모리에 저장하는 간단한 방식으로 시작해요.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3줄 요약)">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Python 가상환경 생성 후 FastAPI 설치</li>
+          <li>프로젝트 CRUD API 엔드포인트 생성</li>
+          <li><code>/docs</code>에서 API 테스트</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- 메인 콘텐츠 -->
+    <article class="prose prose-invert max-w-none">
+      <!-- 섹션 1: 환경 설정 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          환경 설정
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          프론트엔드 폴더(<code>my-admin</code>) 옆에 백엔드 폴더를 만듭니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# 상위 폴더로 이동 (my-admin 폴더가 있는 곳)
+cd ..
+
+# 백엔드 폴더 생성
+mkdir my-admin-api
+cd my-admin-api
+
+# Python 가상환경 생성 (권장)
+python3 -m venv venv
+
+# 가상환경 활성화
+# Mac/Linux:
+source venv/bin/activate
+# Windows:
+# venv\\Scripts\\activate`}
+          filename="터미널"
+        />
+
+        <Callout client:load variant="info" title="Python이 없다면?">
+          <p class="text-sm">
+            <a href="https://www.python.org/downloads/" class="text-primary hover:underline">python.org</a>에서
+            Python 3.10 이상을 설치하세요. Mac 사용자는 <code>brew install python</code>도 가능합니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 섹션 2: FastAPI 설치 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          FastAPI 설치
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={`# FastAPI와 서버 설치
+pip install fastapi uvicorn
+
+# 의존성 파일 생성
+pip freeze > requirements.txt`}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4">
+          <code>requirements.txt</code> 파일이 생성됩니다. 나중에 배포할 때 이 파일을 사용합니다.
+        </p>
+      </section>
+
+      <!-- 섹션 3: 첫 API 만들기 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          첫 API 만들기
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          <code>main.py</code> 파일을 만들고 아래 코드를 붙여넣으세요:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(title="My Admin API")
+
+# CORS 설정 - 프론트엔드와 통신하려면 필수!
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite 개발 서버
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "version": "1.0.0"}
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to My Admin API"}`}
+          filename="main.py"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          서버를 실행해봅시다:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`uvicorn main:app --reload --port 8000`}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4">
+          브라우저에서 <code>http://localhost:8000/docs</code>를 열면 Swagger UI가 나타납니다!
+        </p>
+
+        <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            성공!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            Swagger 문서가 보이면 API 서버가 정상 작동하는 것입니다.
+          </p>
+        </div>
+      </section>
+
+      <!-- 섹션 4: AI로 CRUD API 만들기 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          AI로 CRUD API 만들기
+        </h2>
+
+        <p class="text-text-secondary mb-6">
+          프로젝트 CRUD API를 AI에게 만들어달라고 요청합니다.
+        </p>
+
+        <PromptBox
+          client:load
+          prompt={`FastAPI로 프로젝트 CRUD API를 만들어줘.
+
+요구사항:
+1. 데이터베이스 없이 메모리(딕셔너리)에 저장
+2. Pydantic 모델로 타입 검증
+
+API 엔드포인트:
+- GET /api/v1/projects - 프로젝트 목록 (페이지네이션)
+- POST /api/v1/projects - 프로젝트 생성
+- GET /api/v1/projects/{id} - 프로젝트 상세
+- PUT /api/v1/projects/{id} - 프로젝트 수정
+- DELETE /api/v1/projects/{id} - 프로젝트 삭제
+
+프로젝트 필드:
+- id: UUID (자동 생성)
+- name: 문자열 (필수)
+- description: 문자열 (선택)
+- created_at: datetime (자동)
+- updated_at: datetime (자동)
+
+파일 구조:
+- main.py (기존 파일에 라우터 추가)
+- schemas.py (Pydantic 모델)
+- storage.py (인메모리 저장소)`}
+          title="AI 프롬프트"
+          description="위 프롬프트를 AI에게 전달하세요."
+        />
+      </section>
+
+      <!-- 섹션 5: 결과 확인 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          결과 확인
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          AI가 만든 코드를 적용하고 서버를 재시작하면
+          <code>/docs</code>에서 모든 API를 테스트할 수 있습니다.
+        </p>
+
+        <!-- API 테스트 시각화 -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+          <div class="bg-gray-900 px-4 py-2 border-b border-gray-700 flex items-center gap-2">
+            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span class="text-gray-400 text-sm ml-2">localhost:8000/docs</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center gap-3 p-3 bg-green-500/10 rounded border border-green-500/30">
+              <span class="px-2 py-1 bg-green-600 text-white text-xs font-bold rounded">GET</span>
+              <code class="text-green-300">/api/v1/projects</code>
+              <span class="text-gray-400 text-sm ml-auto">프로젝트 목록</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-blue-500/10 rounded border border-blue-500/30">
+              <span class="px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded">POST</span>
+              <code class="text-blue-300">/api/v1/projects</code>
+              <span class="text-gray-400 text-sm ml-auto">프로젝트 생성</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-green-500/10 rounded border border-green-500/30">
+              <span class="px-2 py-1 bg-green-600 text-white text-xs font-bold rounded">GET</span>
+              <code class="text-green-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">프로젝트 상세</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-yellow-500/10 rounded border border-yellow-500/30">
+              <span class="px-2 py-1 bg-yellow-600 text-white text-xs font-bold rounded">PUT</span>
+              <code class="text-yellow-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">프로젝트 수정</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-red-500/10 rounded border border-red-500/30">
+              <span class="px-2 py-1 bg-red-600 text-white text-xs font-bold rounded">DELETE</span>
+              <code class="text-red-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">프로젝트 삭제</span>
+            </div>
+          </div>
+        </div>
+
+        <Callout client:load variant="info" title="Swagger에서 테스트하기">
+          <ol class="list-decimal list-inside space-y-1 mt-2 text-sm">
+            <li>POST /api/v1/projects를 클릭</li>
+            <li>"Try it out" 버튼 클릭</li>
+            <li>name과 description 입력</li>
+            <li>"Execute" 버튼 클릭</li>
+            <li>201 응답과 생성된 프로젝트 확인!</li>
+          </ol>
+        </Callout>
+
+        <p class="text-text-secondary mt-4 text-sm">
+          완성된 예제 코드는
+          <a href="https://github.com/choorai/examples/tree/main/b2b-admin/api" class="text-primary hover:underline">
+            GitHub 저장소
+          </a>에서 확인할 수 있습니다.
+        </p>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-backend-fastapi"
+          title="FastAPI 백엔드 완료 체크리스트"
+          items={checklist}
+        />
+      </section>
+
+      <!-- 네비게이션 -->
+      <nav class="flex items-center justify-between pt-8 border-t border-border">
+        <a
+          href="/start/60min/frontend/react"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+        >
+          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div class="text-left">
+            <span class="text-xs text-text-secondary">이전</span>
+            <span class="block text-sm text-white font-medium">프론트엔드</span>
+          </div>
+        </a>
+
+        <a
+          href="/start/60min/connect"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+        >
+          <div class="text-right">
+            <span class="text-xs opacity-70">다음 단계</span>
+            <span class="block text-sm font-bold">프론트-백 연결</span>
+          </div>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    </article>
+  </div>
+</DocsLayout>

@@ -33,3 +33,46 @@ choorai/
 └── docker-compose.yml
 ```
 - 로컬 실행: `make dev` 또는 `docker compose up`
+
+## 도메인 구조
+
+### 네이밍 규칙
+| 서비스 | 도메인 | 설명 |
+|--------|--------|------|
+| 문서 사이트 | `choorai.com` | 메인 문서/랜딩 |
+| 예시 프론트엔드 | `{project}.choorai.com` | 예: `b2b-admin.choorai.com` |
+| 백엔드 API | `{language}.backend.choorai.com` | 예: `fastapi.backend.choorai.com` |
+
+### 환경별 서브도메인
+| 환경 | 패턴 | 예시 |
+|------|------|------|
+| Production | `{service}.choorai.com` | `b2b-admin.choorai.com` |
+| Staging | `staging-{service}.choorai.com` | `staging-b2b-admin.choorai.com` |
+
+### 현재 도메인 목록
+```
+choorai.com                      → Cloudflare Pages (문서)
+b2b-admin.choorai.com            → Cloudflare Pages (예시 프론트)
+fastapi.backend.choorai.com      → Cloud Run (FastAPI 백엔드)
+go.backend.choorai.com           → Cloud Run (Go 백엔드, 예정)
+```
+
+### Cloudflare DNS 설정 예시
+```
+Type    Name                    Content                         Proxy
+-----   ----------------------  ------------------------------- ------
+CNAME   @                       <pages-project>.pages.dev       ✓
+CNAME   b2b-admin               <pages-project>.pages.dev       ✓
+CNAME   fastapi.backend         <cloud-run-url>.run.app         ✓
+CNAME   go.backend              <cloud-run-url>.run.app         ✓
+```
+
+### CORS 설정 (백엔드)
+각 백엔드는 환경 변수로 허용 도메인 설정:
+```bash
+# .env.production
+ALLOWED_ORIGINS=https://b2b-admin.choorai.com,https://choorai.com
+
+# .env.staging
+ALLOWED_ORIGINS=https://staging-b2b-admin.choorai.com
+```

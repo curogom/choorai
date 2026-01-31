@@ -165,7 +165,7 @@ const prerequisites = [
               <h4 class="text-white font-bold">Cursor</h4>
             </div>
             <p class="text-text-secondary text-sm mb-3">AI가 내장된 코드 에디터</p>
-            <a href="https://cursor.sh" target="_blank" class="text-primary text-sm hover:underline">
+            <a href="https://cursor.sh" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
               cursor.sh →
             </a>
           </div>
@@ -173,7 +173,7 @@ const prerequisites = [
           <div class="p-4 bg-surface border border-border rounded-xl">
             <h4 class="text-white font-bold mb-2">VS Code</h4>
             <p class="text-text-secondary text-sm mb-3">가장 널리 사용되는 무료 에디터</p>
-            <a href="https://code.visualstudio.com" target="_blank" class="text-primary text-sm hover:underline">
+            <a href="https://code.visualstudio.com" target="_blank" rel="noopener" class="text-primary text-sm hover:underline">
               code.visualstudio.com →
             </a>
           </div>
@@ -188,12 +188,32 @@ const prerequisites = [
           <a
             href="https://nodejs.org"
             target="_blank"
+            rel="noopener"
             class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors no-underline"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M11.998 24c-.321 0-.641-.084-.922-.247L8.14 22.016c-.438-.245-.224-.332-.08-.383.657-.229.79-.281 1.49-.681.074-.041.17-.025.245.019l2.255 1.339c.082.045.198.045.275 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.19-.137-.242l-8.791-5.072c-.081-.047-.189-.047-.271 0L3.264 6.68c-.087.051-.139.146-.139.243v10.074c0 .095.052.19.134.236l2.409 1.392c1.307.653 2.108-.116 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.111.255.253v9.948c0 1.744-.95 2.745-2.604 2.745-.509 0-.909 0-2.026-.551l-2.306-1.327C1.571 18.027 1 17.13 1 16.163V6.089c0-.966.571-1.864 1.461-2.341l8.795-5.082c.868-.493 2.021-.493 2.886 0l8.795 5.082c.891.477 1.462 1.375 1.462 2.341v10.074c0 .966-.571 1.864-1.462 2.341l-8.795 5.082c-.281.163-.601.247-.922.247h-.002z"/>
             </svg>
             Node.js 다운로드 (LTS)
+          </a>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Python 설치</h3>
+        <p class="text-text-secondary mb-4">
+          백엔드 개발에 사용됩니다. Python 3.10 이상을 설치하세요.
+        </p>
+
+        <div class="mb-4">
+          <a
+            href="https://www.python.org/downloads/"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors no-underline"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+            </svg>
+            Python 다운로드 (3.12)
           </a>
         </div>
 
@@ -205,7 +225,8 @@ const prerequisites = [
           <CodeBlock
             client:load
             code={`node --version
-npm --version`}
+npm --version
+python3 --version`}
             filename="터미널"
           />
         </div>
@@ -263,12 +284,12 @@ npm --version`}
         </a>
 
         <a
-          href="/start/60min/step2"
+          href="/start/60min/frontend/react"
           class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
         >
           <div class="text-right">
             <span class="text-xs opacity-70">다음 단계</span>
-            <span class="block text-sm font-bold">프론트엔드 만들기</span>
+            <span class="block text-sm font-bold">프론트엔드 (React)</span>
           </div>
           <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

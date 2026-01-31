@@ -11,3 +11,29 @@ export interface ApiError {
   message: string;
   details?: Record<string, unknown>;
 }
+
+// Projects
+export interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectListResponse {
+  items: Project[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export interface ProjectCreate {
+  name: string;
+  description?: string;
+}
+
+export interface ProjectUpdate {
+  name?: string;
+  description?: string;
+}

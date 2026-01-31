@@ -1,0 +1,426 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Checklist from '../../../../components/Checklist';
+import CodeBlock from '../../../../components/CodeBlock';
+import PromptBox from '../../../../components/PromptBox';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'completed' as const },
+  { label: '백엔드', status: 'completed' as const },
+  { label: '연결', status: 'current' as const },
+  { label: '배포', status: 'upcoming' as const },
+  { label: '완료', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'tanstack', label: 'TanStack Query 설치', description: 'API 상태 관리' },
+  { id: 'client', label: 'API 클라이언트 생성', description: 'fetch 래퍼' },
+  { id: 'hooks', label: 'React hooks 생성', description: 'useProjects 등' },
+  { id: 'connect', label: '프론트-백 연결 확인', description: '데이터 표시' },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - 프론트-백 연결"
+  description="프론트엔드와 백엔드를 연결해봅시다"
+  currentPath="/start/60min/connect"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 브레드크럼 -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <span>/</span>
+      <span class="text-primary font-medium">연결</span>
+    </nav>
+
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={50}
+        label="60분 완주 챌린지"
+        sublabel="Step 4/6"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 페이지 제목 -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        예상 소요시간: 10분
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        프론트-백 연결
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        프론트엔드에서 백엔드 API를 호출하여 실제 데이터를 표시합니다.
+        TanStack Query를 사용해 API 상태 관리를 쉽게 처리해요.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3줄 요약)">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>TanStack Query 설치로 API 호출 관리</li>
+          <li>API 클라이언트 + React hooks 생성</li>
+          <li>로컬 state를 API 연결로 교체</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- 메인 콘텐츠 -->
+    <article class="prose prose-invert max-w-none">
+      <!-- 사전 확인 -->
+      <section class="mb-10">
+        <Callout client:load variant="warning" title="시작 전 확인">
+          <p class="text-sm mb-2">두 서버가 모두 실행 중이어야 합니다:</p>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li>프론트엔드: <code>http://localhost:5173</code> (npm run dev)</li>
+            <li>백엔드: <code>http://localhost:8000</code> (uvicorn main:app --reload)</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- 섹션 1: TanStack Query 설치 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          TanStack Query 설치
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          프론트엔드 폴더(<code>my-admin</code>)에서 실행하세요:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# my-admin 폴더에서 실행
+npm install @tanstack/react-query`}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          <code>src/main.tsx</code>에 QueryClientProvider를 추가합니다:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import App from './App'
+import './index.css'
+
+const queryClient = new QueryClient()
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>,
+)`}
+          filename="src/main.tsx"
+        />
+      </section>
+
+      <!-- 섹션 2: API 클라이언트 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          API 클라이언트 생성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          <code>src/api/client.ts</code> 파일을 만듭니다:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  async get<T>(path: string): Promise<T> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`);
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+    return response.json() as Promise<T>;
+  }
+
+  async post<T, D>(path: string, data: D): Promise<T> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+    return response.json() as Promise<T>;
+  }
+
+  async delete(path: string): Promise<void> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+  }
+}
+
+export const apiClient = new ApiClient(API_URL);`}
+          filename="src/api/client.ts"
+        />
+      </section>
+
+      <!-- 섹션 3: React Hooks -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          React Hooks 생성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          <code>src/hooks/useProjects.ts</code> 파일을 만듭니다:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '../api/client';
+
+// 타입 정의
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProjectCreate {
+  name: string;
+  description?: string;
+}
+
+interface ProjectListResponse {
+  items: Project[];
+  total: number;
+}
+
+// Hooks
+export function useProjects() {
+  return useQuery({
+    queryKey: ['projects'],
+    queryFn: () => apiClient.get<ProjectListResponse>('/api/v1/projects'),
+  });
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: ProjectCreate) =>
+      apiClient.post<Project, ProjectCreate>('/api/v1/projects', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => apiClient.delete(\`/api/v1/projects/\${id}\`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}`}
+          filename="src/hooks/useProjects.ts"
+        />
+      </section>
+
+      <!-- 섹션 4: 컴포넌트 연결 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          컴포넌트에서 사용하기
+        </h2>
+
+        <p class="text-text-secondary mb-6">
+          AI에게 기존 컴포넌트를 API 연결 버전으로 수정해달라고 요청합니다:
+        </p>
+
+        <PromptBox
+          client:load
+          prompt={`기존 App.tsx를 수정해서 API와 연결해줘.
+
+변경사항:
+1. 로컬 state 대신 useProjects, useCreateProject, useDeleteProject hooks 사용
+2. 로딩 상태 표시 (isLoading)
+3. 에러 상태 표시 (isError)
+4. 생성/삭제 시 버튼 비활성화 (isPending)
+
+기존 UI는 유지하고, 데이터 소스만 API로 변경해줘.
+
+사용할 hooks:
+- useProjects() - { data, isLoading, isError }
+- useCreateProject() - { mutate, isPending }
+- useDeleteProject() - { mutate, isPending }`}
+          title="AI 프롬프트"
+          description="기존 코드를 AI에게 보여주면서 수정 요청하세요."
+        />
+      </section>
+
+      <!-- 섹션 5: 연결 확인 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          연결 확인
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          프론트엔드에서 프로젝트를 생성하면 백엔드 API에 저장됩니다.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span class="text-sm font-medium text-gray-300">프론트엔드</span>
+              <span class="text-xs text-gray-500">:5173</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">1.</span>
+                <span class="text-white">폼에 이름 입력</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">2.</span>
+                <span class="text-white">"생성" 버튼 클릭</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">3.</span>
+                <span class="text-white">목록에 추가됨 확인</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span class="text-sm font-medium text-gray-300">백엔드</span>
+              <span class="text-xs text-gray-500">:8000</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">1.</span>
+                <span class="text-white">POST 요청 수신</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">2.</span>
+                <span class="text-white">메모리에 저장</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">3.</span>
+                <span class="text-white">201 응답 반환</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            연결 성공!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            프론트엔드에서 생성한 프로젝트가 백엔드 <code>/docs</code>의 GET API에서도 보이면 성공입니다!
+          </p>
+        </div>
+      </section>
+
+      <!-- CORS 에러 해결 -->
+      <section class="mb-10">
+        <Callout client:load variant="error" title="CORS 에러가 발생한다면?">
+          <p class="text-sm mb-2">
+            브라우저 콘솔에 "CORS" 에러가 보이면 백엔드의 CORS 설정을 확인하세요:
+          </p>
+          <ol class="list-decimal list-inside space-y-1 text-sm">
+            <li>백엔드 <code>main.py</code>에서 <code>allow_origins</code> 확인</li>
+            <li><code>["http://localhost:5173"]</code>이 포함되어야 함</li>
+            <li>백엔드 서버 재시작</li>
+          </ol>
+          <p class="text-sm mt-2">
+            자세한 해결 방법은 <a href="/troubleshooting/cors" class="text-primary hover:underline">CORS 트러블슈팅</a>을 참고하세요.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-connect"
+          title="연결 완료 체크리스트"
+          items={checklist}
+        />
+      </section>
+
+      <!-- 네비게이션 -->
+      <nav class="flex items-center justify-between pt-8 border-t border-border">
+        <a
+          href="/start/60min/backend/fastapi"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+        >
+          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div class="text-left">
+            <span class="text-xs text-text-secondary">이전</span>
+            <span class="block text-sm text-white font-medium">백엔드</span>
+          </div>
+        </a>
+
+        <a
+          href="/start/60min/deploy"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+        >
+          <div class="text-right">
+            <span class="text-xs opacity-70">다음 단계</span>
+            <span class="block text-sm font-bold">배포하기</span>
+          </div>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    </article>
+  </div>
+</DocsLayout>
