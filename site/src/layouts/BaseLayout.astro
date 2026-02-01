@@ -24,6 +24,15 @@ const { title, description = 'AI와 함께 60분 만에 나만의 웹서비스�
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
 
+    <!-- Google Analytics 4 -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-YXS32NS94P"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YXS32NS94P');
+    </script>
+
     <title>{title} | Choorai</title>
   </head>
   <body>
