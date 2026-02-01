@@ -16,13 +16,25 @@ const { title, description = 'AI와 함께 60분 만에 나만의 웹서비스�
     <meta name="generator" content={Astro.generator} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
+    <meta property="og:image" content="https://choorai.com/og-image.png" />
+    <meta property="og:image:alt" content="Choorai - AI와 함께 60분 만에 웹 서비스 배포 체험하기!" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://choorai.com" />
+    <meta property="og:site_name" content="Choorai" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://choorai.com/og-image.png" />
 
     <!-- Google Analytics 4 -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-YXS32NS94P"></script>
