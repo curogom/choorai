@@ -19,16 +19,17 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
 
   const completedCount = processedSteps.filter(s => s.status === 'completed').length;
   const currentStepIndex = processedSteps.findIndex(s => s.status === 'current');
+  const isAllCompleted = currentStepIndex === -1 && completedCount === steps.length;
 
   return (
     <nav aria-label="튜토리얼 진행 단계">
       {/* 모바일: 축약형 표시 */}
       <div className="flex md:hidden items-center justify-center gap-2 py-3">
         <span className="text-primary font-bold text-lg">
-          {currentStepIndex + 1} / {steps.length}
+          {isAllCompleted ? completedCount : currentStepIndex + 1} / {steps.length}
         </span>
         <span className="text-text-secondary text-sm">
-          {processedSteps[currentStepIndex]?.label || '완료'}
+          {isAllCompleted ? '완료' : processedSteps[currentStepIndex]?.label || '진행 중'}
         </span>
       </div>
 
