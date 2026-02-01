@@ -78,18 +78,17 @@ const navigation = [
 
           <div class="flex items-center gap-4">
             <!-- 검색 -->
-            <div class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3">
+            <button
+              id="search-trigger"
+              class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3 hover:border-primary/50 transition-colors cursor-pointer"
+              aria-label="문서 검색 열기"
+            >
               <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input
-                type="search"
-                placeholder="문서 검색..."
-                aria-label="문서 검색"
-                class="flex-1 bg-transparent border-none text-sm text-white placeholder:text-text-secondary px-2 focus:outline-none"
-              />
+              <span class="flex-1 text-left text-sm text-text-secondary px-2">문서 검색...</span>
               <kbd class="text-[10px] text-text-secondary bg-background px-1.5 py-0.5 rounded border border-border" aria-hidden="true">⌘K</kbd>
-            </div>
+            </button>
 
             <a href="https://github.com/curogom/choorai" class="text-text-secondary hover:text-white transition-colors" aria-label="GitHub 저장소">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -140,4 +139,66 @@ const navigation = [
       </main>
     </div>
   </div>
+
+  <!-- 검색 모달 -->
+  <div id="search-modal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="search-overlay"></div>
+    <div class="relative max-w-2xl mx-auto mt-20 bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
+      <div class="p-4">
+        <div id="pagefind-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pagefind 초기화
+    async function initSearch() {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/pagefind/pagefind-ui.css';
+      document.head.appendChild(link);
+
+      const style = document.createElement('style');
+      style.textContent = `
+        .pagefind-ui { --pagefind-ui-scale: 1; --pagefind-ui-primary: #57ABFF; --pagefind-ui-text: #fff; --pagefind-ui-background: #161B22; --pagefind-ui-border: #30363D; --pagefind-ui-tag: #21262D; --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: 8px; }
+        .pagefind-ui__search-input { background: #0D1117 !important; }
+        .pagefind-ui__result-link { color: #57ABFF !important; }
+        .pagefind-ui__result-excerpt { color: #8B949E !important; }
+      `;
+      document.head.appendChild(style);
+
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind-ui.js';
+      script.onload = () => {
+        // @ts-ignore
+        new PagefindUI({
+          element: '#pagefind-container',
+          showSubResults: true,
+          showImages: false,
+          translations: { placeholder: '검색어를 입력하세요...', zero_results: '결과 없음', many_results: '[COUNT]개 결과', one_result: '1개 결과' }
+        });
+      };
+      document.head.appendChild(script);
+    }
+
+    // 모달 열기/닫기
+    const modal = document.getElementById('search-modal');
+    const trigger = document.getElementById('search-trigger');
+    const overlay = document.getElementById('search-overlay');
+
+    function openSearch() {
+      modal?.classList.remove('hidden');
+      setTimeout(() => (document.querySelector('.pagefind-ui__search-input') as HTMLElement)?.focus(), 100);
+    }
+    function closeSearch() { modal?.classList.add('hidden'); }
+
+    trigger?.addEventListener('click', openSearch);
+    overlay?.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+      if (e.key === 'Escape') closeSearch();
+    });
+
+    initSearch();
+  </script>
 </BaseLayout>
