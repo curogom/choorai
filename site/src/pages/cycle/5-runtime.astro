@@ -1,0 +1,304 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+---
+
+<DocsLayout
+  title="Cycle 5: Runtime 환경"
+  description="개발 환경 구성과 docker-compose로 로컬 개발 환경 만들기"
+  currentPath="/cycle/5-runtime"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/cycle/0-overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 5: Runtime</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 5
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Runtime 환경
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        docker-compose로 로컬 개발 환경을 구성하고,
+        개발/스테이징/프로덕션 환경을 분리하는 방법을 배웁니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이 Cycle에서 배우는 것">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>개발 환경의 중요성</li>
+          <li>docker-compose 활용</li>
+          <li>환경별 설정 분리</li>
+          <li>클라우드 vs 로컬 선택 기준</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 개발 환경의 중요성 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">개발 환경의 중요성</h2>
+
+        <p class="text-text-secondary mb-4">
+          "내 컴퓨터에서는 되는데..."라는 말을 없애려면
+          <strong class="text-white">모든 개발자가 동일한 환경</strong>에서 작업해야 합니다.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">환경이 다르면</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Node.js 버전 차이로 빌드 실패</li>
+              <li>DB 버전 차이로 쿼리 오류</li>
+              <li>OS 차이로 경로 문제 발생</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">환경이 같으면</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>새 팀원도 바로 개발 시작</li>
+              <li>버그 재현이 쉬움</li>
+              <li>CI/CD와 동일한 환경</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- docker-compose 활용 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">docker-compose 활용</h2>
+
+        <p class="text-text-secondary mb-4">
+          docker-compose는 여러 컨테이너를 한 번에 관리하는 도구입니다.
+          프론트엔드, 백엔드, 데이터베이스를 모두 정의할 수 있습니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">기본 구성</h3>
+
+        <CodeBlock
+          client:load
+          code={`services:
+  # Frontend (React)
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+
+  # Backend (FastAPI)
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/myapp
+    depends_on:
+      - db
+
+  # Database (PostgreSQL)
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=myapp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:`}
+          filename="docker-compose.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">자주 쓰는 명령어</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 모든 서비스 시작
+docker-compose up
+
+# 백그라운드로 시작
+docker-compose up -d
+
+# 특정 서비스만 재시작
+docker-compose restart backend
+
+# 로그 확인
+docker-compose logs -f backend
+
+# 모든 서비스 중지 및 삭제
+docker-compose down
+
+# 볼륨까지 삭제 (주의!)
+docker-compose down -v`}
+          filename="터미널"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">핫 리로드 설정</h3>
+
+        <p class="text-text-secondary mb-4">
+          개발 중 코드 변경이 즉시 반영되도록 볼륨을 마운트합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# FastAPI 개발 서버 (핫 리로드 활성화)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]`}
+          filename="Dockerfile (개발용)"
+        />
+      </section>
+
+      <!-- 환경별 설정 분리 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">환경별 설정 분리</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">.env 파일 관리</h3>
+
+        <CodeBlock
+          client:load
+          code={`# .env.development (로컬 개발)
+DATABASE_URL=postgresql://user:pass@localhost:5432/myapp_dev
+DEBUG=true
+API_URL=http://localhost:8080
+
+# .env.staging (스테이징)
+DATABASE_URL=postgresql://user:pass@staging-db:5432/myapp_staging
+DEBUG=true
+API_URL=https://staging-api.myapp.com
+
+# .env.production (프로덕션)
+DATABASE_URL=postgresql://user:pass@prod-db:5432/myapp
+DEBUG=false
+API_URL=https://api.myapp.com`}
+          filename=".env 파일들"
+        />
+
+        <Callout client:load variant="warning" title=".gitignore에 추가">
+          <p class="mt-2 text-sm">
+            <code class="bg-surface px-1 rounded">.env</code> 파일은 절대 Git에 커밋하지 마세요.
+            대신 <code class="bg-surface px-1 rounded">.env.example</code>을 만들어 템플릿을 공유합니다.
+          </p>
+        </Callout>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">.env.example 예시</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 데이터베이스
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# API 설정
+API_URL=https://api.example.com
+DEBUG=false
+
+# 인증
+JWT_SECRET=your-secret-key-here`}
+          filename=".env.example"
+        />
+      </section>
+
+      <!-- 클라우드 vs 로컬 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">클라우드 vs 로컬</h2>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">상황</th>
+                <th class="text-left py-3 px-3 text-white">추천</th>
+                <th class="text-left py-3 px-3 text-white">이유</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">혼자 개발</td>
+                <td class="py-3 px-3"><span class="text-green-400">docker-compose</span></td>
+                <td class="py-3 px-3 text-text-secondary">무료, 빠른 피드백</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">팀 개발</td>
+                <td class="py-3 px-3"><span class="text-blue-400">클라우드 DB + 로컬 앱</span></td>
+                <td class="py-3 px-3 text-text-secondary">데이터 공유 필요</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">스테이징</td>
+                <td class="py-3 px-3"><span class="text-purple-400">클라우드</span></td>
+                <td class="py-3 px-3 text-text-secondary">실제 환경과 유사</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-text-secondary">프로덕션</td>
+                <td class="py-3 px-3"><span class="text-purple-400">클라우드</span></td>
+                <td class="py-3 px-3 text-text-secondary">안정성, 확장성</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">비용 최적화 팁</h3>
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">개발 시간에만</strong> 클라우드 DB 사용 (사용량 기반 과금)</li>
+          <li><strong class="text-white">무료 티어</strong> 적극 활용 (Supabase, Neon, PlanetScale)</li>
+          <li><strong class="text-white">스테이징 환경</strong>은 최소 사양으로 유지</li>
+          <li><strong class="text-white">로컬 DB</strong>로 충분한 테스트 후 클라우드 배포</li>
+        </ul>
+      </section>
+
+      <!-- 다음 단계 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="다음 단계">
+          <p class="text-sm">
+            개발 환경 구성이 완료되었다면, 이제 운영에 대해 배워봅시다.
+            <a href="/cycle/6-ops" class="text-primary hover:underline ml-1">Cycle 6: Ops</a>에서
+            배포 전략, 모니터링, 비용 관리를 배웁니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/cycle/4-database"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cycle 4: 데이터베이스</span>
+        </div>
+      </a>
+
+      <a
+        href="/cycle/6-ops"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Cycle 6: Ops</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

@@ -26,13 +26,19 @@ const navigation = [
     items: [
       { label: 'Cycle 0: 개요', href: '/cycle/0-overview' },
       { label: 'Cycle 0: 도구', href: '/cycle/0-tools' },
-      { label: 'Cycle 1: DNS', href: '#', disabled: true },
-      { label: 'Cycle 2: Frontend', href: '#', disabled: true },
-      { label: 'Cycle 3: Backend', href: '#', disabled: true },
+      { label: 'Cycle 1: DNS', href: '/cycle/1-dns' },
+      { label: 'Cycle 2: Frontend', href: '/cycle/2-frontend' },
+      { label: 'Cycle 3: Backend', href: '/cycle/3-backend' },
       { label: 'Cycle 4: 데이터베이스', href: '/cycle/4-database' },
-      { label: 'Cycle 5: Runtime', href: '#', disabled: true },
-      { label: 'Cycle 6: Ops', href: '#', disabled: true },
+      { label: 'Cycle 5: Runtime', href: '/cycle/5-runtime' },
+      { label: 'Cycle 6: Ops', href: '/cycle/6-ops' },
       { label: '인증 가이드', href: '/cycle/auth' },
+    ],
+  },
+  {
+    title: 'Agent Recipes',
+    items: [
+      { label: 'Core Pack (10개)', href: '/agent-recipes' },
     ],
   },
   {
@@ -62,12 +68,8 @@ const navigation = [
       <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-14">
           <div class="flex items-center gap-4">
-            <a href="/" class="flex items-center gap-2">
-              <div class="flex items-center justify-center w-7 h-7 rounded bg-primary/20 text-primary">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
+            <a href="/" class="flex items-center gap-2" aria-label="Choorai 홈">
+              <img src="/favicon.png" alt="" class="w-7 h-7" aria-hidden="true" />
               <span class="text-lg font-bold">Choorai</span>
             </a>
             <span class="text-border">|</span>
@@ -76,20 +78,20 @@ const navigation = [
 
           <div class="flex items-center gap-4">
             <!-- 검색 -->
-            <div class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3">
-              <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button
+              id="search-trigger"
+              class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3 hover:border-primary/50 transition-colors cursor-pointer"
+              aria-label="문서 검색 열기"
+            >
+              <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input
-                type="text"
-                placeholder="문서 검색..."
-                class="flex-1 bg-transparent border-none text-sm text-white placeholder:text-text-secondary px-2 focus:outline-none"
-              />
-              <kbd class="text-[10px] text-text-secondary bg-background px-1.5 py-0.5 rounded border border-border">⌘K</kbd>
-            </div>
+              <span class="flex-1 text-left text-sm text-text-secondary px-2">문서 검색...</span>
+              <kbd class="text-[10px] text-text-secondary bg-background px-1.5 py-0.5 rounded border border-border" aria-hidden="true">⌘K</kbd>
+            </button>
 
-            <a href="https://github.com" class="text-text-secondary hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <a href="https://github.com/curogom/choorai" class="text-text-secondary hover:text-white transition-colors" aria-label="GitHub 저장소">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
             </a>
@@ -100,7 +102,7 @@ const navigation = [
 
     <div class="flex-1 flex">
       <!-- 사이드바 -->
-      <aside class="hidden lg:block w-64 border-r border-border bg-background sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+      <aside class="hidden lg:block w-64 border-r border-border bg-background sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto" role="navigation" aria-label="문서 네비게이션">
         <nav class="p-4 space-y-6">
           {navigation.map((section) => (
             <div>
@@ -110,26 +112,19 @@ const navigation = [
               <ul class="space-y-1">
                 {section.items.map((item) => (
                   <li>
-                    {item.disabled ? (
-                      <span class="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-text-secondary/40 cursor-not-allowed">
-                        <span>{item.label}</span>
-                        <span class="text-[10px] bg-surface/50 px-1.5 py-0.5 rounded text-text-secondary/60">준비 중</span>
-                      </span>
-                    ) : (
-                      <a
-                        href={item.href}
-                        class={`
-                          flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-                          transition-colors
-                          ${currentPath === item.href
-                            ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                            : 'text-text-secondary hover:text-white hover:bg-surface'
-                          }
-                        `}
-                      >
-                        {item.label}
-                      </a>
-                    )}
+                    <a
+                      href={item.href}
+                      class={`
+                        flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                        transition-colors
+                        ${currentPath === item.href
+                          ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
+                          : 'text-text-secondary hover:text-white hover:bg-surface'
+                        }
+                      `}
+                    >
+                      {item.label}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -144,4 +139,66 @@ const navigation = [
       </main>
     </div>
   </div>
+
+  <!-- 검색 모달 -->
+  <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label="문서 검색">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="search-overlay" aria-hidden="true"></div>
+    <div class="relative max-w-2xl mx-auto mt-20 bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
+      <div class="p-4">
+        <div id="pagefind-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pagefind 초기화
+    async function initSearch() {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/pagefind/pagefind-ui.css';
+      document.head.appendChild(link);
+
+      const style = document.createElement('style');
+      style.textContent = `
+        .pagefind-ui { --pagefind-ui-scale: 1; --pagefind-ui-primary: #57ABFF; --pagefind-ui-text: #fff; --pagefind-ui-background: #161B22; --pagefind-ui-border: #30363D; --pagefind-ui-tag: #21262D; --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: 8px; }
+        .pagefind-ui__search-input { background: #0D1117 !important; }
+        .pagefind-ui__result-link { color: #57ABFF !important; }
+        .pagefind-ui__result-excerpt { color: #8B949E !important; }
+      `;
+      document.head.appendChild(style);
+
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind-ui.js';
+      script.onload = () => {
+        // @ts-ignore
+        new PagefindUI({
+          element: '#pagefind-container',
+          showSubResults: true,
+          showImages: false,
+          translations: { placeholder: '검색어를 입력하세요...', zero_results: '결과 없음', many_results: '[COUNT]개 결과', one_result: '1개 결과' }
+        });
+      };
+      document.head.appendChild(script);
+    }
+
+    // 모달 열기/닫기
+    const modal = document.getElementById('search-modal');
+    const trigger = document.getElementById('search-trigger');
+    const overlay = document.getElementById('search-overlay');
+
+    function openSearch() {
+      modal?.classList.remove('hidden');
+      setTimeout(() => (document.querySelector('.pagefind-ui__search-input') as HTMLElement)?.focus(), 100);
+    }
+    function closeSearch() { modal?.classList.add('hidden'); }
+
+    trigger?.addEventListener('click', openSearch);
+    overlay?.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+      if (e.key === 'Escape') closeSearch();
+    });
+
+    initSearch();
+  </script>
 </BaseLayout>

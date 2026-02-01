@@ -72,7 +72,14 @@ export default function Checklist({
       </div>
 
       {/* 진행률 바 */}
-      <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+      <div
+        className="h-1.5 w-full bg-border rounded-full overflow-hidden"
+        role="progressbar"
+        aria-valuenow={progress}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`진행률 ${progress}%`}
+      >
         <div
           className="h-full bg-primary rounded-full transition-all duration-300"
           style={{ width: `${progress}%` }}
@@ -95,7 +102,7 @@ export default function Checklist({
                   peer w-6 h-6 rounded border-2 border-text-secondary
                   bg-transparent text-primary cursor-pointer
                   checked:border-primary checked:bg-primary
-                  focus:ring-0 focus:ring-offset-0
+                  focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
                   transition-colors
                 "
               />
@@ -109,6 +116,7 @@ export default function Checklist({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
@@ -135,8 +143,8 @@ export default function Checklist({
 
       {/* 축하 메시지 */}
       {showCelebration && (
-        <div className="flex items-center justify-center gap-2 p-4 bg-success/10 border border-success/30 rounded-lg text-success animate-fade-in-up">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center justify-center gap-2 p-4 bg-success/10 border border-success/30 rounded-lg text-success animate-fade-in-up" role="alert">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
           <span className="font-bold">모든 항목을 완료했습니다!</span>
