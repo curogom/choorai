@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist",
+    "prebuild": "node scripts/count-tests.js",
+    "build": "npm run prebuild && astro check && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro"
   },

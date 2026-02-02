@@ -60,7 +60,7 @@ export default function PromptBox({
           </div>
           <div>
             <h3 className="text-white text-xl font-bold">{title}</h3>
-            <p className="text-accent-purple font-medium text-sm">작업 필요</p>
+            <p className="text-accent-purple font-medium text-sm">복사해서 사용하세요</p>
           </div>
         </div>
 
