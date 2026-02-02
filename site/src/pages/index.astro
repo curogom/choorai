@@ -361,6 +361,51 @@ const currentYear = new Date().getFullYear();
           </div>
         </div>
       </section>
+
+      <!-- Proof 섹션 -->
+      <section class="py-12 sm:py-16 border-t border-border/50 bg-surface/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-surface border border-border">
+                <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Public Repo</div>
+                <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-white hover:text-primary transition-colors">
+                  curogom/choorai
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-surface border border-border">
+                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Test Coverage</div>
+                <div class="text-sm font-medium text-white">65+ tests</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-surface border border-border">
+                <svg class="w-5 h-5 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Tech Stack</div>
+                <div class="text-sm font-medium text-white">FastAPI + React + Vite</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- 푸터 -->
@@ -371,7 +416,7 @@ const currentYear = new Date().getFullYear();
             <img src="/favicon.png" alt="" class="w-6 h-6" aria-hidden="true" />
             <span class="text-white font-bold text-lg">Choorai</span>
           </div>
-          <div class="flex items-center gap-8">
+          <div class="flex items-center gap-6 sm:gap-8">
             <a href="https://www.keyflow.me/ko/@curogom" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">블로그</a>
             <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium flex items-center gap-2">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -383,11 +428,18 @@ const currentYear = new Date().getFullYear();
             <a href="/privacy" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">개인정보처리방침</a>
           </div>
         </div>
-        <div class="mt-8 pt-8 border-t border-border text-center md:text-left">
-          <p class="text-xs text-text-secondary leading-5">
+        <div class="mt-8 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-xs text-text-secondary leading-5 text-center md:text-left">
             © {currentYear} Choorai. 모든 권리 보유.
-            <span class="block md:inline mt-1 md:mt-0 md:ml-2">비개발자를 위해 만들었습니다.</span>
           </p>
+          <div class="flex items-center gap-1 text-xs text-text-secondary">
+            <span>Made by</span>
+            <a href="https://curogom.dev" target="_blank" rel="noopener noreferrer" class="text-white hover:text-primary transition-colors font-medium">curogom</a>
+            <span class="mx-2">·</span>
+            <a href="https://github.com/curogom" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">GitHub</a>
+            <span class="mx-2">·</span>
+            <a href="https://linkedin.curogom.dev" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">LinkedIn</a>
+          </div>
         </div>
       </div>
     </footer>
