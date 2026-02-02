@@ -43,7 +43,7 @@ function countPythonTests(dir) {
 }
 
 function countJsTests(dir) {
-  const files = getFiles(join(rootDir, dir), /\.test\.(ts|tsx)$/);
+  const files = getFiles(join(rootDir, dir), /\.(test|spec|e2e-spec)\.(ts|tsx)$/);
   let count = 0;
 
   for (const file of files) {
@@ -59,6 +59,8 @@ function countJsTests(dir) {
 const counts = {
   b2bAdmin: {
     api: countPythonTests('examples/b2b-admin/api/tests'),
+    apiHono: countJsTests('examples/b2b-admin/api-hono/src'),
+    apiNest: countJsTests('examples/b2b-admin/api-nest/test'),
     web: countJsTests('examples/b2b-admin/web/src'),
   },
   b2cTodo: {
@@ -68,9 +70,9 @@ const counts = {
 };
 
 const result = {
-  b2bAdmin: counts.b2bAdmin.api + counts.b2bAdmin.web,
+  b2bAdmin: counts.b2bAdmin.api + counts.b2bAdmin.apiHono + counts.b2bAdmin.apiNest + counts.b2bAdmin.web,
   b2cTodo: counts.b2cTodo.api + counts.b2cTodo.web,
-  total: counts.b2bAdmin.api + counts.b2bAdmin.web + counts.b2cTodo.api + counts.b2cTodo.web,
+  total: counts.b2bAdmin.api + counts.b2bAdmin.apiHono + counts.b2bAdmin.apiNest + counts.b2bAdmin.web + counts.b2cTodo.api + counts.b2cTodo.web,
   breakdown: counts,
   generatedAt: new Date().toISOString(),
 };

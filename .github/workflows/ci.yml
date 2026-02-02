@@ -25,6 +25,8 @@ jobs:
           cache-dependency-path: |
             site/package-lock.json
             examples/b2b-admin/web/package-lock.json
+            examples/b2b-admin/api-hono/package-lock.json
+            examples/b2b-admin/api-nest/package-lock.json
             examples/b2c-todo/web/package-lock.json
 
       - name: Setup Python
@@ -41,6 +43,20 @@ jobs:
 
       - name: Run B2B Admin API tests
         run: cd examples/b2b-admin/api && pytest -v
+
+      # B2B Admin API (Hono) 테스트
+      - name: Install B2B Admin API (Hono) dependencies
+        run: cd examples/b2b-admin/api-hono && npm ci
+
+      - name: Run B2B Admin API (Hono) tests
+        run: cd examples/b2b-admin/api-hono && npm run test:run
+
+      # B2B Admin API (NestJS) 테스트
+      - name: Install B2B Admin API (NestJS) dependencies
+        run: cd examples/b2b-admin/api-nest && npm ci
+
+      - name: Run B2B Admin API (NestJS) tests
+        run: cd examples/b2b-admin/api-nest && npm run test:e2e
 
       - name: Install B2B Admin Web dependencies
         run: cd examples/b2b-admin/web && npm ci
