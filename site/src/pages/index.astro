@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button';
 import ProgressBar from '../components/ProgressBar';
+import testCounts from '../data/test-counts.json';
 
 const features = [
   {
@@ -252,7 +253,7 @@ const currentYear = new Date().getFullYear();
                   <p class="text-sm text-text-secondary">프로젝트 관리 대시보드</p>
                 </div>
                 <span class="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
-                  30 tests
+                  {testCounts.b2bAdmin} tests
                 </span>
               </div>
               <div class="flex flex-wrap gap-2 mb-4">
@@ -280,7 +281,7 @@ const currentYear = new Date().getFullYear();
                   <p class="text-sm text-text-secondary">개인용 할 일 관리</p>
                 </div>
                 <span class="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
-                  35 tests
+                  {testCounts.b2cTodo} tests
                 </span>
               </div>
               <div class="flex flex-wrap gap-2 mb-4">
@@ -388,7 +389,7 @@ const currentYear = new Date().getFullYear();
               </div>
               <div>
                 <div class="text-xs text-text-secondary">Test Coverage</div>
-                <div class="text-sm font-medium text-white">65+ tests</div>
+                <div class="text-sm font-medium text-white">{testCounts.total}+ tests</div>
               </div>
             </div>
 
