@@ -25,6 +25,7 @@ jobs:
           cache-dependency-path: |
             site/package-lock.json
             examples/b2b-admin/web/package-lock.json
+            examples/b2b-admin/web-vue/package-lock.json
             examples/b2b-admin/api-hono/package-lock.json
             examples/b2b-admin/api-nest/package-lock.json
             examples/b2c-todo/web/package-lock.json
@@ -63,6 +64,13 @@ jobs:
 
       - name: Run B2B Admin Web tests
         run: cd examples/b2b-admin/web && npm run test:run
+
+      # B2B Admin Web (Vue) 테스트
+      - name: Install B2B Admin Web (Vue) dependencies
+        run: cd examples/b2b-admin/web-vue && npm ci
+
+      - name: Run B2B Admin Web (Vue) tests
+        run: cd examples/b2b-admin/web-vue && npm run test:run
 
       # B2C Todo 테스트
       - name: Install B2C Todo API dependencies

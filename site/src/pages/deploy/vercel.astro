@@ -1,0 +1,320 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import Checklist from '../../components/Checklist';
+
+const deployChecklist = [
+  { id: 'github', label: 'GitHub에 코드 푸시', description: 'git push origin main' },
+  { id: 'vercel', label: 'Vercel 계정 생성', description: 'vercel.com' },
+  { id: 'connect', label: 'GitHub 연결', description: 'Vercel에서 저장소 연동' },
+  { id: 'deploy', label: '배포 완료', description: '자동 배포 확인' },
+  { id: 'domain', label: '커스텀 도메인 (선택)', description: '나만의 도메인 연결' },
+];
+---
+
+<DocsLayout
+  title="Vercel 배포 가이드"
+  description="React/Vite/Next.js 앱을 Vercel에 무료로 배포하는 방법"
+  currentPath="/deploy/vercel"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/deploy" class="hover:text-white transition-colors">배포</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Vercel</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/80 text-white text-xs font-bold mb-4">
+        무료 호스팅
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Vercel로 배포하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Next.js를 만든 Vercel에서 프론트엔드 앱을 무료로 배포할 수 있습니다.
+        GitHub 연동으로 푸시할 때마다 자동 배포됩니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="왜 Vercel?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Next.js 최적화 (공식 플랫폼)</li>
+          <li>무료 티어: 100GB 대역폭/월</li>
+          <li>자동 HTTPS, 전 세계 Edge Network</li>
+          <li>Preview Deployments (PR마다 미리보기)</li>
+          <li>Serverless/Edge Functions 지원</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Step 1 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          GitHub에 코드 올리기
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          배포할 코드가 GitHub 저장소에 있어야 합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# 저장소 초기화 (처음인 경우)
+git init
+
+# 파일 추가
+git add .
+
+# 커밋
+git commit -m "Initial commit"
+
+# GitHub 저장소 연결 (처음인 경우)
+git remote add origin https://github.com/username/my-project.git
+
+# 푸시
+git push -u origin main`}
+          filename="터미널"
+        />
+
+        <Callout client:load variant="info">
+          <p>
+            GitHub 저장소가 없다면 <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">github.com/new</a>에서 생성하세요.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Step 2 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          Vercel 설정
+        </h2>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-4">
+          <li>
+            <a href="https://vercel.com/signup" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+              Vercel 가입
+            </a> (무료, GitHub 계정으로 로그인 추천)
+          </li>
+          <li>대시보드에서 <strong class="text-white">Add New...</strong> → <strong class="text-white">Project</strong> 클릭</li>
+          <li><strong class="text-white">Import Git Repository</strong>에서 저장소 선택</li>
+          <li>프레임워크가 자동 감지됩니다</li>
+        </ol>
+
+        <div class="mt-6 p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-3">빌드 설정 (프레임워크별)</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="text-sm font-bold text-primary mb-2">React + Vite</h4>
+              <ul class="text-text-secondary text-sm space-y-1">
+                <li>Framework Preset: <code class="bg-background px-1 rounded">Vite</code></li>
+                <li>Build Command: <code class="bg-background px-1 rounded">npm run build</code></li>
+                <li>Output Directory: <code class="bg-background px-1 rounded">dist</code></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-bold text-primary mb-2">Next.js</h4>
+              <ul class="text-text-secondary text-sm space-y-1">
+                <li>Framework Preset: <code class="bg-background px-1 rounded">Next.js</code> (자동 감지)</li>
+                <li>Build Command: <code class="bg-background px-1 rounded">npm run build</code></li>
+                <li>Output Directory: <code class="bg-background px-1 rounded">.next</code> (자동)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-bold text-primary mb-2">Vue + Vite</h4>
+              <ul class="text-text-secondary text-sm space-y-1">
+                <li>Framework Preset: <code class="bg-background px-1 rounded">Vite</code></li>
+                <li>Build Command: <code class="bg-background px-1 rounded">npm run build</code></li>
+                <li>Output Directory: <code class="bg-background px-1 rounded">dist</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          환경 변수 설정 (필요시)
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          API URL 등 환경별로 다른 값은 환경 변수로 설정합니다.
+        </p>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-2 mb-4">
+          <li>프로젝트 → <strong class="text-white">Settings</strong></li>
+          <li><strong class="text-white">Environment Variables</strong> 탭</li>
+          <li>변수 추가 (예: <code class="bg-surface px-1 rounded">VITE_API_URL</code>)</li>
+          <li>Production / Preview / Development 환경 선택 가능</li>
+        </ol>
+
+        <CodeBlock
+          client:load
+          code={`# 예시 환경 변수
+VITE_API_URL=https://api.myapp.com
+NEXT_PUBLIC_API_URL=https://api.myapp.com`}
+          filename="Environment Variables"
+        />
+
+        <Callout client:load variant="info">
+          <p>
+            Vite는 <code class="bg-surface px-1 rounded">VITE_</code>, Next.js는 <code class="bg-surface px-1 rounded">NEXT_PUBLIC_</code> 접두사가 필요합니다.
+            자세한 내용은 <a href="/troubleshooting/env" class="text-primary hover:underline">환경 변수 에러 해결</a>을 참고하세요.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Step 4 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          커스텀 도메인 연결 (선택)
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          기본으로 <code class="bg-surface px-1 rounded">프로젝트명.vercel.app</code> 도메인이 제공됩니다.
+          나만의 도메인을 사용하려면 추가 설정이 필요합니다.
+        </p>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-2 mb-4">
+          <li>프로젝트 → <strong class="text-white">Settings</strong> → <strong class="text-white">Domains</strong></li>
+          <li>도메인 입력 (예: <code class="bg-surface px-1 rounded">myapp.com</code>)</li>
+          <li>DNS 설정 안내에 따라 A 또는 CNAME 레코드 추가</li>
+          <li>SSL 인증서 자동 발급</li>
+        </ol>
+
+        <Callout client:load variant="tip">
+          <p>
+            Vercel에서 도메인을 직접 구매하면 DNS 설정이 자동으로 됩니다.
+            외부 도메인 사용 시 Nameservers를 Vercel로 변경하면 편리합니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 비교표 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Vercel vs Cloudflare Pages</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-4 text-white">항목</th>
+                <th class="text-left py-3 px-4 text-white">Vercel</th>
+                <th class="text-left py-3 px-4 text-white">Cloudflare Pages</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-4 text-text-secondary">무료 대역폭</td>
+                <td class="py-3 px-4">100GB/월</td>
+                <td class="py-3 px-4 text-success">무제한</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-4 text-text-secondary">빌드 시간</td>
+                <td class="py-3 px-4 text-success">6,000분/월</td>
+                <td class="py-3 px-4">500회/월</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-4 text-text-secondary">Edge Functions</td>
+                <td class="py-3 px-4">제한적 (무료)</td>
+                <td class="py-3 px-4 text-success">Workers 무료</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-4 text-text-secondary">Next.js 지원</td>
+                <td class="py-3 px-4 text-success">최적화 (공식)</td>
+                <td class="py-3 px-4">가능 (어댑터 필요)</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-4 text-text-secondary">Preview Deployments</td>
+                <td class="py-3 px-4 text-success">PR마다 자동</td>
+                <td class="py-3 px-4 text-success">PR마다 자동</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 text-text-secondary">추천 대상</td>
+                <td class="py-3 px-4"><strong class="text-white">Next.js, 풀스택</strong></td>
+                <td class="py-3 px-4"><strong class="text-white">정적 사이트, SPA</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Callout client:load variant="info" title="어떤 걸 선택해야 할까요?">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li><strong class="text-white">Next.js 사용</strong> → Vercel 추천 (최적화)</li>
+            <li><strong class="text-white">Vite + React/Vue SPA</strong> → 둘 다 OK (Cloudflare 무제한 대역폭 장점)</li>
+            <li><strong class="text-white">Edge Workers 활용</strong> → Cloudflare 추천</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="deploy-vercel"
+          title="배포 완료 체크리스트"
+          items={deployChecklist}
+        />
+      </section>
+
+      <!-- 배포 후 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">배포 완료!</h2>
+
+        <div class="p-6 bg-success/10 border border-success/30 rounded-xl">
+          <div class="flex items-center gap-3 mb-4">
+            <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-white font-bold text-xl">축하합니다!</h3>
+          </div>
+          <p class="text-text-secondary">
+            이제 코드를 GitHub에 푸시할 때마다 자동으로 배포됩니다.
+            <code class="bg-background px-1 rounded">프로젝트명.vercel.app</code>에서 확인하세요.
+          </p>
+        </div>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/deploy/cloudflare-pages"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cloudflare Pages</span>
+        </div>
+      </a>
+
+      <a
+        href="/deploy/cloud-run"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Cloud Run</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

@@ -1,0 +1,357 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+
+// Define code blocks in frontmatter to avoid parsing issues
+const reactStateCode = `const [name, setName] = useState('');
+
+<input
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+/>`;
+
+const vueStateCode = `const name = ref('');
+
+<input v-model="name" />`;
+
+const vueComposableCode = `// composables/useProjects.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import { computed, type Ref } from 'vue';
+import { apiClient } from '../api/client';
+
+export function useProjects(page: Ref<number> = ref(1)) {
+  return useQuery({
+    queryKey: computed(() => ['projects', page.value]),
+    queryFn: () =>
+      apiClient.get(\`/api/v1/projects?page=\${page.value}\`),
+  });
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) =>
+      apiClient.post('/api/v1/projects', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}`;
+
+const vueComponentCode = `<script setup lang="ts">
+import { ref } from 'vue';
+import { useCreateProject } from '../composables/useProjects';
+
+const name = ref('');
+const description = ref('');
+const { mutate: createProject, isPending } = useCreateProject();
+
+const handleSubmit = () => {
+  if (!name.value.trim()) return;
+
+  createProject(
+    { name: name.value.trim(), description: description.value.trim() },
+    {
+      onSuccess: () => {
+        name.value = '';
+        description.value = '';
+      },
+    }
+  );
+};
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        프로젝트 이름
+      </label>
+      <input
+        v-model="name"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        placeholder="프로젝트 이름 입력"
+        required
+      />
+    </div>
+    <button
+      type="submit"
+      :disabled="isPending"
+      class="w-full bg-blue-600 text-white py-2 rounded-lg"
+    >
+      {{ isPending ? '생성 중...' : '프로젝트 생성' }}
+    </button>
+  </form>
+</template>`;
+
+const folderStructureCode = `examples/b2b-admin/web-vue/
+├── src/
+│   ├── main.ts              # 앱 진입점
+│   ├── App.vue              # 루트 컴포넌트
+│   ├── api/
+│   │   └── client.ts        # API 클라이언트 (React와 동일)
+│   ├── types/
+│   │   └── api.ts           # 타입 정의 (React와 동일)
+│   ├── composables/         # Vue Hooks (React의 hooks/)
+│   │   ├── useHealth.ts
+│   │   └── useProjects.ts
+│   ├── router/
+│   │   └── index.ts         # Vue Router 설정
+│   ├── components/
+│   │   ├── HealthStatus.vue
+│   │   ├── AppLayout.vue
+│   │   ├── ProjectForm.vue
+│   │   └── ProjectCard.vue
+│   └── pages/
+│       ├── ProjectsPage.vue
+│       └── ProjectDetailPage.vue
+├── package.json
+├── vite.config.ts
+└── tailwind.config.js`;
+
+const runCommandCode = `# 1. 백엔드 실행 (Hono 권장)
+cd examples/b2b-admin/api-hono
+npm install
+npm run dev
+
+# 2. Vue 프론트엔드 실행 (새 터미널)
+cd examples/b2b-admin/web-vue
+npm install
+npm run dev
+
+# 브라우저에서 http://localhost:5174 접속`;
+---
+
+<DocsLayout
+  title="Vue 3 프론트엔드 (Lv.2)"
+  description="Vue 3 + Composition API로 B2B Admin을 구현하는 방법"
+  currentPath="/cycle/2-frontend/vue"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/cycle/0-overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/cycle/2-frontend" class="hover:text-white transition-colors">Cycle 2: Frontend</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Vue</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          Vue 3
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Vue 3 프론트엔드
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        HTML에 가까운 템플릿 문법으로 React와 동일한 기능을 구현합니다.
+        <strong class="text-white">같은 API, 다른 프론트엔드</strong> 철학을 직접 체험하세요.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="왜 Vue인가요?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>HTML에 가까운 템플릿 문법 → 초보자 접근성 높음</li>
+          <li>v-model로 양방향 바인딩이 간단함</li>
+          <li>React와 동일한 TanStack Query 사용 가능</li>
+          <li>Composition API로 React Hooks와 유사한 패턴</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- React vs Vue 비교 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">React vs Vue 3 비교</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">React</th>
+                <th class="text-left py-2 px-3 text-white">Vue 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">useState</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">ref()</code> / <code class="bg-surface px-1 rounded">reactive()</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">useEffect</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">onMounted()</code> / <code class="bg-surface px-1 rounded">watch()</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">@tanstack/react-query</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">@tanstack/vue-query</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">react-router-dom</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">vue-router</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3">JSX</td>
+                <td class="py-2 px-3">SFC Template (.vue)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">children</code> props</td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">&lt;slot /&gt;</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 프로젝트 구조 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">프로젝트 구조</h2>
+
+        <CodeBlock
+          client:load
+          code={folderStructureCode}
+          filename="폴더 구조"
+        />
+      </section>
+
+      <!-- Composition API 예제 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Composition API 예제</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">상태 관리 (ref)</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <p class="text-xs text-text-secondary mb-2">React</p>
+            <CodeBlock
+              client:load
+              code={reactStateCode}
+              filename="React"
+            />
+          </div>
+          <div>
+            <p class="text-xs text-text-secondary mb-2">Vue 3</p>
+            <CodeBlock
+              client:load
+              code={vueStateCode}
+              filename="Vue"
+            />
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Vue Query Composable</h3>
+
+        <CodeBlock
+          client:load
+          code={vueComposableCode}
+          filename="composables/useProjects.ts"
+        />
+      </section>
+
+      <!-- 컴포넌트 예제 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Vue 컴포넌트 예제</h2>
+
+        <CodeBlock
+          client:load
+          code={vueComponentCode}
+          filename="components/ProjectForm.vue"
+        />
+      </section>
+
+      <!-- 실행 방법 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">로컬 실행</h2>
+
+        <CodeBlock
+          client:load
+          code={runCommandCode}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- 배포 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cloudflare Pages 배포</h2>
+
+        <p class="text-text-secondary mb-4">
+          React와 동일하게 Cloudflare Pages에 배포할 수 있습니다.
+          <code class="bg-surface px-1 rounded">public/_redirects</code> 파일이 이미 포함되어 있어
+          SPA 라우팅 문제가 해결됩니다.
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Framework preset</td>
+                <td class="py-2 px-3 text-text-secondary">Vite</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Build command</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">npm run build</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Build output directory</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">dist</code></td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3 text-white font-medium">Root directory</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">examples/b2b-admin/web-vue</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 다음 단계 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="핵심 포인트">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li><strong class="text-white">API 클라이언트</strong>와 <strong class="text-white">타입 정의</strong>는 React와 100% 동일</li>
+            <li>TanStack Query는 React/Vue 모두 지원</li>
+            <li>프레임워크가 달라도 동일한 백엔드 API 사용 가능</li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/cycle/2-frontend"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cycle 2: Frontend</span>
+        </div>
+      </a>
+
+      <a
+        href="/cycle/3-backend"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Cycle 3: Backend</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

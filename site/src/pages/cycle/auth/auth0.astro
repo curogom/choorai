@@ -1,0 +1,467 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+
+const installCode = `npm install @auth0/auth0-react`;
+
+const envCode = `# .env.local
+VITE_AUTH0_DOMAIN=your-tenant.auth0.com
+VITE_AUTH0_CLIENT_ID=your-client-id
+VITE_AUTH0_AUDIENCE=https://your-api-identifier`;
+
+const providerSetupCode = `// main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Auth0Provider } from '@auth0/auth0-react';
+import App from './App';
+import './index.css';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: 'openid profile email',
+      }}
+    >
+      <App />
+    </Auth0Provider>
+  </React.StrictMode>
+);`;
+
+const useAuth0Code = `// components/AuthButtons.tsx
+import { useAuth0 } from '@auth0/auth0-react';
+
+export function AuthButtons() {
+  const {
+    isAuthenticated,
+    isLoading,
+    user,
+    loginWithRedirect,
+    logout,
+  } = useAuth0();
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isAuthenticated) {
+    return (
+      <div className="flex items-center gap-4">
+        <img
+          src={user?.picture}
+          alt={user?.name}
+          className="w-10 h-10 rounded-full"
+        />
+        <span>{user?.name}</span>
+        <button
+          onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg"
+        >
+          로그아웃
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => loginWithRedirect()}
+      className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+    >
+      로그인
+    </button>
+  );
+}`;
+
+const protectedRouteCode = `// components/ProtectedRoute.tsx
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
+
+// 방법 1: HOC 사용
+export const ProtectedPage = withAuthenticationRequired(
+  function Dashboard() {
+    const { user } = useAuth0();
+    return <div>환영합니다, {user?.name}님!</div>;
+  },
+  {
+    onRedirecting: () => <div>리다이렉트 중...</div>,
+  }
+);
+
+// 방법 2: 훅으로 직접 체크
+export function ProtectedContent({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+
+  if (isLoading) return <div>로딩 중...</div>;
+
+  if (!isAuthenticated) {
+    loginWithRedirect();
+    return <div>로그인 페이지로 이동 중...</div>;
+  }
+
+  return <>{children}</>;
+}`;
+
+const apiCallCode = `// hooks/useApi.ts
+import { useAuth0 } from '@auth0/auth0-react';
+
+export function useApi() {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const fetchWithToken = async (url: string, options: RequestInit = {}) => {
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: \`Bearer \${token}\`,
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  return { fetchWithToken };
+}
+
+// 사용 예시
+function ProjectList() {
+  const { fetchWithToken } = useApi();
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    fetchWithToken('/api/projects')
+      .then(res => res.json())
+      .then(data => setProjects(data));
+  }, []);
+
+  return <ul>{projects.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}`;
+
+const backendVerifyCode = `// 백엔드 (Node.js/Express 예시)
+import { expressjwt } from 'express-jwt';
+import jwksRsa from 'jwks-rsa';
+
+const checkJwt = expressjwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: \`https://\${process.env.AUTH0_DOMAIN}/.well-known/jwks.json\`,
+  }),
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: \`https://\${process.env.AUTH0_DOMAIN}/\`,
+  algorithms: ['RS256'],
+});
+
+// 보호된 API 엔드포인트
+app.get('/api/protected', checkJwt, (req, res) => {
+  // req.auth에 토큰 정보가 담겨있음
+  res.json({ userId: req.auth.sub });
+});`;
+
+const rbacCode = `// Auth0 대시보드에서 역할(Role) 생성 후,
+// 토큰에 역할 정보를 포함하도록 Rule 추가
+
+// Auth0 Rule (Actions 또는 Rules에서 설정)
+exports.onExecutePostLogin = async (event, api) => {
+  const namespace = 'https://your-app.com';
+  if (event.authorization) {
+    api.idToken.setCustomClaim(\`\${namespace}/roles\`, event.authorization.roles);
+    api.accessToken.setCustomClaim(\`\${namespace}/roles\`, event.authorization.roles);
+  }
+};
+
+// React에서 역할 확인
+function AdminPanel() {
+  const { user, isAuthenticated } = useAuth0();
+
+  const roles = user?.['https://your-app.com/roles'] || [];
+  const isAdmin = roles.includes('admin');
+
+  if (!isAdmin) {
+    return <div>관리자 권한이 필요합니다.</div>;
+  }
+
+  return <div>관리자 패널</div>;
+}`;
+---
+
+<DocsLayout
+  title="Auth0 인증 가이드 (Lv.3)"
+  description="React 앱에 Auth0로 엔터프라이즈급 인증을 추가하는 방법"
+  currentPath="/cycle/auth/auth0"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/cycle/0-overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/cycle/auth" class="hover:text-white transition-colors">인증 가이드</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Auth0</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold">
+          Lv.3
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold">
+          Enterprise
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Auth0 인증 가이드
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Auth0는 <strong class="text-white">엔터프라이즈급 인증 플랫폼</strong>입니다.
+        RBAC, MFA, SSO 등 고급 기능이 필요할 때 선택합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="왜 Auth0인가요?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>RBAC (역할 기반 접근 제어) 기본 제공</li>
+          <li>Enterprise SSO (SAML, LDAP) 지원</li>
+          <li>MFA (다중 인증) 쉽게 활성화</li>
+          <li>상세한 로그인 로그 및 분석</li>
+          <li>무료 티어: 월 7,000 MAU</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Step 1: Auth0 설정 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          Auth0 프로젝트 설정
+        </h2>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-3">
+          <li>
+            <a href="https://auth0.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+              auth0.com
+            </a>에서 계정 생성
+          </li>
+          <li>Tenant 생성 (예: my-app.auth0.com)</li>
+          <li><strong class="text-white">Applications</strong> → <strong class="text-white">Create Application</strong></li>
+          <li><strong class="text-white">Single Page Web Applications</strong> 선택</li>
+          <li>Settings에서 다음 설정:
+            <ul class="list-disc list-inside ml-4 mt-2">
+              <li>Allowed Callback URLs: <code class="bg-surface px-1 rounded">http://localhost:5173</code></li>
+              <li>Allowed Logout URLs: <code class="bg-surface px-1 rounded">http://localhost:5173</code></li>
+              <li>Allowed Web Origins: <code class="bg-surface px-1 rounded">http://localhost:5173</code></li>
+            </ul>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Step 2: 설치 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          React 앱 연동
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={installCode}
+          filename="터미널"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">환경 변수 설정</h3>
+        <CodeBlock
+          client:load
+          code={envCode}
+          filename=".env.local"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Auth0Provider 설정</h3>
+        <CodeBlock
+          client:load
+          code={providerSetupCode}
+          filename="main.tsx"
+        />
+      </section>
+
+      <!-- Step 3: useAuth0 훅 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          useAuth0 훅 사용
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={useAuth0Code}
+          filename="components/AuthButtons.tsx"
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h4 class="text-white font-bold mb-2">주요 속성/메서드</h4>
+          <ul class="text-text-secondary text-sm space-y-1">
+            <li><code class="bg-background px-1 rounded">isAuthenticated</code> - 로그인 여부</li>
+            <li><code class="bg-background px-1 rounded">isLoading</code> - 인증 상태 로딩 중</li>
+            <li><code class="bg-background px-1 rounded">user</code> - 사용자 프로필 정보</li>
+            <li><code class="bg-background px-1 rounded">loginWithRedirect()</code> - 로그인 페이지로 이동</li>
+            <li><code class="bg-background px-1 rounded">logout()</code> - 로그아웃</li>
+            <li><code class="bg-background px-1 rounded">getAccessTokenSilently()</code> - API 토큰 획득</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Step 4: 보호된 라우트 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          보호된 라우트 구현
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={protectedRouteCode}
+          filename="components/ProtectedRoute.tsx"
+        />
+      </section>
+
+      <!-- Step 5: API 호출 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          백엔드 API 연동
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          API 호출 시 Access Token을 포함해야 합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={apiCallCode}
+          filename="hooks/useApi.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">백엔드에서 토큰 검증</h3>
+        <CodeBlock
+          client:load
+          code={backendVerifyCode}
+          filename="server.js"
+        />
+      </section>
+
+      <!-- Step 6: RBAC -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">6</span>
+          역할 기반 접근 제어 (RBAC)
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          Auth0의 RBAC 기능을 사용하면 사용자별로 권한을 관리할 수 있습니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={rbacCode}
+          filename="RBAC 설정"
+        />
+
+        <Callout client:load variant="info">
+          <p class="text-sm">
+            Auth0 대시보드에서 <strong class="text-white">User Management → Roles</strong>에서
+            역할을 생성하고 사용자에게 할당할 수 있습니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 언제 사용하면 좋은가 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">언제 Auth0를 선택할까요?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Auth0 추천</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>RBAC/권한 관리 필요</li>
+              <li>Enterprise SSO (SAML) 필요</li>
+              <li>상세한 로그인 분석 필요</li>
+              <li>MFA 필수인 서비스</li>
+              <li>규정 준수 (SOC2, HIPAA 등)</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">다른 선택지 고려</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>간단한 로그인만 필요 → <a href="/cycle/auth/clerk" class="text-primary hover:underline">Clerk</a></li>
+              <li>Next.js 전용 → <a href="/cycle/auth/nextauth" class="text-primary hover:underline">NextAuth</a></li>
+              <li>Google 생태계 → <a href="/cycle/auth/firebase" class="text-primary hover:underline">Firebase</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 다음 단계 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="다음 단계">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>
+              <a href="https://auth0.com/docs/secure/multi-factor-authentication" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                MFA 설정
+              </a> - 2단계 인증 활성화
+            </li>
+            <li>
+              <a href="https://auth0.com/docs/authenticate/protocols/saml" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                SAML SSO
+              </a> - 기업 SSO 연동
+            </li>
+            <li>
+              <a href="https://auth0.com/docs/customize/actions" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                Actions
+              </a> - 로그인 플로우 커스터마이징
+            </li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/cycle/auth/nextauth"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">NextAuth (Lv.3)</span>
+        </div>
+      </a>
+
+      <a
+        href="/cycle/auth/firebase"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Firebase (Lv.2)</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>
