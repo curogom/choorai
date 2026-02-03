@@ -1,0 +1,414 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+
+const clerkProviderCode = `// main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ClerkProvider } from '@clerk/clerk-react';
+import App from './App';
+import './index.css';
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing Publishable Key');
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <App />
+    </ClerkProvider>
+  </React.StrictMode>
+);`;
+
+const envCode = `# .env.local
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxx...`;
+
+const authComponentsCode = `// components/AuthButtons.tsx
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from '@clerk/clerk-react';
+
+export function AuthButtons() {
+  return (
+    <div className="flex items-center gap-4">
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            로그인
+          </button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button className="px-4 py-2 border border-gray-300 rounded-lg">
+            회원가입
+          </button>
+        </SignUpButton>
+      </SignedOut>
+      <SignedIn>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
+    </div>
+  );
+}`;
+
+const protectedRouteCode = `// components/ProtectedRoute.tsx
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
+}`;
+
+const useAuthCode = `// hooks/useAuthenticatedFetch.ts
+import { useAuth } from '@clerk/clerk-react';
+
+export function useAuthenticatedFetch() {
+  const { getToken } = useAuth();
+
+  return async (url: string, options: RequestInit = {}) => {
+    const token = await getToken();
+
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: \`Bearer \${token}\`,
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+}
+
+// 사용 예시
+// const authFetch = useAuthenticatedFetch();
+// const data = await authFetch('/api/projects');`;
+
+const userHookCode = `// components/UserProfile.tsx
+import { useUser } from '@clerk/clerk-react';
+
+export function UserProfile() {
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  if (!isLoaded) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (!isSignedIn) {
+    return <div>로그인이 필요합니다</div>;
+  }
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow">
+      <img
+        src={user.imageUrl}
+        alt={user.fullName || '프로필'}
+        className="w-16 h-16 rounded-full"
+      />
+      <h2 className="mt-2 text-lg font-bold">{user.fullName}</h2>
+      <p className="text-gray-600">{user.primaryEmailAddress?.emailAddress}</p>
+    </div>
+  );
+}`;
+
+const backendVerifyCode = `// 백엔드 (Node.js/Express 예시)
+import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+
+// 미들웨어로 토큰 검증
+app.get('/api/protected',
+  ClerkExpressRequireAuth(),
+  (req, res) => {
+    // req.auth.userId로 사용자 ID 접근 가능
+    res.json({ userId: req.auth.userId });
+  }
+);`;
+
+const installCode = `npm install @clerk/clerk-react`;
+---
+
+<DocsLayout
+  title="Clerk 인증 가이드 (Lv.2)"
+  description="React 앱에 Clerk으로 인증 기능을 추가하는 방법"
+  currentPath="/cycle/auth/clerk"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/cycle/0-overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/cycle/auth" class="hover:text-white transition-colors">인증 가이드</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Clerk</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold">
+          React
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Clerk 인증 가이드
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Clerk은 React 앱에 가장 쉽게 인증을 추가할 수 있는 서비스입니다.
+        <strong class="text-white">10분 만에</strong> 로그인/회원가입 기능을 완성할 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="왜 Clerk인가요?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>React에 최적화된 컴포넌트와 훅 제공</li>
+          <li>소셜 로그인 (Google, GitHub 등) 기본 지원</li>
+          <li>무료 티어: 월 10,000 MAU</li>
+          <li>UI 컴포넌트 커스터마이징 가능</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Step 1: Clerk 프로젝트 설정 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          Clerk 프로젝트 설정
+        </h2>
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-3">
+          <li>
+            <a href="https://clerk.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+              clerk.com
+            </a>에서 무료 계정 생성
+          </li>
+          <li><strong class="text-white">Create application</strong> 클릭</li>
+          <li>앱 이름 입력 (예: My React App)</li>
+          <li>로그인 방식 선택 (Email, Google, GitHub 등)</li>
+          <li><strong class="text-white">API Keys</strong>에서 <code class="bg-surface px-1 rounded">Publishable key</code> 복사</li>
+        </ol>
+      </section>
+
+      <!-- Step 2: React 앱 연동 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          React 앱 연동
+        </h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">패키지 설치</h3>
+        <CodeBlock
+          client:load
+          code={installCode}
+          filename="터미널"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">환경 변수 설정</h3>
+        <CodeBlock
+          client:load
+          code={envCode}
+          filename=".env.local"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">ClerkProvider 설정</h3>
+        <CodeBlock
+          client:load
+          code={clerkProviderCode}
+          filename="main.tsx"
+        />
+
+        <Callout client:load variant="warning" title="환경 변수 주의">
+          <p class="text-sm">
+            Vite를 사용하는 경우 환경 변수 이름이 <code class="bg-surface px-1 rounded">VITE_</code>로 시작해야 합니다.
+            Next.js는 <code class="bg-surface px-1 rounded">NEXT_PUBLIC_</code>을 사용합니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Step 3: 인증 UI 컴포넌트 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          인증 UI 컴포넌트
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          Clerk은 바로 사용할 수 있는 UI 컴포넌트를 제공합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={authComponentsCode}
+          filename="components/AuthButtons.tsx"
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h4 class="text-white font-bold mb-2">주요 컴포넌트</h4>
+          <ul class="text-text-secondary text-sm space-y-1">
+            <li><code class="bg-background px-1 rounded">SignedIn</code> - 로그인된 상태에서만 표시</li>
+            <li><code class="bg-background px-1 rounded">SignedOut</code> - 로그아웃된 상태에서만 표시</li>
+            <li><code class="bg-background px-1 rounded">UserButton</code> - 프로필 드롭다운 메뉴</li>
+            <li><code class="bg-background px-1 rounded">SignInButton</code> - 로그인 버튼/모달</li>
+            <li><code class="bg-background px-1 rounded">SignUpButton</code> - 회원가입 버튼/모달</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Step 4: 보호된 라우트 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          보호된 라우트 구현
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          로그인이 필요한 페이지를 보호하려면 <code class="bg-surface px-1 rounded">ProtectedRoute</code> 컴포넌트를 만듭니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={protectedRouteCode}
+          filename="components/ProtectedRoute.tsx"
+        />
+      </section>
+
+      <!-- Step 5: 사용자 정보 접근 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          사용자 정보 접근
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          <code class="bg-surface px-1 rounded">useUser</code> 훅으로 현재 로그인한 사용자 정보에 접근할 수 있습니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={userHookCode}
+          filename="components/UserProfile.tsx"
+        />
+      </section>
+
+      <!-- Step 6: 백엔드 연동 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">6</span>
+          백엔드 API 연동 (선택)
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          백엔드 API를 호출할 때 인증 토큰을 포함하려면 <code class="bg-surface px-1 rounded">useAuth</code> 훅을 사용합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={useAuthCode}
+          filename="hooks/useAuthenticatedFetch.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">백엔드에서 토큰 검증</h3>
+        <CodeBlock
+          client:load
+          code={backendVerifyCode}
+          filename="server.js"
+        />
+      </section>
+
+      <!-- 언제 사용하면 좋은가 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">언제 Clerk을 선택할까요?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Clerk 추천</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>React/Next.js 프로젝트</li>
+              <li>빠른 인증 구현이 필요할 때</li>
+              <li>소셜 로그인이 필요할 때</li>
+              <li>UI 커스터마이징이 중요할 때</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">다른 선택지 고려</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Next.js만 사용 → <a href="/cycle/auth/nextauth" class="text-primary hover:underline">NextAuth</a></li>
+              <li>Supabase 사용 중 → Supabase Auth</li>
+              <li>엔터프라이즈 요구사항 → <a href="/cycle/auth/auth0" class="text-primary hover:underline">Auth0</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 다음 단계 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="다음 단계">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>
+              <a href="https://clerk.com/docs/components/customization" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                UI 커스터마이징
+              </a> - 브랜드에 맞게 스타일 변경
+            </li>
+            <li>
+              <a href="https://clerk.com/docs/organizations/overview" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                Organizations
+              </a> - 팀/조직 기능 추가
+            </li>
+            <li>
+              <a href="/cycle/4-database/supabase" class="text-primary hover:underline">
+                Supabase 연동
+              </a> - 데이터베이스와 함께 사용
+            </li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border">
+      <a
+        href="/cycle/auth"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">인증 가이드</span>
+        </div>
+      </a>
+
+      <a
+        href="/cycle/auth/nextauth"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">NextAuth (Lv.3)</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>
