@@ -40,13 +40,11 @@ func main() {
 	r.Get("/health", healthHandler.Check)
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Route("/todos", func(r chi.Router) {
-			r.Get("/", todoHandler.List)
-			r.Post("/", todoHandler.Create)
-			r.Get("/{id}", todoHandler.Get)
-			r.Patch("/{id}", todoHandler.Update)
-			r.Delete("/{id}", todoHandler.Delete)
-		})
+		r.Get("/todos", todoHandler.List)
+		r.Post("/todos", todoHandler.Create)
+		r.Get("/todos/{id}", todoHandler.Get)
+		r.Patch("/todos/{id}", todoHandler.Update)
+		r.Delete("/todos/{id}", todoHandler.Delete)
 	})
 
 	// Start server

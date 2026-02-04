@@ -2,15 +2,11 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Callout from '../../../components/Callout';
 import CodeBlock from '../../../components/CodeBlock';
+import testCountsData from '../../../data/test-counts.json';
 
-// Test count from the project
-const testCounts = {
-  b2bAdmin: { api: 17, apiHono: 19, apiNest: 13, web: 8, webVue: 14 },
-  b2cTodo: { api: 35, apiHono: 19, apiNest: 13, web: 0, webVue: 5 },
-};
-
-const totalTests = Object.values(testCounts.b2bAdmin).reduce((a, b) => a + b, 0) +
-                   Object.values(testCounts.b2cTodo).reduce((a, b) => a + b, 0);
+// Use test counts from generated JSON file
+const testCounts = testCountsData.breakdown;
+const totalTests = testCountsData.total;
 ---
 
 <DocsLayout

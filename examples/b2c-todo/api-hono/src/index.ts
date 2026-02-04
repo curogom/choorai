@@ -15,7 +15,7 @@ const app = new Hono();
 const config = {
   appName: 'B2C Todo API',
   version: '0.1.0',
-  allowedOrigins: ['http://localhost:5173'],
+  allowedOrigins: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
 };
 
 // CORS Middleware

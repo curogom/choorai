@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -10,6 +11,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
+
+// TodoListResponse represents the paginated list response
+type TodoListResponse struct {
+	Items    []*model.Todo `json:"items"`
+	Total    int           `json:"total"`
+	Page     int           `json:"page"`
+	PageSize int           `json:"page_size"`
+}
 
 // TodoHandler handles todo-related requests
 type TodoHandler struct {
@@ -64,16 +73,52 @@ func (h *TodoHandler) seedData() {
 
 // List handles GET /api/v1/todos
 func (h *TodoHandler) List(w http.ResponseWriter, r *http.Request) {
+	// Parse pagination parameters
+	page := 1
+	pageSize := 10
+
+	if p := r.URL.Query().Get("page"); p != "" {
+		if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
+			page = parsed
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if parsed, err := strconv.Atoi(ps); err == nil && parsed > 0 && parsed <= 100 {
+			pageSize = parsed
+		}
+	}
+
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
+	// Collect all todos
 	todos := make([]*model.Todo, 0, len(h.todos))
 	for _, t := range h.todos {
 		todos = append(todos, t)
 	}
 
+	total := len(todos)
+
+	// Apply pagination
+	start := (page - 1) * pageSize
+	end := start + pageSize
+	if start > total {
+		start = total
+	}
+	if end > total {
+		end = total
+	}
+	paginatedTodos := todos[start:end]
+
+	response := TodoListResponse{
+		Items:    paginatedTodos,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todos)
+	json.NewEncoder(w).Encode(response)
 }
 
 // Get handles GET /api/v1/todos/{id}
