@@ -1,0 +1,345 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Checklist from '../../../../components/Checklist';
+import CodeBlock from '../../../../components/CodeBlock';
+import PromptBox from '../../../../components/PromptBox';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'current' as const },
+  { label: '백엔드', status: 'upcoming' as const },
+  { label: '연결', status: 'upcoming' as const },
+  { label: '배포', status: 'upcoming' as const },
+  { label: '완료', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'vite', label: 'Vite 프로젝트 생성', description: 'npm create vite' },
+  { id: 'tailwind', label: 'Tailwind CSS 설치', description: '스타일링 프레임워크' },
+  { id: 'dev', label: '개발 서버 실행', description: 'npm run dev로 확인' },
+  { id: 'component', label: '첫 컴포넌트 생성', description: 'AI로 UI 만들기' },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - Vue 프론트엔드"
+  description="Vue 3 + Vite로 프론트엔드를 만들어봅시다"
+  currentPath="/start/60min/frontend/vue"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 브레드크럼 -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <span>/</span>
+      <span class="text-text-secondary">프론트엔드</span>
+      <span>/</span>
+      <span class="text-primary font-medium">Vue</span>
+    </nav>
+
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={17}
+        label="60분 완주 챌린지"
+        sublabel="Step 2/6"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 페이지 제목 -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          15분
+        </div>
+        <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">Vue 3</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        프론트엔드: Vue 3 + Vite
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Vue 3와 Vite를 사용해 프론트엔드를 만듭니다.
+        HTML에 가까운 템플릿 문법으로 초보자도 쉽게 시작할 수 있어요.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3줄 요약)">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><code>npm create vite@latest</code>로 Vue 프로젝트 생성</li>
+          <li>Tailwind CSS 설치로 스타일링 준비</li>
+          <li>AI에게 "할 일 목록 UI 만들어줘" 요청</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- 메인 콘텐츠 -->
+    <article class="prose prose-invert max-w-none">
+      <!-- 섹션 1: 프로젝트 생성 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          프로젝트 생성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          터미널을 열고 원하는 폴더로 이동한 뒤, 아래 명령어를 실행하세요.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# 프로젝트 생성
+npm create vite@latest my-todo -- --template vue-ts
+
+# 폴더로 이동
+cd my-todo
+
+# 의존성 설치
+npm install`}
+          filename="터미널"
+        />
+
+        <Callout client:load variant="info" title="React vs Vue">
+          <div class="mt-2 text-sm">
+            <p class="mb-2">Vue는 HTML에 가까운 템플릿 문법을 사용합니다:</p>
+            <ul class="list-disc list-inside space-y-1">
+              <li><code>v-model</code>로 양방향 바인딩이 간단함</li>
+              <li><code>v-if</code>, <code>v-for</code>로 직관적인 조건/반복</li>
+              <li>Single File Component (.vue)로 HTML/CSS/JS 통합</li>
+            </ul>
+          </div>
+        </Callout>
+      </section>
+
+      <!-- 섹션 2: Tailwind CSS -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          Tailwind CSS 설치
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          Tailwind CSS를 설치하면 클래스만으로 예쁜 UI를 만들 수 있습니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Tailwind 설치
+npm install -D tailwindcss postcss autoprefixer
+
+# 설정 파일 생성
+npx tailwindcss init -p`}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          <code>tailwind.config.js</code> 파일을 열고 아래처럼 수정하세요:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}`}
+          filename="tailwind.config.js"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          <code>src/style.css</code>를 열고 맨 위에 추가하세요:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`@tailwind base;
+@tailwind components;
+@tailwind utilities;`}
+          filename="src/style.css"
+        />
+      </section>
+
+      <!-- 섹션 3: 개발 서버 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          개발 서버 실행
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={`npm run dev`}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4">
+          브라우저에서 <code>http://localhost:5173</code>을 열면 Vite + Vue 기본 페이지가 보입니다.
+        </p>
+
+        <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            성공!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            Vue 로고가 보이면 프론트엔드 기본 설정이 완료된 것입니다.
+          </p>
+        </div>
+      </section>
+
+      <!-- 섹션 4: AI로 UI 만들기 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          AI로 UI 만들기
+        </h2>
+
+        <p class="text-text-secondary mb-6">
+          이제 AI에게 할 일 관리 UI를 만들어달라고 요청합니다.
+          아래 프롬프트를 복사해서 Antigravity 또는 ChatGPT에 붙여넣으세요.
+        </p>
+
+        <PromptBox
+          client:load
+          prompt={`Vue 3 + TypeScript + Tailwind로 할 일 관리 앱을 만들어줘.
+
+요구사항:
+1. src/App.vue에 메인 레이아웃 (헤더 + 콘텐츠)
+2. 할 일 목록을 보여주는 리스트 UI
+3. 새 할 일 입력 폼
+4. 완료 체크박스 (토글)
+5. 할 일 삭제 버튼
+6. 지금은 ref()로 로컬 데이터 관리 (나중에 API 연결할 거야)
+
+스타일:
+- 다크 모드 배경 (bg-gray-900)
+- 카드는 bg-gray-800
+- 완료된 항목은 취소선
+
+파일 구조:
+- src/App.vue
+- src/components/TodoForm.vue
+- src/components/TodoItem.vue
+- src/types/index.ts`}
+          title="AI 프롬프트"
+          description="위 프롬프트를 AI에게 전달하세요. Antigravity를 사용한다면 Cmd+L로 에이전트 패널을 열 수 있습니다."
+        />
+
+        <Callout client:load variant="warning" title="Vue 3 Composition API">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><code>&lt;script setup&gt;</code> 문법 사용 권장</li>
+            <li><code>ref()</code>로 반응형 상태 관리</li>
+            <li><code>v-model</code>로 입력 바인딩</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- 섹션 5: 예상 결과물 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
+          예상 결과물
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          AI가 만들어준 코드를 적용하면 이런 화면이 나옵니다:
+        </p>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">할 일 목록</h3>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          </div>
+
+          <!-- 입력 폼 미리보기 -->
+          <div class="flex gap-2 mb-6">
+            <div class="flex-1 bg-gray-900 rounded px-3 py-2 text-gray-500 text-sm">새 할 일을 입력하세요...</div>
+            <div class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium">추가</div>
+          </div>
+
+          <!-- 리스트 미리보기 -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 bg-gray-900 rounded-lg p-3">
+              <input type="checkbox" class="w-5 h-5 rounded" />
+              <span class="flex-1 text-white">Vue 3 배우기</span>
+              <button class="text-red-400 text-sm">삭제</button>
+            </div>
+            <div class="flex items-center gap-3 bg-gray-900 rounded-lg p-3">
+              <input type="checkbox" checked class="w-5 h-5 rounded" />
+              <span class="flex-1 text-gray-500 line-through">프로젝트 생성</span>
+              <button class="text-red-400 text-sm">삭제</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-text-secondary mt-4 text-sm">
+          완성된 예제 코드는
+          <a href="https://github.com/curogom/choorai/tree/main/examples/b2c-todo/web-vue" class="text-primary hover:underline">
+            GitHub 저장소
+          </a>에서 확인할 수 있습니다.
+        </p>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-frontend-vue"
+          title="Vue 프론트엔드 완료 체크리스트"
+          items={checklist}
+        />
+      </section>
+
+      <!-- 네비게이션 -->
+      <nav class="flex items-center justify-between pt-8 border-t border-border">
+        <a
+          href="/start/60min"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+        >
+          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div class="text-left">
+            <span class="text-xs text-text-secondary">이전</span>
+            <span class="block text-sm text-white font-medium">사전 준비</span>
+          </div>
+        </a>
+
+        <a
+          href="/start/60min/backend/hono"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+        >
+          <div class="text-right">
+            <span class="text-xs opacity-70">다음 단계</span>
+            <span class="block text-sm font-bold">백엔드 만들기</span>
+          </div>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    </article>
+  </div>
+</DocsLayout>

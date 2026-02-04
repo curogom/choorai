@@ -66,14 +66,17 @@ const counts = {
   },
   b2cTodo: {
     api: countPythonTests('examples/b2c-todo/api/tests'),
+    apiHono: countJsTests('examples/b2c-todo/api-hono/src'),
+    apiNest: countJsTests('examples/b2c-todo/api-nest/test'),
     web: countJsTests('examples/b2c-todo/web/src'),
+    webVue: countJsTests('examples/b2c-todo/web-vue/src'),
   },
 };
 
 const result = {
   b2bAdmin: counts.b2bAdmin.api + counts.b2bAdmin.apiHono + counts.b2bAdmin.apiNest + counts.b2bAdmin.web + counts.b2bAdmin.webVue,
-  b2cTodo: counts.b2cTodo.api + counts.b2cTodo.web,
-  total: counts.b2bAdmin.api + counts.b2bAdmin.apiHono + counts.b2bAdmin.apiNest + counts.b2bAdmin.web + counts.b2bAdmin.webVue + counts.b2cTodo.api + counts.b2cTodo.web,
+  b2cTodo: counts.b2cTodo.api + counts.b2cTodo.apiHono + counts.b2cTodo.apiNest + counts.b2cTodo.web + counts.b2cTodo.webVue,
+  total: counts.b2bAdmin.api + counts.b2bAdmin.apiHono + counts.b2bAdmin.apiNest + counts.b2bAdmin.web + counts.b2bAdmin.webVue + counts.b2cTodo.api + counts.b2cTodo.apiHono + counts.b2cTodo.apiNest + counts.b2cTodo.web + counts.b2cTodo.webVue,
   breakdown: counts,
   generatedAt: new Date().toISOString(),
 };

@@ -29,6 +29,9 @@ jobs:
             examples/b2b-admin/api-hono/package-lock.json
             examples/b2b-admin/api-nest/package-lock.json
             examples/b2c-todo/web/package-lock.json
+            examples/b2c-todo/web-vue/package-lock.json
+            examples/b2c-todo/api-hono/package-lock.json
+            examples/b2c-todo/api-nest/package-lock.json
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -86,6 +89,27 @@ jobs:
 
       - name: Run B2C Todo Web tests
         run: cd examples/b2c-todo/web && npm run test:run
+
+      # B2C Todo API (Hono) 테스트
+      - name: Install B2C Todo API (Hono) dependencies
+        run: cd examples/b2c-todo/api-hono && npm ci
+
+      - name: Run B2C Todo API (Hono) tests
+        run: cd examples/b2c-todo/api-hono && npm run test:run
+
+      # B2C Todo API (NestJS) 테스트
+      - name: Install B2C Todo API (NestJS) dependencies
+        run: cd examples/b2c-todo/api-nest && npm ci
+
+      - name: Run B2C Todo API (NestJS) tests
+        run: cd examples/b2c-todo/api-nest && npm run test:e2e
+
+      # B2C Todo Web (Vue) 테스트
+      - name: Install B2C Todo Web (Vue) dependencies
+        run: cd examples/b2c-todo/web-vue && npm ci
+
+      - name: Run B2C Todo Web (Vue) tests
+        run: cd examples/b2c-todo/web-vue && npm run test:run
 
   # 사이트 빌드 검증
   build:

@@ -1,0 +1,371 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../components/Stepper';
+import ProgressBar from '../../../../components/ProgressBar';
+import Checklist from '../../../../components/Checklist';
+import CodeBlock from '../../../../components/CodeBlock';
+import PromptBox from '../../../../components/PromptBox';
+import Callout from '../../../../components/Callout';
+
+const steps = [
+  { label: '사전 준비', status: 'completed' as const },
+  { label: '프론트엔드', status: 'completed' as const },
+  { label: '백엔드', status: 'current' as const },
+  { label: '연결', status: 'upcoming' as const },
+  { label: '배포', status: 'upcoming' as const },
+  { label: '완료', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'init', label: '프로젝트 초기화', description: 'npm init -y' },
+  { id: 'hono', label: 'Hono 설치', description: 'npm install hono @hono/node-server' },
+  { id: 'server', label: '서버 실행', description: 'npx tsx src/index.ts' },
+  { id: 'api', label: 'API 엔드포인트 생성', description: 'CRUD 구현' },
+];
+---
+
+<DocsLayout
+  title="60분 완주 - Hono 백엔드"
+  description="Hono로 Node.js 백엔드를 만들어봅시다"
+  currentPath="/start/60min/backend/hono"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- 브레드크럼 -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <span>/</span>
+      <span class="text-text-secondary">백엔드</span>
+      <span>/</span>
+      <span class="text-primary font-medium">Hono</span>
+    </nav>
+
+    <!-- 진행률 -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ProgressBar
+        client:load
+        value={33}
+        label="60분 완주 챌린지"
+        sublabel="Step 3/6"
+      />
+    </div>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} />
+    </div>
+
+    <!-- 페이지 제목 -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          15분
+        </div>
+        <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">Hono</span>
+        <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-bold">Lv.1 입문</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        백엔드: Hono
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        JavaScript/TypeScript로 백엔드를 만듭니다.
+        프론트엔드와 같은 언어를 사용해 학습 부담이 적어요.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3줄 요약)">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><code>npm install hono</code>로 설치</li>
+          <li>파일 하나에 전체 API 작성 가능</li>
+          <li>15분 만에 CRUD API 완성</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- 왜 Hono? -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="왜 Hono인가?">
+        <div class="mt-2 text-sm space-y-2">
+          <p>Hono는 <strong class="text-white">가장 가벼운 Node.js 웹 프레임워크</strong>입니다:</p>
+          <ul class="list-disc list-inside space-y-1">
+            <li>JavaScript/TypeScript로 프론트엔드와 같은 언어</li>
+            <li>Express보다 빠르고 현대적</li>
+            <li>보일러플레이트 코드가 거의 없음</li>
+            <li>Edge Runtime (Cloudflare Workers) 지원</li>
+          </ul>
+        </div>
+      </Callout>
+    </section>
+
+    <!-- 메인 콘텐츠 -->
+    <article class="prose prose-invert max-w-none">
+      <!-- 섹션 1: 프로젝트 생성 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
+          프로젝트 생성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          프론트엔드 폴더(<code>my-todo</code>) 옆에 백엔드 폴더를 만듭니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# 상위 폴더로 이동 (my-todo 폴더가 있는 곳)
+cd ..
+
+# 백엔드 폴더 생성
+mkdir my-todo-api
+cd my-todo-api
+
+# 프로젝트 초기화
+npm init -y
+
+# Hono 설치
+npm install hono @hono/node-server
+
+# TypeScript 설치 (선택)
+npm install -D typescript @types/node tsx`}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- 섹션 2: 첫 API 작성 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
+          첫 API 작성
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          <code>src/index.ts</code> 파일을 만들고 아래 코드를 입력하세요.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+import { cors } from 'hono/cors';
+
+const app = new Hono();
+
+// CORS 설정 (프론트엔드 연결용)
+app.use('*', cors({
+  origin: ['http://localhost:5173'],
+  credentials: true,
+}));
+
+// Health check
+app.get('/health', (c) => {
+  return c.json({ status: 'ok' });
+});
+
+// Hello API
+app.get('/api/hello', (c) => {
+  const name = c.req.query('name') || 'World';
+  return c.json({ message: \`Hello, \${name}!\` });
+});
+
+// 서버 시작
+serve({ fetch: app.fetch, port: 8000 });
+console.log('🚀 Server running on http://localhost:8000');`}
+          filename="src/index.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">서버 실행</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 서버 실행
+npx tsx src/index.ts
+
+# 테스트 (새 터미널에서)
+curl http://localhost:8000/health
+curl http://localhost:8000/api/hello?name=Choorai`}
+          filename="터미널"
+        />
+
+        <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            성공!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            <code>{`{"status": "ok"}`}</code>가 보이면 서버가 정상 실행 중입니다.
+          </p>
+        </div>
+      </section>
+
+      <!-- 섹션 3: CRUD API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
+          할 일 CRUD API
+        </h2>
+
+        <p class="text-text-secondary mb-4">
+          이제 할 일 관리 API를 추가합니다. AI에게 아래 프롬프트로 요청하세요.
+        </p>
+
+        <PromptBox
+          client:load
+          prompt={`Hono로 Todo CRUD API를 만들어줘.
+
+요구사항:
+1. 인메모리 저장소 (Map 사용)
+2. Todo 타입: id, title, is_completed, created_at
+3. API 엔드포인트:
+   - GET /api/v1/todos - 목록 (page, page_size 쿼리)
+   - POST /api/v1/todos - 생성 (title 필수)
+   - GET /api/v1/todos/:id - 단건 조회
+   - PATCH /api/v1/todos/:id - 수정 (is_completed 토글)
+   - DELETE /api/v1/todos/:id - 삭제
+4. 입력 검증 (빈 제목 거부)
+5. 에러 응답 처리
+
+기존 코드에 추가해줘.`}
+          title="AI 프롬프트"
+          description="Antigravity나 ChatGPT에 요청하세요."
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">예상 결과 API</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 할 일 생성
+curl -X POST http://localhost:8000/api/v1/todos \\
+  -H "Content-Type: application/json" \\
+  -d '{"title": "Hono 배우기"}'
+
+# 할 일 목록
+curl http://localhost:8000/api/v1/todos
+
+# 완료 처리
+curl -X PATCH http://localhost:8000/api/v1/todos/1 \\
+  -H "Content-Type: application/json" \\
+  -d '{"is_completed": true}'
+
+# 삭제
+curl -X DELETE http://localhost:8000/api/v1/todos/1`}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- 섹션 4: 폴더 구조 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
+          최종 폴더 구조
+        </h2>
+
+        <CodeBlock
+          client:load
+          code={`my-todo-api/
+├── src/
+│   ├── index.ts      # 진입점 + 라우터
+│   ├── types/
+│   │   └── index.ts  # Todo 타입 정의
+│   └── storage/
+│       └── index.ts  # 인메모리 저장소
+├── package.json
+└── tsconfig.json     # (선택)`}
+          filename="폴더 구조"
+        />
+
+        <p class="text-text-secondary mt-4 text-sm">
+          완성된 예제 코드는
+          <a href="https://github.com/curogom/choorai/tree/main/examples/b2c-todo/api-hono" class="text-primary hover:underline">
+            GitHub 저장소
+          </a>에서 확인할 수 있습니다.
+        </p>
+      </section>
+
+      <!-- FastAPI vs Hono -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">FastAPI vs Hono</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-2 text-white">항목</th>
+                <th class="text-left py-3 px-2 text-white">Hono</th>
+                <th class="text-left py-3 px-2 text-white">FastAPI</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">언어</td>
+                <td class="py-3 px-2 text-green-400">JavaScript/TypeScript</td>
+                <td class="py-3 px-2">Python</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">프론트엔드와 통일</td>
+                <td class="py-3 px-2 text-green-400">✅ 같은 언어</td>
+                <td class="py-3 px-2">❌ 다른 언어</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">자동 문서화</td>
+                <td class="py-3 px-2">❌</td>
+                <td class="py-3 px-2 text-green-400">✅ /docs</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-2">추천 상황</td>
+                <td class="py-3 px-2">JS만 알 때, 빠른 시작</td>
+                <td class="py-3 px-2">Python 선호, ML 연동</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 체크리스트 -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-backend-hono"
+          title="Hono 백엔드 완료 체크리스트"
+          items={checklist}
+        />
+      </section>
+
+      <!-- 네비게이션 -->
+      <nav class="flex items-center justify-between pt-8 border-t border-border">
+        <a
+          href="/start/60min/frontend/vue"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+        >
+          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div class="text-left">
+            <span class="text-xs text-text-secondary">이전</span>
+            <span class="block text-sm text-white font-medium">Vue 프론트엔드</span>
+          </div>
+        </a>
+
+        <a
+          href="/start/60min/connect"
+          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+        >
+          <div class="text-right">
+            <span class="text-xs opacity-70">다음 단계</span>
+            <span class="block text-sm font-bold">프론트 + 백엔드 연결</span>
+          </div>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    </article>
+  </div>
+</DocsLayout>
