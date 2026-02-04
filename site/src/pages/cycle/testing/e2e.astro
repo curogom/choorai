@@ -80,8 +80,8 @@ test.describe('Todo App', () => {
     // 체크박스 클릭
     await page.getByRole('checkbox').first().click();
 
-    // 완료 상태 확인 (취소선 등)
-    await expect(page.getByText('테스트 할 일')).toHaveClass(/completed/);
+    // 완료 상태 확인 (취소선 스타일)
+    await expect(page.getByText('테스트 할 일')).toHaveClass(/line-through/);
   });
 
   test('should delete a todo', async ({ page }) => {

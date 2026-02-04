@@ -56,14 +56,14 @@ describe('Todos API', () => {
       expect(data.is_completed).toBe(false);
     });
 
-    it('should return 400 for empty title', async () => {
+    it('should return 422 for empty title', async () => {
       const res = await app.request('/api/v1/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: '' }),
       });
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(422); // Validation error
     });
   });
 
