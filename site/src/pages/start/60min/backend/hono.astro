@@ -1,7 +1,7 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import Stepper from '../../../../components/Stepper';
-import ProgressBar from '../../../../components/ProgressBar';
+import ChallengeProgressBar from '../../../../components/ChallengeProgressBar';
 import Checklist from '../../../../components/Checklist';
 import CodeBlock from '../../../../components/CodeBlock';
 import PromptBox from '../../../../components/PromptBox';
@@ -43,12 +43,7 @@ const checklist = [
 
     <!-- 진행률 -->
     <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
-      <ProgressBar
-        client:load
-        value={33}
-        label="60분 완주 챌린지"
-        sublabel="Step 3/6"
-      />
+      <ChallengeProgressBar client:load />
     </div>
 
     <!-- 스텝 인디케이터 -->

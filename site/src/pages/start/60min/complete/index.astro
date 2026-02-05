@@ -1,7 +1,7 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import Stepper from '../../../../components/Stepper';
-import ProgressBar from '../../../../components/ProgressBar';
+import ChallengeProgressBar from '../../../../components/ChallengeProgressBar';
 import Callout from '../../../../components/Callout';
 
 const steps = [
@@ -56,12 +56,7 @@ const nextSteps = [
   <div class="max-w-4xl mx-auto px-6 py-8">
     <!-- 진행률 -->
     <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
-      <ProgressBar
-        client:load
-        value={100}
-        label="60분 완주 챌린지"
-        sublabel="완료!"
-      />
+      <ChallengeProgressBar client:load />
     </div>
 
     <!-- 스텝 인디케이터 -->

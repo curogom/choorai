@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { notifyProgressChange } from '../lib/progressStore';
 
 interface ChecklistItem {
   id: string;
@@ -38,6 +39,11 @@ export default function Checklist({
   // 상태 변경 시 localStorage 저장
   useEffect(() => {
     localStorage.setItem(`checklist-${storageKey}`, JSON.stringify([...checked]));
+
+    // 진행률 변경 알림 (60min 챌린지인 경우에만)
+    if (storageKey.startsWith('60min')) {
+      notifyProgressChange();
+    }
 
     // 모두 완료 시 축하 효과
     if (checked.size === items.length && items.length > 0) {
@@ -100,7 +106,7 @@ export default function Checklist({
                 onChange={() => toggleItem(item.id)}
                 className="
                   peer w-6 h-6 rounded border-2 border-text-secondary
-                  bg-transparent text-primary cursor-pointer
+                  bg-transparent cursor-pointer appearance-none
                   checked:border-primary checked:bg-primary
                   focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
                   transition-colors

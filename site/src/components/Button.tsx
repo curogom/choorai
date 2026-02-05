@@ -29,7 +29,7 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: `
-    bg-primary hover:bg-primary-hover text-background
+    bg-primary hover:bg-primary-hover text-background hover:text-background
     font-bold transition-all transform hover:scale-105
   `,
   secondary: `

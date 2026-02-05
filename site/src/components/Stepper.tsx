@@ -34,7 +34,7 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
       </div>
 
       {/* 데스크탑: 전체 스텝 표시 */}
-      <div className="hidden md:block w-full overflow-x-auto pb-4">
+      <div className="hidden md:block w-full overflow-x-auto py-4">
         <div className="flex items-center justify-between relative px-4">
           {/* 배경 라인 */}
           <div className="absolute top-[15px] left-0 w-full h-[2px] bg-border -z-10" aria-hidden="true" />
