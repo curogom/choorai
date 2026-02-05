@@ -1,0 +1,673 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+---
+
+<DocsLayout
+  title="Cycle 8: CI/CD - 자동 배포"
+  description="GitHub Actions로 코드 푸시만으로 자동 빌드, 테스트, 배포를 구현합니다"
+  currentPath="/map/cicd"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 8: CI/CD</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 8
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        CI/CD - 자동 배포
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        코드를 푸시하면 자동으로 빌드, 테스트, 배포까지.
+        수동 배포의 반복 작업에서 벗어나 개발에만 집중하세요.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이 Cycle에서 배우는 것">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>CI/CD 개념과 파이프라인 이해</li>
+          <li>GitHub Actions 워크플로우 작성</li>
+          <li>프론트엔드/백엔드 자동 배포 구축</li>
+          <li>환경별 배포 전략 수립</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- CI/CD 개념 -->
+      <section class="mb-10" id="concept">
+        <h2 class="text-2xl font-bold text-white mb-4">CI/CD란?</h2>
+
+        <p class="text-text-secondary mb-4">
+          <strong class="text-white">CI/CD</strong>는 코드 변경부터 배포까지의 과정을 자동화하는 방법론입니다.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">CI (Continuous Integration)</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              코드 변경을 자주 통합하고 자동으로 검증
+            </p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">코드 푸시</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">자동 빌드</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">자동 테스트</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">CD (Continuous Deployment)</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              검증된 코드를 자동으로 프로덕션에 배포
+            </p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">빌드 성공</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">자동 배포</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">릴리스 완료</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">파이프라인 흐름</h3>
+
+        <div class="p-4 bg-surface border border-border rounded-xl mb-6">
+          <div class="flex items-center justify-between overflow-x-auto gap-2 text-sm">
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500/30 text-blue-300 mb-1">📝</span>
+              <span class="text-text-secondary text-xs">Push</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500/30 text-yellow-300 mb-1">🔨</span>
+              <span class="text-text-secondary text-xs">Build</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-500/30 text-purple-300 mb-1">🧪</span>
+              <span class="text-text-secondary text-xs">Test</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/30 text-green-300 mb-1">🚀</span>
+              <span class="text-text-secondary text-xs">Deploy</span>
+            </div>
+          </div>
+        </div>
+
+        <Callout client:load variant="tip" title="왜 자동화가 필요한가?">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">휴먼 에러 방지</strong>: 수동 작업의 실수 제거</li>
+            <li><strong class="text-white">빠른 피드백</strong>: 문제를 즉시 발견</li>
+            <li><strong class="text-white">일관성</strong>: 매번 동일한 과정으로 배포</li>
+            <li><strong class="text-white">시간 절약</strong>: 개발에 집중할 시간 확보</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- GitHub Actions 기본 -->
+      <section class="mb-10" id="github-actions">
+        <h2 class="text-2xl font-bold text-white mb-4">GitHub Actions 기본</h2>
+
+        <p class="text-text-secondary mb-4">
+          GitHub Actions는 GitHub에 내장된 <strong class="text-white">무료 CI/CD 도구</strong>입니다.
+          별도 서버 없이 코드 저장소에서 바로 사용할 수 있습니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">워크플로우 파일 위치</h3>
+
+        <CodeBlock
+          client:load
+          code={`my-project/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml          # CI 워크플로우
+│       ├── deploy.yml      # 배포 워크플로우
+│       └── test.yml        # 테스트 워크플로우
+├── src/
+└── ...`}
+          filename="프로젝트 구조"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">YAML 문법 핵심</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Hello World CI  # 워크플로우 이름
+
+on:  # 트리거 조건
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:  # 실행할 작업들
+  build:
+    runs-on: ubuntu-latest  # 실행 환경
+
+    steps:  # 순차 실행할 단계들
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Hello World 출력
+        run: echo "Hello, GitHub Actions!"`}
+          filename=".github/workflows/hello.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">트리거 종류</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">트리거</th>
+                <th class="text-left py-3 px-3 text-white">설명</th>
+                <th class="text-left py-3 px-3 text-white">예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">push</td>
+                <td class="py-3 px-3 text-text-secondary">코드 푸시 시</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">branches: [main]</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">pull_request</td>
+                <td class="py-3 px-3 text-text-secondary">PR 생성/업데이트 시</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">types: [opened, synchronize]</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">schedule</td>
+                <td class="py-3 px-3 text-text-secondary">정해진 시간에 (cron)</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">cron: '0 0 * * *'</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-primary font-mono">workflow_dispatch</td>
+                <td class="py-3 px-3 text-text-secondary">수동 실행</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">GitHub UI에서 버튼 클릭</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">자주 사용하는 액션</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/checkout@v4</h4>
+            <p class="text-text-secondary text-xs">저장소 코드를 체크아웃</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/setup-node@v4</h4>
+            <p class="text-text-secondary text-xs">Node.js 환경 설정</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/setup-python@v5</h4>
+            <p class="text-text-secondary text-xs">Python 환경 설정</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/cache@v4</h4>
+            <p class="text-text-secondary text-xs">의존성 캐싱</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 프론트엔드 자동 배포 -->
+      <section class="mb-10" id="frontend-deploy">
+        <h2 class="text-2xl font-bold text-white mb-4">프론트엔드 자동 배포</h2>
+
+        <p class="text-text-secondary mb-4">
+          React/Vue 프로젝트를 <strong class="text-white">Cloudflare Pages</strong>에 자동 배포합니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Cloudflare Pages 배포 워크플로우</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'  # frontend 폴더 변경 시만 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: \${{ secrets.VITE_API_URL }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: my-frontend
+          directory: frontend/dist`}
+          filename=".github/workflows/deploy-frontend.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Secrets 설정 방법</h3>
+
+        <div class="p-4 bg-surface border border-border rounded-xl mb-6">
+          <ol class="list-decimal list-inside text-text-secondary text-sm space-y-2">
+            <li>GitHub 저장소 → <strong class="text-white">Settings</strong> → <strong class="text-white">Secrets and variables</strong> → <strong class="text-white">Actions</strong></li>
+            <li><strong class="text-white">New repository secret</strong> 클릭</li>
+            <li>Name: <code class="text-primary">CLOUDFLARE_API_TOKEN</code></li>
+            <li>Value: Cloudflare 대시보드에서 생성한 API 토큰</li>
+          </ol>
+        </div>
+
+        <Callout client:load variant="tip" title="Cloudflare API 토큰 생성">
+          <ol class="list-decimal list-inside mt-2 text-sm space-y-1">
+            <li>Cloudflare 대시보드 → My Profile → API Tokens</li>
+            <li>Create Token → Edit Cloudflare Workers 템플릿 사용</li>
+            <li>Account Resources: 본인 계정 선택</li>
+            <li>Zone Resources: All zones (또는 특정 도메인)</li>
+          </ol>
+        </Callout>
+      </section>
+
+      <!-- 백엔드 자동 배포 -->
+      <section class="mb-10" id="backend-deploy">
+        <h2 class="text-2xl font-bold text-white mb-4">백엔드 자동 배포</h2>
+
+        <p class="text-text-secondary mb-4">
+          FastAPI/Node.js 백엔드를 <strong class="text-white">Cloud Run</strong>에 자동 배포합니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI → Cloud Run 배포</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Backend (FastAPI)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+env:
+  PROJECT_ID: my-gcp-project
+  REGION: asia-northeast3
+  SERVICE_NAME: my-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: \${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker \${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        working-directory: backend
+        run: |
+          docker build -t \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} .
+          docker push \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy \${{ env.SERVICE_NAME }} \\
+            --image=\${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} \\
+            --region=\${{ env.REGION }} \\
+            --platform=managed \\
+            --allow-unauthenticated \\
+            --set-env-vars="DATABASE_URL=\${{ secrets.DATABASE_URL }}"`}
+          filename=".github/workflows/deploy-backend.yml (FastAPI)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Node.js (Hono) → Cloud Run 배포</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Backend (Hono)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+env:
+  PROJECT_ID: my-gcp-project
+  REGION: asia-northeast3
+  SERVICE_NAME: my-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: \${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker \${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        working-directory: backend
+        run: |
+          docker build -t \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} .
+          docker push \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy \${{ env.SERVICE_NAME }} \\
+            --image=\${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} \\
+            --region=\${{ env.REGION }} \\
+            --platform=managed \\
+            --allow-unauthenticated`}
+          filename=".github/workflows/deploy-backend.yml (Hono)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">GCP 서비스 계정 키 생성</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 1. 서비스 계정 생성
+gcloud iam service-accounts create github-actions \\
+  --display-name="GitHub Actions"
+
+# 2. 필요한 역할 부여
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/run.admin"
+
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/iam.serviceAccountUser"
+
+# 3. 키 생성 (JSON 파일)
+gcloud iam service-accounts keys create key.json \\
+  --iam-account=github-actions@PROJECT_ID.iam.gserviceaccount.com
+
+# 4. key.json 내용을 GCP_SA_KEY secret에 등록`}
+          filename="터미널"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">환경별 배포 (dev/staging/prod)</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy by Branch
+
+on:
+  push:
+    branches:
+      - main        # 프로덕션
+      - staging     # 스테이징
+      - develop     # 개발
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set environment
+        run: |
+          if [ "\${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api" >> $GITHUB_ENV
+          elif [ "\${{ github.ref }}" = "refs/heads/staging" ]; then
+            echo "ENV=staging" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api-staging" >> $GITHUB_ENV
+          else
+            echo "ENV=dev" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api-dev" >> $GITHUB_ENV
+          fi
+
+      # ... 이후 배포 단계에서 \${{ env.SERVICE_NAME }} 사용`}
+          filename="환경별 배포 예시"
+        />
+      </section>
+
+      <!-- 고급 패턴 -->
+      <section class="mb-10" id="advanced">
+        <h2 class="text-2xl font-bold text-white mb-4">고급 패턴</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Matrix 빌드</h3>
+
+        <p class="text-text-secondary mb-4">
+          여러 버전/환경에서 동시에 테스트합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: \${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test`}
+          filename="Matrix 빌드"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">캐싱으로 빌드 속도 개선</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Node.js 의존성 캐싱
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'  # 자동 캐싱!
+
+# Python 의존성 캐싱
+- uses: actions/setup-python@v5
+  with:
+    python-version: '3.11'
+    cache: 'pip'  # 자동 캐싱!
+
+# Docker 레이어 캐싱
+- uses: docker/build-push-action@v5
+  with:
+    cache-from: type=gha
+    cache-to: type=gha,mode=max`}
+          filename="캐싱 예시"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">조건부 실행</h3>
+
+        <CodeBlock
+          client:load
+          code={`jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: npm run build
+
+  deploy:
+    needs: build  # build 완료 후 실행
+    if: github.ref == 'refs/heads/main'  # main 브랜치만
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo "Deploying..."`}
+          filename="조건부 실행"
+        />
+      </section>
+
+      <!-- 무료 티어 & 팁 -->
+      <section class="mb-10" id="free-tier">
+        <h2 class="text-2xl font-bold text-white mb-4">무료 티어 & 팁</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">GitHub Actions 무료 한도</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">플랜</th>
+                <th class="text-left py-3 px-3 text-white">무료 제공량</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Public 저장소</td>
+                <td class="py-3 px-3 text-green-400">무제한</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Private (Free 플랜)</td>
+                <td class="py-3 px-3 text-green-400">2,000분/월</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-text-secondary">Private (Pro 플랜)</td>
+                <td class="py-3 px-3 text-green-400">3,000분/월</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Callout client:load variant="info" title="비용 최적화 팁">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">캐싱 활용</strong>: 의존성 캐싱으로 빌드 시간 단축</li>
+            <li><strong class="text-white">경로 필터</strong>: 변경된 폴더만 빌드 (paths 옵션)</li>
+            <li><strong class="text-white">조건부 실행</strong>: 불필요한 워크플로우 스킵</li>
+            <li><strong class="text-white">Self-hosted Runner</strong>: 대량 빌드 시 자체 러너 사용</li>
+          </ul>
+        </Callout>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">자주 발생하는 오류</h3>
+
+        <div class="space-y-3">
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Permission denied</h4>
+            <p class="text-text-secondary text-xs mb-2">서비스 계정에 필요한 역할이 없음</p>
+            <p class="text-primary text-xs">→ IAM에서 roles/run.admin 등 역할 추가</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Secret not found</h4>
+            <p class="text-text-secondary text-xs mb-2">Secrets에 등록되지 않은 변수 참조</p>
+            <p class="text-primary text-xs">→ Settings → Secrets에서 변수 추가</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Docker build failed</h4>
+            <p class="text-text-secondary text-xs mb-2">로컬에서는 되는데 CI에서 실패</p>
+            <p class="text-primary text-xs">→ .dockerignore 확인, 환경변수 확인</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 마무리 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="🎉 학습 사이클 완주!">
+          <p class="text-sm">
+            축하합니다! 모든 학습 사이클을 완료했습니다.
+            이제 도메인 설정부터 자동 배포까지 전체 웹 서비스 배포 파이프라인을 구축할 수 있습니다.
+            <a href="/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>를
+            활용해서 실제 프로젝트를 시작해보세요!
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/docker"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cycle 7: Docker</span>
+        </div>
+      </a>
+
+      <a
+        href="/recipes"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">🎉 Agent Recipes</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import CollapsibleNavGroup from '../components/CollapsibleNavGroup';
+import NavGroup from '../components/NavGroup.tsx';
 
 interface Props {
   title: string;
@@ -10,103 +10,117 @@ interface Props {
 
 const { title, description, currentPath } = Astro.props;
 
-// 60분 완주 하위 그룹
-const startGroups = {
-  frontend: {
-    title: '프론트엔드',
-    icon: '🎨',
-    items: [
-      { label: 'React', href: '/start/60min/frontend/react', description: '가장 인기있는 선택' },
-      { label: 'Vue', href: '/start/60min/frontend/vue', description: '쉬운 템플릿 문법' },
-    ],
-  },
-  backend: {
-    title: '백엔드',
-    icon: '⚙️',
-    items: [
-      { label: 'FastAPI', href: '/start/60min/backend/fastapi', badge: '추천', description: 'Python 백엔드' },
-      { label: 'Hono', href: '/start/60min/backend/hono', description: 'JavaScript 백엔드' },
-    ],
-  },
-};
-
-// 시작하기 섹션
-const startSection = {
-  title: '🚀 시작하기',
-  mainItems: [
-    { label: '60분 완주', href: '/start/60min', badge: '추천' },
-  ],
-  groups: startGroups,
-  stepItems: [
-    { label: '연결하기', href: '/start/60min/connect' },
-    { label: '배포하기', href: '/start/60min/deploy' },
-    { label: '완료!', href: '/start/60min/complete' },
-  ],
-  toolItems: [
-    { label: '도구 준비', href: '/cycle/0-tools' },
-  ],
-};
-
-// 더 깊게 알아보기 섹션
-const deepDiveNavigation = [
+// 새로운 IA: Path / Map / Fix / Recipes / Reference
+const navigation = [
   {
-    title: '📖 가이드 목록',
+    title: '🎯 Path',
+    href: '/path',
+    groups: [
+      {
+        title: '코스 목록',
+        storageKey: 'path-courses',
+        items: [
+          { label: '60분 완주', href: '/path/60min', badge: '입문', indent: 1 },
+          { label: 'React', href: '/start/60min/frontend/react', indent: 2 },
+          { label: 'Vue', href: '/start/60min/frontend/vue', indent: 2 },
+          { label: 'FastAPI', href: '/start/60min/backend/fastapi', indent: 2 },
+          { label: 'Hono', href: '/start/60min/backend/hono', indent: 2 },
+          { label: '연결하기', href: '/start/60min/connect', indent: 2 },
+          { label: '배포하기', href: '/start/60min/deploy', indent: 2 },
+          { label: '완료!', href: '/start/60min/complete', indent: 2 },
+          { label: '미니 SaaS', badge: '준비중', indent: 1 },
+          { label: 'B2B Admin', badge: '준비중', indent: 1 },
+        ],
+      },
+    ],
     items: [
-      { label: '전체 가이드', href: '/cycle/0-overview' },
+      { label: '도구 준비', href: '/map/tools' },
     ],
   },
   {
-    title: '🌐 도메인',
-    items: [
-      { label: 'DNS 설정', href: '/cycle/1-dns' },
+    title: '🗺️ Map',
+    href: '/map',
+    groups: [
+      {
+        title: '기본 사이클',
+        storageKey: 'map-basic',
+        items: [
+          { label: '전체 로드맵', href: '/map' },
+          { label: '도메인 & DNS', href: '/map/dns' },
+          { label: '프론트엔드', href: '/map/frontend', indent: 1 },
+          { label: 'Vue', href: '/map/frontend/vue', indent: 2 },
+          { label: '백엔드', href: '/map/backend', indent: 1 },
+          { label: 'Hono', href: '/map/backend/hono', indent: 2 },
+          { label: 'Go', href: '/map/backend/go', indent: 2 },
+          { label: 'NestJS', href: '/map/backend/nest', indent: 2 },
+          { label: '데이터베이스', href: '/map/database', indent: 1 },
+          { label: 'RDB', badge: '준비중', indent: 2 },
+          { label: 'NoSQL', badge: '준비중', indent: 2 },
+          { label: 'In-Memory/Cache', badge: '준비중', indent: 2 },
+          { label: 'Vector DB', badge: '준비중', indent: 2 },
+          { label: '환경변수', href: '/map/runtime', indent: 1 },
+          { label: '모니터링', href: '/map/ops', indent: 1 },
+        ],
+      },
+      {
+        title: '심화',
+        storageKey: 'map-advanced',
+        items: [
+          { label: 'Docker', href: '/map/docker', indent: 1 },
+          { label: 'CI/CD', href: '/map/cicd', indent: 1 },
+        ],
+      },
     ],
   },
   {
-    title: '🎨 프론트엔드',
+    title: '☁️ BaaS',
     items: [
-      { label: 'React 심화', href: '/cycle/2-frontend' },
-      { label: 'Vue 심화', href: '/cycle/2-frontend/vue' },
-    ],
-  },
-  {
-    title: '⚙️ 백엔드',
-    items: [
-      { label: 'FastAPI 심화', href: '/cycle/3-backend' },
-      { label: 'Hono 심화', href: '/cycle/3-backend/hono' },
-      { label: 'Go', href: '/cycle/3-backend/go' },
-      { label: 'NestJS', href: '/cycle/3-backend/nest' },
-    ],
-  },
-  {
-    title: '🗄️ 데이터베이스',
-    items: [
-      { label: '개요', href: '/cycle/4-database' },
-      { label: 'Supabase', href: '/cycle/4-database/supabase' },
+      { label: 'Supabase', href: '/baas/supabase' },
+      { label: 'Firebase', badge: '준비중' },
     ],
   },
   {
     title: '🔐 인증',
     items: [
-      { label: '개요', href: '/cycle/auth' },
-      { label: 'Clerk', href: '/cycle/auth/clerk', badge: '추천' },
-      { label: 'NextAuth', href: '/cycle/auth/nextauth' },
-      { label: 'Auth0', href: '/cycle/auth/auth0' },
-      { label: 'Firebase', href: '/cycle/auth/firebase' },
-    ],
-  },
-  {
-    title: '⚙️ 운영',
-    items: [
-      { label: '환경 변수', href: '/cycle/5-runtime' },
-      { label: '모니터링', href: '/cycle/6-ops' },
+      { label: '개요', href: '/map/auth' },
+      { label: 'Clerk', href: '/map/auth/clerk', badge: '추천', indent: 1 },
+      { label: 'NextAuth', href: '/map/auth/nextauth', indent: 1 },
+      { label: 'Auth0', href: '/map/auth/auth0', indent: 1 },
+      { label: 'Firebase', href: '/map/auth/firebase', indent: 1 },
     ],
   },
   {
     title: '🧪 테스팅',
     items: [
-      { label: '개요', href: '/cycle/testing' },
-      { label: '단위 테스트', href: '/cycle/testing/unit' },
-      { label: 'E2E 테스트', href: '/cycle/testing/e2e' },
+      { label: '개요', href: '/map/testing' },
+      { label: '단위 테스트', href: '/map/testing/unit', indent: 1 },
+      { label: 'E2E 테스트', href: '/map/testing/e2e', indent: 1 },
+    ],
+  },
+  {
+    title: '🛠️ Fix',
+    href: '/fix',
+    items: [
+      { label: '트러블슈팅', href: '/fix' },
+      { label: 'CORS 에러', href: '/fix/cors', indent: 1 },
+      { label: '환경 변수', href: '/fix/env', indent: 1 },
+      { label: 'SPA 404', href: '/fix/spa-404', indent: 1 },
+      { label: '빌드 실패', href: '/fix/build-fail', indent: 1 },
+      { label: '인증/쿠키', href: '/fix/auth-cookie', indent: 1 },
+    ],
+  },
+  {
+    title: '🤖 Recipes',
+    href: '/recipes',
+    items: [
+      { label: 'Agent Recipes', href: '/recipes' },
+    ],
+  },
+  {
+    title: '📦 Reference',
+    href: '/reference',
+    items: [
+      { label: '예제 프로젝트', href: '/reference' },
     ],
   },
   {
@@ -115,22 +129,6 @@ const deepDiveNavigation = [
       { label: 'Cloudflare Pages', href: '/deploy/cloudflare-pages' },
       { label: 'Vercel', href: '/deploy/vercel' },
       { label: 'Cloud Run', href: '/deploy/cloud-run' },
-    ],
-  },
-  {
-    title: '🛠️ 트러블슈팅',
-    items: [
-      { label: 'CORS 에러', href: '/troubleshooting/cors' },
-      { label: '환경 변수', href: '/troubleshooting/env' },
-      { label: 'SPA 404', href: '/troubleshooting/spa-404' },
-      { label: '빌드 실패', href: '/troubleshooting/build-fail' },
-      { label: '인증/쿠키', href: '/troubleshooting/auth-cookie' },
-    ],
-  },
-  {
-    title: '🤖 Agent Recipes',
-    items: [
-      { label: 'Core Pack (10개)', href: '/agent-recipes' },
     ],
   },
 ];
@@ -187,138 +185,55 @@ const deepDiveNavigation = [
 
     <div class="flex-1 flex">
       <!-- 사이드바 -->
-      <aside class="hidden lg:block w-64 border-r border-border bg-background sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
-        <nav class="p-4 space-y-6" aria-label="문서 네비게이션">
-          <!-- 시작하기 섹션 -->
-          <div>
-            <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
-              {startSection.title}
-            </h3>
-            <ul class="space-y-1">
-              {startSection.mainItems.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class={`
-                      flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                      transition-colors
-                      ${currentPath === item.href
-                        ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                        : 'text-text-secondary hover:text-white hover:bg-surface'
-                      }
-                    `}
-                  >
-                    <span>{item.label}</span>
-                    {item.badge && (
-                      <span class="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
-                        {item.badge}
-                      </span>
-                    )}
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            <!-- 프론트엔드/백엔드 토글 그룹 -->
-            <CollapsibleNavGroup
-              client:load
-              title={startSection.groups.frontend.title}
-              icon={startSection.groups.frontend.icon}
-              items={startSection.groups.frontend.items}
-              currentPath={currentPath}
-              storageKey="start-frontend"
-              defaultOpen={true}
-            />
-            <CollapsibleNavGroup
-              client:load
-              title={startSection.groups.backend.title}
-              icon={startSection.groups.backend.icon}
-              items={startSection.groups.backend.items}
-              currentPath={currentPath}
-              storageKey="start-backend"
-              defaultOpen={true}
-            />
-
-            <!-- 연결/배포/완료 단계 -->
-            <ul class="space-y-1 mt-2">
-              {startSection.stepItems.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class={`
-                      flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                      transition-colors
-                      ${currentPath === item.href
-                        ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                        : 'text-text-secondary hover:text-white hover:bg-surface'
-                      }
-                    `}
-                  >
-                    <span>{item.label}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            <!-- 도구 준비 -->
-            <ul class="space-y-1 mt-2 pt-2 border-t border-border/30">
-              {startSection.toolItems.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class={`
-                      flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                      transition-colors
-                      ${currentPath === item.href
-                        ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                        : 'text-text-secondary hover:text-white hover:bg-surface'
-                      }
-                    `}
-                  >
-                    <span>{item.label}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <!-- 구분선 -->
-          <div class="border-t border-border/50 pt-4">
-            <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
-              📚 더 깊게 알아보기
-            </h3>
-          </div>
-
-          <!-- 더 깊게 알아보기 섹션들 -->
-          {deepDiveNavigation.map((section) => (
-            <div>
-              <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
+      <aside id="sidebar" class="hidden lg:block w-64 border-r border-border bg-background sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+        <nav class="p-4 space-y-4" aria-label="문서 네비게이션">
+          {navigation.map((section, index) => (
+            <div class={index > 0 ? 'pt-4 border-t border-border/50' : ''}>
+              <h3 class="text-base font-bold text-white mb-3 px-3 flex items-center gap-2">
                 {section.title}
               </h3>
-              <ul class="space-y-1">
-                {section.items.map((item) => (
-                  <li>
-                    <a
-                      href={item.href}
-                      class={`
-                        flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                        transition-colors
-                        ${currentPath === item.href
-                          ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                          : 'text-text-secondary hover:text-white hover:bg-surface'
-                        }
-                      `}
-                    >
-                      <span>{item.label}</span>
-                      {item.badge && (
-                        <span class="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
-                          {item.badge}
-                        </span>
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+
+              {/* 접을 수 있는 그룹 */}
+              {section.groups?.map((group) => (
+                <NavGroup
+                  client:load
+                  title={group.title}
+                  items={group.items}
+                  currentPath={currentPath}
+                  storageKey={group.storageKey}
+                />
+              ))}
+
+              {/* 일반 아이템 */}
+              {section.items && (
+                <ul class="space-y-1">
+                  {section.items?.map((item) => (
+                    item.href ? (
+                      <li>
+                        <a
+                          href={item.href}
+                          class={`
+                            flex items-center justify-between py-2 rounded-lg text-sm font-medium
+                            transition-colors pr-3
+                            ${item.indent === 2 ? 'pl-9 text-xs' : item.indent === 1 ? 'pl-6' : 'pl-3'}
+                            ${currentPath === item.href || currentPath?.startsWith(item.href + '/')
+                              ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
+                              : 'text-text-secondary hover:text-white hover:bg-surface'
+                            }
+                          `}
+                        >
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span class="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
+                              {item.badge}
+                            </span>
+                          )}
+                        </a>
+                      </li>
+                    ) : null
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </nav>
@@ -369,122 +284,21 @@ const deepDiveNavigation = [
           </svg>
         </button>
       </div>
-      <nav class="p-4 space-y-6 overflow-y-auto h-[calc(100%-3.5rem)]" aria-label="문서 네비게이션">
-        <!-- 시작하기 섹션 (모바일) -->
-        <div>
-          <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
-            {startSection.title}
-          </h3>
-          <ul class="space-y-1">
-            {startSection.mainItems.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class={`
-                    flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                    transition-colors
-                    ${currentPath === item.href
-                      ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                      : 'text-text-secondary hover:text-white hover:bg-surface'
-                    }
-                  `}
-                >
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span class="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
-                      {item.badge}
-                    </span>
-                  )}
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          <!-- 프론트엔드/백엔드 토글 그룹 (모바일) -->
-          <CollapsibleNavGroup
-            client:load
-            title={startSection.groups.frontend.title}
-            icon={startSection.groups.frontend.icon}
-            items={startSection.groups.frontend.items}
-            currentPath={currentPath}
-            storageKey="mobile-start-frontend"
-            defaultOpen={true}
-          />
-          <CollapsibleNavGroup
-            client:load
-            title={startSection.groups.backend.title}
-            icon={startSection.groups.backend.icon}
-            items={startSection.groups.backend.items}
-            currentPath={currentPath}
-            storageKey="mobile-start-backend"
-            defaultOpen={true}
-          />
-
-          <!-- 연결/배포/완료 단계 (모바일) -->
-          <ul class="space-y-1 mt-2">
-            {startSection.stepItems.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class={`
-                    flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                    transition-colors
-                    ${currentPath === item.href
-                      ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                      : 'text-text-secondary hover:text-white hover:bg-surface'
-                    }
-                  `}
-                >
-                  <span>{item.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          <!-- 도구 준비 (모바일) -->
-          <ul class="space-y-1 mt-2 pt-2 border-t border-border/30">
-            {startSection.toolItems.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class={`
-                    flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
-                    transition-colors
-                    ${currentPath === item.href
-                      ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
-                      : 'text-text-secondary hover:text-white hover:bg-surface'
-                    }
-                  `}
-                >
-                  <span>{item.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- 구분선 (모바일) -->
-        <div class="border-t border-border/50 pt-4">
-          <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
-            📚 더 깊게 알아보기
-          </h3>
-        </div>
-
-        <!-- 더 깊게 알아보기 섹션들 (모바일) -->
-        {deepDiveNavigation.map((section) => (
+      <nav class="p-4 space-y-4 overflow-y-auto h-[calc(100%-3.5rem)]" aria-label="문서 네비게이션">
+        {navigation.map((section) => (
           <div>
             <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
               {section.title}
             </h3>
             <ul class="space-y-1">
-              {section.items.map((item) => (
+              {section.items?.map((item) => (
                 <li>
                   <a
                     href={item.href}
                     class={`
                       flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium
                       transition-colors
-                      ${currentPath === item.href
+                      ${currentPath === item.href || currentPath?.startsWith(item.href + '/')
                         ? 'bg-primary/10 text-primary border-l-2 border-primary -ml-[1px]'
                         : 'text-text-secondary hover:text-white hover:bg-surface'
                       }
@@ -599,5 +413,15 @@ const deepDiveNavigation = [
     mobileTrigger?.addEventListener('click', openMobileMenu);
     mobileClose?.addEventListener('click', closeMobileMenu);
     mobileOverlay?.addEventListener('click', closeMobileMenu);
+
+    // 사이드바에서 현재 활성 항목으로 스크롤
+    const sidebar = document.getElementById('sidebar');
+    const activeItem = sidebar?.querySelector('.border-primary');
+    if (sidebar && activeItem) {
+      const sidebarRect = sidebar.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      const scrollTop = activeItem.offsetTop - sidebar.offsetTop - (sidebarRect.height / 2) + (itemRect.height / 2);
+      sidebar.scrollTop = Math.max(0, scrollTop);
+    }
   </script>
 </BaseLayout>

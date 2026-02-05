@@ -6,6 +6,8 @@ import Checklist from '../../../../components/Checklist';
 import CodeBlock from '../../../../components/CodeBlock';
 import PromptBox from '../../../../components/PromptBox';
 import Callout from '../../../../components/Callout';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
 
 const steps = [
   { label: '사전 준비', status: 'completed' as const },
@@ -54,12 +56,7 @@ const checklist = [
     <!-- 페이지 제목 -->
     <header class="mb-8 pb-6 border-b border-border">
       <div class="flex items-center gap-3 mb-4">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          15분
-        </div>
+        <MetaBadge icon="clock" text="예상 소요시간: 15분" />
         <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">FastAPI</span>
       </div>
       <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
@@ -86,10 +83,7 @@ const checklist = [
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 환경 설정 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          환경 설정
-        </h2>
+        <SectionHeader number={1} title="환경 설정" />
 
         <p class="text-text-secondary mb-4">
           프론트엔드 폴더(<code>my-admin</code>) 옆에 백엔드 폴더를 만듭니다.
@@ -125,10 +119,7 @@ source venv/bin/activate
 
       <!-- 섹션 2: FastAPI 설치 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          FastAPI 설치
-        </h2>
+        <SectionHeader number={2} title="FastAPI 설치" />
 
         <CodeBlock
           client:load
@@ -147,10 +138,7 @@ pip freeze > requirements.txt`}
 
       <!-- 섹션 3: 첫 API 만들기 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          첫 API 만들기
-        </h2>
+        <SectionHeader number={3} title="첫 API 만들기" />
 
         <p class="text-text-secondary mb-4">
           <code>main.py</code> 파일을 만들고 아래 코드를 붙여넣으세요:
@@ -211,10 +199,7 @@ def root():
 
       <!-- 섹션 4: AI로 CRUD API 만들기 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          AI로 CRUD API 만들기
-        </h2>
+        <SectionHeader number={4} title="AI로 CRUD API 만들기" />
 
         <p class="text-text-secondary mb-6">
           프로젝트 CRUD API를 AI에게 만들어달라고 요청합니다.
@@ -253,10 +238,7 @@ API 엔드포인트:
 
       <!-- 섹션 5: 결과 확인 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
-          결과 확인
-        </h2>
+        <SectionHeader number={5} title="결과 확인" />
 
         <p class="text-text-secondary mb-4">
           AI가 만든 코드를 적용하고 서버를 재시작하면

@@ -1,0 +1,466 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+
+// Code blocks defined as variables to avoid esbuild parsing issues
+const goModCode = `module my-api
+
+go 1.22
+
+require (
+    github.com/go-chi/chi/v5 v5.1.0
+    github.com/go-chi/cors v1.2.1
+    github.com/google/uuid v1.6.0
+)`;
+
+const mainGoCode = `package main
+
+import (
+    "encoding/json"
+    "log"
+    "net/http"
+    "os"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi/v5/middleware"
+    "github.com/go-chi/cors"
+)
+
+func main() {
+    r := chi.NewRouter()
+
+    // Middleware
+    r.Use(middleware.Logger)
+    r.Use(middleware.Recoverer)
+    r.Use(cors.Handler(cors.Options{
+        AllowedOrigins:   []string{"http://localhost:*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+        AllowedHeaders:   []string{"Content-Type"},
+        AllowCredentials: true,
+    }))
+
+    // Routes
+    r.Get("/health", healthHandler)
+    r.Get("/api/hello", helloHandler)
+
+    // Start server
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
+    log.Printf("Server starting on port %s", port)
+    http.ListenAndServe(":"+port, r)
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]string{
+        "status": "healthy",
+    })
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+    name := r.URL.Query().Get("name")
+    if name == "" {
+        name = "World"
+    }
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]string{
+        "message": "Hello, " + name + "!",
+    })
+}`;
+
+const crudCode = `package main
+
+import (
+    "encoding/json"
+    "net/http"
+    "sync"
+    "time"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/google/uuid"
+)
+
+// Project model
+type Project struct {
+    ID          string    \`json:"id"\`
+    Name        string    \`json:"name"\`
+    Description string    \`json:"description"\`
+    CreatedAt   time.Time \`json:"created_at"\`
+}
+
+// In-memory storage
+var (
+    projects = make(map[string]*Project)
+    mu       sync.RWMutex
+)
+
+// List projects
+func listProjects(w http.ResponseWriter, r *http.Request) {
+    mu.RLock()
+    defer mu.RUnlock()
+
+    items := make([]*Project, 0, len(projects))
+    for _, p := range projects {
+        items = append(items, p)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "items": items,
+        "total": len(items),
+    })
+}
+
+// Create project
+func createProject(w http.ResponseWriter, r *http.Request) {
+    var req struct {
+        Name        string \`json:"name"\`
+        Description string \`json:"description"\`
+    }
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, \`{"error":"invalid body"}\`, http.StatusBadRequest)
+        return
+    }
+
+    project := &Project{
+        ID:          uuid.New().String(),
+        Name:        req.Name,
+        Description: req.Description,
+        CreatedAt:   time.Now(),
+    }
+
+    mu.Lock()
+    projects[project.ID] = project
+    mu.Unlock()
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(project)
+}
+
+// Get project
+func getProject(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+
+    mu.RLock()
+    project, exists := projects[id]
+    mu.RUnlock()
+
+    if !exists {
+        http.Error(w, \`{"error":"not found"}\`, http.StatusNotFound)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(project)
+}
+
+// Delete project
+func deleteProject(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+
+    mu.Lock()
+    defer mu.Unlock()
+
+    if _, exists := projects[id]; !exists {
+        http.Error(w, \`{"error":"not found"}\`, http.StatusNotFound)
+        return
+    }
+
+    delete(projects, id)
+    w.WriteHeader(http.StatusNoContent)
+}
+
+// Router setup
+func setupRoutes(r chi.Router) {
+    r.Route("/api/v1/projects", func(r chi.Router) {
+        r.Get("/", listProjects)
+        r.Post("/", createProject)
+        r.Get("/{id}", getProject)
+        r.Delete("/{id}", deleteProject)
+    })
+}`;
+
+const dockerfileCode = `# Build stage
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o server .
+
+# Runtime stage
+FROM alpine:3.20
+WORKDIR /app
+RUN adduser -D -g '' appuser
+COPY --from=builder /app/server .
+RUN chown -R appuser:appuser /app
+USER appuser
+EXPOSE 8080
+CMD ["./server"]`;
+
+const deployCode = `# 로컬 테스트
+docker build -t my-go-api .
+docker run -p 8080:8080 my-go-api
+
+# 이미지 크기 확인 (< 20MB!)
+docker images my-go-api
+
+# Cloud Run 배포
+gcloud run deploy my-go-api \\
+  --source . \\
+  --region asia-northeast3 \\
+  --allow-unauthenticated \\
+  --min-instances 0 \\
+  --max-instances 1`;
+
+const terminalSetup = `mkdir my-api && cd my-api
+go mod init my-api
+go get github.com/go-chi/chi/v5
+go get github.com/go-chi/cors
+go get github.com/google/uuid`;
+
+const terminalRun = `go run main.go
+
+# 테스트
+curl http://localhost:8080/health
+curl http://localhost:8080/api/hello?name=Choorai`;
+---
+
+<DocsLayout
+  title="Go (Chi) - Lv.3 성능 중심"
+  description="빠른 실행, 작은 이미지, 낮은 메모리의 Go 백엔드"
+  currentPath="/map/backend/go"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/backend" class="hover:text-white transition-colors">Backend 배포</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Go</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold">Lv.3 성능</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Go</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Chi Router</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Go로 성능 중심 백엔드 만들기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Go는 컴파일 언어로, 빠른 실행 속도와 낮은 메모리 사용량이 특징입니다.
+        단일 바이너리로 배포하여 Docker 이미지 크기를 20MB 이하로 줄일 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="왜 Go인가?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>빠른 실행 속도 (컴파일 언어)</li>
+          <li>단일 바이너리 배포 (의존성 없음)</li>
+          <li>낮은 메모리 사용량 (Cold Start 빠름)</li>
+          <li>Docker 이미지 ~15MB</li>
+          <li>동시성 처리에 강함 (goroutine)</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 프로젝트 생성 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">1. 프로젝트 생성</h2>
+
+        <CodeBlock
+          client:load
+          code={terminalSetup}
+          filename="터미널"
+        />
+
+        <p class="text-text-secondary mt-4">
+          Chi는 가볍고 빠른 Go 라우터입니다.
+          Express.js와 비슷한 미들웨어 패턴을 사용합니다.
+        </p>
+      </section>
+
+      <!-- 첫 API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">2. 첫 API 작성</h2>
+
+        <CodeBlock
+          client:load
+          code={mainGoCode}
+          filename="main.go"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">실행</h3>
+
+        <CodeBlock
+          client:load
+          code={terminalRun}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- CRUD API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">3. CRUD API 추가</h2>
+
+        <CodeBlock
+          client:load
+          code={crudCode}
+          filename="handlers.go"
+        />
+
+        <Callout client:load variant="info" title="sync.RWMutex">
+          <p class="text-sm mt-1">
+            Go에서 동시성 안전을 위해 <code class="bg-surface px-1 rounded">sync.RWMutex</code>를 사용합니다.
+            읽기는 여러 goroutine이 동시에, 쓰기는 하나만 가능합니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Docker 배포 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">4. Docker로 배포</h2>
+
+        <CodeBlock
+          client:load
+          code={dockerfileCode}
+          filename="Dockerfile"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          멀티스테이지 빌드로 최종 이미지에는 바이너리만 포함됩니다.
+          결과 이미지 크기는 약 15-20MB입니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={deployCode}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- 비교 -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">프레임워크 비교</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-2 text-white">항목</th>
+                <th class="text-left py-3 px-2 text-white">Go (Chi)</th>
+                <th class="text-left py-3 px-2 text-white">Hono</th>
+                <th class="text-left py-3 px-2 text-white">FastAPI</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">이미지 크기</td>
+                <td class="py-3 px-2 text-green-400">~15MB</td>
+                <td class="py-3 px-2">~150MB</td>
+                <td class="py-3 px-2">~200MB</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">Cold Start</td>
+                <td class="py-3 px-2 text-green-400">~100ms</td>
+                <td class="py-3 px-2">~300ms</td>
+                <td class="py-3 px-2">~500ms</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">메모리 사용</td>
+                <td class="py-3 px-2 text-green-400">~20MB</td>
+                <td class="py-3 px-2">~50MB</td>
+                <td class="py-3 px-2">~80MB</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">학습 곡선</td>
+                <td class="py-3 px-2 text-yellow-400">중간</td>
+                <td class="py-3 px-2 text-green-400">쉬움</td>
+                <td class="py-3 px-2 text-green-400">쉬움</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-2">타입 시스템</td>
+                <td class="py-3 px-2 text-green-400">정적</td>
+                <td class="py-3 px-2">동적 (TS)</td>
+                <td class="py-3 px-2">동적 (Pydantic)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 언제 사용? -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">언제 Go를 선택할까?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-green-400 font-bold mb-2">Go 추천</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>✅ Cold Start가 중요한 서버리스</li>
+              <li>✅ 비용 최적화가 필요한 경우</li>
+              <li>✅ 높은 동시 처리량</li>
+              <li>✅ 마이크로서비스 아키텍처</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">다른 선택 고려</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>빠른 프로토타입 → <a href="/map/backend/hono" class="text-primary">Hono</a></li>
+              <li>자동 문서화 → FastAPI</li>
+              <li>엔터프라이즈 구조 → <a href="/map/backend/nest" class="text-primary">NestJS</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 예제 코드 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="전체 예제 코드">
+          <p class="text-sm mt-2">
+            B2B Admin API의 Go 버전을 확인하세요:
+            <a href="https://github.com/curogom/choorai/tree/main/examples/b2b-admin/api-go" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">
+              examples/b2b-admin/api-go
+            </a>
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/backend/hono"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Hono (Lv.1)</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/backend/nest"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">NestJS (Lv.4)</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

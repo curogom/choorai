@@ -1,42 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button';
-import ChallengeProgressBar from '../components/ChallengeProgressBar';
+import NextActionCard from '../components/NextActionCard';
+import MiniMap from '../components/MiniMap';
+import ModeToggle from '../components/ModeToggle';
 import testCounts from '../data/test-counts.json';
-
-const features = [
-  {
-    icon: 'timer',
-    title: '60분 완성',
-    description: '복잡한 이론 공부 없이 실전 프로젝트로 바로 시작하세요. 한 시간 안에 결과물을 만듭니다.',
-    color: 'blue',
-  },
-  {
-    icon: 'build',
-    title: '트러블슈팅 가이드',
-    description: '에러가 나도 당황하지 마세요. 자주 발생하는 문제와 해결책을 단계별로 제공합니다.',
-    color: 'green',
-  },
-  {
-    icon: 'smart_toy',
-    title: 'AI 프롬프트 제공',
-    description: 'ChatGPT, Claude 등 AI에게 어떻게 질문해야 할지 막막한가요? 최적화된 질문을 드립니다.',
-    color: 'purple',
-  },
-  {
-    icon: 'savings',
-    title: '비용 0원',
-    description: '서버 비용 걱정 없이 무료 티어를 활용하여 서비스를 운영하는 방법을 알려드립니다.',
-    color: 'yellow',
-  },
-];
-
-const iconColors: Record<string, string> = {
-  blue: 'bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20',
-  green: 'bg-green-500/10 text-green-400 group-hover:bg-green-500/20',
-  purple: 'bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20',
-  yellow: 'bg-yellow-500/10 text-yellow-400 group-hover:bg-yellow-500/20',
-};
 
 const currentYear = new Date().getFullYear();
 ---
@@ -54,10 +22,15 @@ const currentYear = new Date().getFullYear();
             <img src="/favicon.png" alt="Choorai" class="w-8 h-8" />
             <span class="text-xl font-bold tracking-tight">Choorai</span>
           </div>
+          <!-- 새로운 네비게이션 -->
+          <nav class="hidden md:flex items-center gap-6">
+            <a href="/map" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/path/60min" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/fix" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/recipes" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
+          </nav>
           <div class="flex items-center gap-4">
-            <a href="/docs" class="hidden sm:flex text-sm font-medium text-text-secondary hover:text-white transition-colors">
-              문서 보기
-            </a>
             <a
               href="https://github.com/curogom/choorai"
               target="_blank"
@@ -67,7 +40,7 @@ const currentYear = new Date().getFullYear();
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
-              GitHub
+              <span class="hidden sm:inline">GitHub</span>
             </a>
           </div>
         </div>
@@ -75,14 +48,14 @@ const currentYear = new Date().getFullYear();
     </header>
 
     <main class="flex-grow z-10 flex flex-col">
-      <!-- 히어로 섹션 -->
-      <section class="relative pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pb-28 overflow-hidden">
+      <!-- 히어로 섹션 (간소화) -->
+      <section class="relative pt-12 pb-8 sm:pt-16 sm:pb-12 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <!-- 배경 블러 -->
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
 
           <!-- 배지 -->
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-6">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
@@ -90,408 +63,278 @@ const currentYear = new Date().getFullYear();
           </div>
 
           <!-- 헤드라인 -->
-          <h1 class="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight max-w-3xl mx-auto">
             <span class="text-gradient">코딩 몰라도 괜찮아요</span>
           </h1>
 
-          <p class="text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p class="text-base sm:text-lg text-text-secondary max-w-xl mx-auto leading-relaxed">
             AI와 함께 60분 만에 나만의 웹서비스를 배포하세요
           </p>
+        </div>
+      </section>
 
-          <!-- CTA 버튼 -->
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
-            <Button
-              client:load
-              variant="primary"
-              size="lg"
-              glow={true}
-              fullWidth={true}
-              icon="play"
-              href="/start/60min"
-            >
-              60분 완주 시작하기
-            </Button>
-            <Button
-              client:load
-              variant="secondary"
-              size="lg"
-              fullWidth={true}
-              icon="book"
-              href="/cycle/0-overview"
-            >
-              둘러보기
-            </Button>
-          </div>
+      <!-- 메인 2컬럼 레이아웃: 다음 행동 + MiniMap -->
+      <section class="py-8 sm:py-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- 좌측: 60분 완주 챌린지 -->
+            <div>
+              <div class="mb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                  <span class="text-xl">⚡</span> 60분 완주 챌린지
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  처음부터 배포까지, AI와 함께 단계별로 진행하세요
+                </p>
+              </div>
+              <NextActionCard client:load />
+            </div>
 
-          <!-- 진행률 카드 -->
-          <div class="mt-16 max-w-lg mx-auto bg-surface border border-border rounded-xl p-5 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 to-primary"></div>
-            <ChallengeProgressBar
-              client:load
-              label="첫 배포 챌린지"
-            />
+            <!-- 우측: 학습 로드맵 -->
+            <div>
+              <div class="mb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                  <span class="text-xl">🗺️</span> 학습 로드맵
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  전체 학습 사이클을 한눈에 확인하세요
+                </p>
+              </div>
+              <div class="space-y-4">
+                <MiniMap client:load showModeToggle={true} />
+
+                <!-- 학습 모드 설명 -->
+                <div class="p-4 bg-surface/50 rounded-lg border border-border">
+                  <div class="flex items-start gap-3">
+                    <div class="p-2 rounded-lg bg-primary/10">
+                      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div class="text-sm">
+                      <p class="text-text-secondary">
+                        <strong class="text-white">Guided</strong>: 추천 순서대로 진행 (초보자용)
+                      </p>
+                      <p class="text-text-secondary mt-1">
+                        <strong class="text-white">Explore</strong>: 원하는 것만 선택 (경험자용)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- One Cycle Standard 섹션 -->
-      <section class="py-16 sm:py-20 border-t border-border/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-purple/10 border border-accent-purple/20 text-accent-purple text-xs font-bold mb-4">
+      <!-- Quick Actions 섹션 -->
+      <section class="py-8 sm:py-12 border-t border-border/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-lg font-bold text-white mb-6 text-center">빠른 액션</h2>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Map -->
+            <a href="/map" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Map</h3>
+                  <p class="text-xs text-text-secondary mt-1">전체 로드맵</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Fix -->
+            <a href="/fix" class="group p-4 bg-surface border border-border rounded-xl hover:border-green-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-green-500/10 text-green-400 group-hover:bg-green-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Fix</h3>
+                  <p class="text-xs text-text-secondary mt-1">트러블슈팅</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Recipes -->
+            <a href="/recipes" class="group p-4 bg-surface border border-border rounded-xl hover:border-purple-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Recipes</h3>
+                  <p class="text-xs text-text-secondary mt-1">AI 프롬프트</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Reference -->
+            <a href="/reference" class="group p-4 bg-surface border border-border rounded-xl hover:border-yellow-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-yellow-500/10 text-yellow-400 group-hover:bg-yellow-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Reference</h3>
+                  <p class="text-xs text-text-secondary mt-1">예제 프로젝트</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- One Cycle Standard 섹션 (간소화) -->
+      <section class="py-12 sm:py-16 border-t border-border/50 bg-surface/30">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-purple/10 border border-accent-purple/20 text-accent-purple text-xs font-bold mb-3">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               <span>The One Cycle Standard</span>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-4">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
               왜 90%가 배포에서 멈출까?
             </h2>
-            <p class="text-text-secondary max-w-2xl mx-auto mb-8">
-              비개발자가 AI로 프로젝트를 시작하면 대부분 "로컬에서 돌아요"에서 멈춘다.<br class="hidden sm:block" />
-              이 사이클을 한 번 완주하면, 두 번째부터는 30분이면 된다.
+            <p class="text-sm text-text-secondary max-w-xl mx-auto">
+              이 사이클을 한 번 완주하면, 두 번째부터는 30분이면 된다
             </p>
           </div>
 
-          <!-- Cycle Flow -->
-          <div class="relative max-w-4xl mx-auto">
-            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
-              {[
-                { step: '1', name: 'DNS', desc: '도메인 연결' },
-                { step: '2', name: 'Frontend', desc: '화면 배포' },
-                { step: '3', name: 'Backend', desc: 'API 배포' },
-                { step: '4', name: 'Database', desc: '데이터 저장' },
-                { step: '5', name: 'Runtime', desc: '환경 설정' },
-                { step: '6', name: 'Ops', desc: '운영 관리' },
-              ].map((item, index) => (
-                <div class="relative group">
-                  <div class="bg-surface border border-border rounded-lg p-3 sm:p-4 text-center hover:border-primary/50 transition-all">
-                    <div class="text-xs text-primary font-bold mb-1">Cycle {item.step}</div>
-                    <div class="text-sm sm:text-base font-bold text-white mb-1">{item.name}</div>
-                    <div class="text-xs text-text-secondary hidden sm:block">{item.desc}</div>
-                  </div>
-                  {index < 5 && (
-                    <div class="absolute top-1/2 -right-1 sm:-right-2 transform -translate-y-1/2 text-text-secondary hidden sm:block">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  )}
+          <!-- Cycle Flow (간소화) -->
+          <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+            {[
+              { name: 'DNS', icon: '🌐' },
+              { name: 'Frontend', icon: '🎨' },
+              { name: 'Backend', icon: '⚙️' },
+              { name: 'Database', icon: '🗄️' },
+              { name: 'Runtime', icon: '🐳' },
+              { name: 'Ops', icon: '📊' },
+            ].map((item, index) => (
+              <div class="flex items-center">
+                <div class="bg-surface border border-border rounded-lg px-3 py-2 text-center hover:border-primary/50 transition-all">
+                  <div class="text-lg mb-0.5">{item.icon}</div>
+                  <div class="text-xs font-medium text-white">{item.name}</div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 경로 선택 섹션 -->
-      <section class="py-16 sm:py-20 border-t border-border/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-4">
-              어디서 시작할까요?
-            </h2>
-            <p class="text-text-secondary max-w-2xl mx-auto">
-              여러분의 경험 수준에 맞는 경로를 선택하세요
-            </p>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <!-- 초보자: 60분 완주 -->
-            <a href="/start/60min" class="group relative bg-surface border-2 border-primary/50 rounded-xl p-6 hover:border-primary transition-all hover:-translate-y-1">
-              <div class="absolute top-0 right-0 px-3 py-1 bg-primary text-background text-xs font-bold rounded-bl-lg rounded-tr-xl">
-                추천
-              </div>
-              <div class="flex items-start gap-4">
-                <div class="p-3 rounded-lg bg-primary/10 text-primary">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                {index < 5 && (
+                  <svg class="w-4 h-4 text-text-muted mx-1 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
-                </div>
-                <div class="flex-1">
-                  <span class="inline-block px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full mb-2">처음이에요</span>
-                  <h3 class="text-xl font-bold text-white mb-2">60분 완주</h3>
-                  <p class="text-sm text-text-secondary mb-4">코딩을 몰라도 AI와 함께 첫 서비스를 배포해보세요</p>
-                  <ul class="space-y-2 text-sm text-text-secondary">
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                      React + FastAPI 조합
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                      단계별 가이드
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                      AI 프롬프트 제공
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                시작하기
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
-
-            <!-- 경험자: 레퍼런스 -->
-            <a href="/cycle/0-overview" class="group relative bg-surface border border-border rounded-xl p-6 hover:border-primary/50 transition-all hover:-translate-y-1">
-              <div class="flex items-start gap-4">
-                <div class="p-3 rounded-lg bg-accent-purple/10 text-accent-purple">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <span class="inline-block px-2 py-0.5 text-xs font-medium bg-accent-purple/10 text-accent-purple rounded-full mb-2">필요한 것만 찾아요</span>
-                  <h3 class="text-xl font-bold text-white mb-2">가이드 & 레퍼런스</h3>
-                  <p class="text-sm text-text-secondary mb-4">프레임워크별 배포 가이드, 트러블슈팅을 찾아보세요</p>
-                  <ul class="space-y-2 text-sm text-text-secondary">
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                      프레임워크별 배포 (Hono, Vue, Go...)
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
-                      데이터베이스 연결
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                      인증 구현 & 트러블슈팅
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-accent-purple font-medium group-hover:gap-3 transition-all">
-                둘러보기
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- 기능 섹션 -->
-      <section class="py-16 sm:py-24 border-t border-border/50 bg-surface/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold tracking-tight text-white mb-4">누구나 쉽게 시작하는 개발</h2>
-            <p class="text-text-secondary max-w-2xl mx-auto">
-              개발자가 아니어도 괜찮습니다. Choorai가 제공하는 도구들로 아이디어를 실현해보세요.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature) => (
-              <div class="group relative bg-surface border border-border rounded-xl p-6 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 rounded-xl transition-opacity"></div>
-                <div class="relative z-10 flex flex-col items-start gap-4">
-                  <div class={`p-3 rounded-lg transition-colors ${iconColors[feature.color]}`}>
-                    {feature.icon === 'timer' && (
-                      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    {feature.icon === 'build' && (
-                      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    )}
-                    {feature.icon === 'smart_toy' && (
-                      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                      </svg>
-                    )}
-                    {feature.icon === 'savings' && (
-                      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                    <p class="text-sm text-text-secondary leading-relaxed">{feature.description}</p>
-                  </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      <!-- What You'll Build 섹션 -->
-      <section class="py-16 sm:py-24 border-t border-border/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold tracking-tight text-white mb-4">실제로 만들어진 예제</h2>
-            <p class="text-text-secondary max-w-2xl mx-auto">
-              60분 완주 튜토리얼을 따라하면 이런 프로젝트를 만들 수 있습니다.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <!-- B2B Admin -->
-            <div class="group bg-surface border border-border rounded-xl p-6 hover:border-primary/50 transition-all">
-              <div class="flex items-start justify-between mb-4">
-                <div>
-                  <h3 class="text-lg font-bold text-white mb-1">B2B Admin Console</h3>
-                  <p class="text-sm text-text-secondary">프로젝트 관리 대시보드</p>
-                </div>
-                <span class="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
-                  {testCounts.b2bAdmin} tests
-                </span>
-              </div>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">CRUD</span>
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">API 연동</span>
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">라우팅</span>
-              </div>
-              <div class="flex items-center gap-4 text-xs text-text-secondary">
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                  API 19 tests
-                </span>
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                  Web 11 tests
-                </span>
-              </div>
-            </div>
-
-            <!-- B2C Todo -->
-            <div class="group bg-surface border border-border rounded-xl p-6 hover:border-primary/50 transition-all">
-              <div class="flex items-start justify-between mb-4">
-                <div>
-                  <h3 class="text-lg font-bold text-white mb-1">B2C Todo App</h3>
-                  <p class="text-sm text-text-secondary">개인용 할 일 관리</p>
-                </div>
-                <span class="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
-                  {testCounts.b2cTodo} tests
-                </span>
-              </div>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">필터링</span>
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">완료 토글</span>
-                <span class="px-2 py-1 text-xs bg-surface-elevated rounded text-text-secondary">상태 관리</span>
-              </div>
-              <div class="flex items-center gap-4 text-xs text-text-secondary">
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                  API 23 tests
-                </span>
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                  Web 12 tests
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="text-center mt-8">
-            <a
-              href="https://github.com/curogom/choorai/tree/main/examples"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          <div class="text-center mt-6">
+            <a href="/map" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
+              전체 로드맵 보기
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
-              GitHub에서 소스코드 보기
             </a>
           </div>
         </div>
       </section>
 
-      <!-- CTA 섹션 -->
-      <section class="py-16 sm:py-24 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="bg-gradient-to-r from-surface-elevated to-surface rounded-2xl border border-border p-8 sm:p-12 lg:p-16 flex flex-col lg:flex-row items-center gap-12 relative">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
-            <div class="flex-1 space-y-6 relative z-10">
-              <h2 class="text-3xl font-bold text-white">
-                여러분의 아이디어는<br />
-                <span class="text-primary">실현될 준비가 되었습니다</span>
-              </h2>
-              <p class="text-text-secondary text-lg">
-                요리 레시피 사이트, 개인 포트폴리오, 혹은 간단한 사내 도구까지.
-                Choorai와 함께라면 더 이상 개발자를 기다릴 필요가 없습니다.
-              </p>
-              <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <div class="flex items-center gap-2 text-sm text-text-secondary">
-                  <svg class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                  </svg>
-                  <span>HTML/CSS 기초 필요 없음</span>
+      <!-- 예제 프로젝트 섹션 -->
+      <section class="py-12 sm:py-16 border-t border-border/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">실제로 만들어진 예제</h2>
+            <p class="text-sm text-text-secondary">60분 완주 튜토리얼을 따라하면 이런 프로젝트를 만들 수 있습니다</p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <!-- B2B Admin -->
+            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-white">B2B Admin Console</h3>
+                  <p class="text-xs text-text-secondary mt-0.5">프로젝트 관리 대시보드</p>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-text-secondary">
-                  <svg class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                  </svg>
-                  <span>설치 없이 웹에서 바로 시작</span>
-                </div>
+                <span class="px-2 py-0.5 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
+                  {testCounts.b2bAdmin} tests
+                </span>
               </div>
-            </div>
-            <div class="flex-1 w-full relative z-10">
-              <div class="relative rounded-lg overflow-hidden border border-border shadow-2xl bg-background aspect-video">
-                <div class="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/20 transition-all cursor-pointer group">
-                  <div class="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-background ml-1" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-accent-purple/20"></div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">CRUD</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">API 연동</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">라우팅</span>
               </div>
-            </div>
+            </a>
+
+            <!-- B2C Todo -->
+            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-white">B2C Todo App</h3>
+                  <p class="text-xs text-text-secondary mt-0.5">개인용 할 일 관리</p>
+                </div>
+                <span class="px-2 py-0.5 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
+                  {testCounts.b2cTodo} tests
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">필터링</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">완료 토글</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">상태 관리</span>
+              </div>
+            </a>
           </div>
         </div>
       </section>
 
       <!-- Proof 섹션 -->
-      <section class="py-12 sm:py-16 border-t border-border/50 bg-surface/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-lg bg-surface border border-border">
-                <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+      <section class="py-8 sm:py-12 border-t border-border/50 bg-surface/20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                 </svg>
               </div>
               <div>
-                <div class="text-xs text-text-secondary">Public Repo</div>
-                <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-white hover:text-primary transition-colors">
-                  curogom/choorai
-                </a>
+                <div class="text-xs text-text-secondary">Open Source</div>
+                <div class="text-sm font-medium text-white">curogom/choorai</div>
               </div>
             </div>
 
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-lg bg-surface border border-border">
-                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div>
-                <div class="text-xs text-text-secondary">Test Coverage</div>
+                <div class="text-xs text-text-secondary">Tests</div>
                 <div class="text-sm font-medium text-white">{testCounts.total}+ tests</div>
               </div>
             </div>
 
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-lg bg-surface border border-border">
-                <svg class="w-5 h-5 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
               </div>
               <div>
-                <div class="text-xs text-text-secondary">Tech Stack</div>
-                <div class="text-sm font-medium text-white">FastAPI + React + Vite</div>
+                <div class="text-xs text-text-secondary">Stack</div>
+                <div class="text-sm font-medium text-white">React + Hono + FastAPI</div>
               </div>
             </div>
           </div>
@@ -500,36 +343,28 @@ const currentYear = new Date().getFullYear();
     </main>
 
     <!-- 푸터 -->
-    <footer class="border-t border-border bg-background py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer class="border-t border-border bg-background py-8">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div class="flex items-center gap-2">
-            <img src="/favicon.png" alt="" class="w-6 h-6" aria-hidden="true" />
-            <span class="text-white font-bold text-lg">Choorai</span>
+            <img src="/favicon.png" alt="" class="w-5 h-5" aria-hidden="true" />
+            <span class="text-white font-bold">Choorai</span>
           </div>
-          <div class="flex items-center gap-6 sm:gap-8">
-            <a href="https://www.keyflow.me/ko/@curogom" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">블로그</a>
-            <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors text-sm font-medium flex items-center gap-2">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-              </svg>
-              GitHub
-            </a>
-            <a href="/terms" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">이용약관</a>
-            <a href="/privacy" class="text-text-secondary hover:text-white transition-colors text-sm font-medium">개인정보처리방침</a>
+          <div class="flex items-center gap-4 sm:gap-6 text-sm">
+            <a href="/map" class="text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/path/60min" class="text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/fix" class="text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/recipes" class="text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors">GitHub</a>
           </div>
         </div>
-        <div class="mt-8 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p class="text-xs text-text-secondary leading-5 text-center md:text-left">
+        <div class="mt-6 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-3">
+          <p class="text-xs text-text-secondary">
             © {currentYear} CuroGom
           </p>
           <div class="flex items-center gap-1 text-xs text-text-secondary">
             <span>Made by</span>
             <a href="https://curogom.dev" target="_blank" rel="noopener noreferrer" class="text-white hover:text-primary transition-colors font-medium">curogom</a>
-            <span class="mx-2">·</span>
-            <a href="https://github.com/curogom" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">GitHub</a>
-            <span class="mx-2">·</span>
-            <a href="https://linkedin.curogom.dev" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">LinkedIn</a>
           </div>
         </div>
       </div>

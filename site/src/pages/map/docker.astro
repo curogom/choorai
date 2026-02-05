@@ -1,0 +1,652 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+---
+
+<DocsLayout
+  title="Cycle 7: Docker - 컨테이너화"
+  description="Docker로 애플리케이션을 컨테이너화하고 어디서든 동일하게 실행합니다"
+  currentPath="/map/docker"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/overview" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 7: Docker</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 7
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Docker - 컨테이너화
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Docker로 애플리케이션을 컨테이너화하면 "내 컴퓨터에서는 되는데..."가 사라집니다.
+        어디서든 동일한 환경에서 동일하게 실행됩니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이 Cycle에서 배우는 것">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>컨테이너의 개념과 장점 이해</li>
+          <li>Dockerfile 작성 및 이미지 빌드</li>
+          <li>Docker Compose로 멀티 컨테이너 관리</li>
+          <li>클라우드 레지스트리에 이미지 배포</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 컨테이너란? -->
+      <section class="mb-10" id="concept">
+        <h2 class="text-2xl font-bold text-white mb-4">컨테이너란?</h2>
+
+        <p class="text-text-secondary mb-4">
+          컨테이너는 애플리케이션과 그 <strong class="text-white">실행에 필요한 모든 것</strong>
+          (코드, 라이브러리, 설정)을 하나의 패키지로 묶은 것입니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">VM vs 컨테이너</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <h4 class="text-white font-bold mb-2">가상 머신 (VM)</h4>
+            <div class="space-y-2 text-sm">
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">App</div>
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">라이브러리</div>
+              <div class="p-2 bg-blue-500/30 rounded text-center text-blue-300">Guest OS (수 GB)</div>
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">Hypervisor</div>
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">Host OS</div>
+            </div>
+            <p class="text-xs text-text-secondary mt-3">
+              ⚠️ OS 전체를 포함하여 무겁고 느림
+            </p>
+          </div>
+
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h4 class="text-white font-bold mb-2">컨테이너</h4>
+            <div class="space-y-2 text-sm">
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">App</div>
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">라이브러리</div>
+              <div class="p-2 bg-green-500/30 rounded text-center text-green-300">컨테이너 엔진 (경량)</div>
+              <div class="p-2 bg-surface rounded text-center text-text-secondary">Host OS</div>
+            </div>
+            <p class="text-xs text-text-secondary mt-3">
+              ✅ OS 커널 공유로 가볍고 빠름
+            </p>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Docker 핵심 개념</h3>
+
+        <div class="space-y-3 mb-6">
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="text-2xl">📦</span>
+            <div>
+              <h4 class="text-white font-bold">이미지 (Image)</h4>
+              <p class="text-text-secondary text-sm">
+                컨테이너의 "설계도". Dockerfile로 정의하고, 한 번 빌드하면 변경 불가 (불변).
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="text-2xl">🐳</span>
+            <div>
+              <h4 class="text-white font-bold">컨테이너 (Container)</h4>
+              <p class="text-text-secondary text-sm">
+                이미지를 실행한 "인스턴스". 여러 개 실행 가능, 삭제하면 데이터도 사라짐.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="text-2xl">🏪</span>
+            <div>
+              <h4 class="text-white font-bold">레지스트리 (Registry)</h4>
+              <p class="text-text-secondary text-sm">
+                이미지를 저장하고 공유하는 "저장소". Docker Hub, GCR, GHCR 등.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <Callout client:load variant="tip" title="왜 컨테이너를 사용하나요?">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">환경 일관성</strong>: 개발/테스트/프로덕션 환경이 동일</li>
+            <li><strong class="text-white">빠른 배포</strong>: 이미지만 다운받아 바로 실행</li>
+            <li><strong class="text-white">격리</strong>: 다른 앱과 충돌 없이 독립 실행</li>
+            <li><strong class="text-white">확장성</strong>: 같은 이미지로 여러 컨테이너 실행</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Dockerfile 기본 -->
+      <section class="mb-10" id="dockerfile">
+        <h2 class="text-2xl font-bold text-white mb-4">Dockerfile 기본</h2>
+
+        <p class="text-text-secondary mb-4">
+          Dockerfile은 이미지를 만드는 <strong class="text-white">"레시피"</strong>입니다.
+          각 명령어가 한 줄씩 레이어를 쌓아 최종 이미지를 만듭니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">기본 명령어</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">명령어</th>
+                <th class="text-left py-3 px-3 text-white">설명</th>
+                <th class="text-left py-3 px-3 text-white">예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">FROM</td>
+                <td class="py-3 px-3 text-text-secondary">베이스 이미지 지정</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">FROM python:3.11-slim</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">WORKDIR</td>
+                <td class="py-3 px-3 text-text-secondary">작업 디렉토리 설정</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">WORKDIR /app</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">COPY</td>
+                <td class="py-3 px-3 text-text-secondary">파일 복사</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">COPY . .</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">RUN</td>
+                <td class="py-3 px-3 text-text-secondary">빌드 시 명령 실행</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">RUN pip install -r requirements.txt</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">EXPOSE</td>
+                <td class="py-3 px-3 text-text-secondary">포트 문서화</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">EXPOSE 8000</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-primary font-mono">CMD</td>
+                <td class="py-3 px-3 text-text-secondary">컨테이너 실행 명령</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">CMD ["uvicorn", "main:app"]</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Python (FastAPI) Dockerfile</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Python 3.11 슬림 이미지 사용 (크기 최소화)
+FROM python:3.11-slim
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 의존성 파일 먼저 복사 (캐싱 최적화)
+COPY requirements.txt .
+
+# 의존성 설치
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 소스 코드 복사
+COPY . .
+
+# 포트 노출 (문서화 목적)
+EXPOSE 8000
+
+# 컨테이너 실행 명령
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]`}
+          filename="Dockerfile (FastAPI)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Node.js (Hono) Dockerfile</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Node.js 20 LTS 알파인 이미지 (경량)
+FROM node:20-alpine
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 패키지 파일 먼저 복사 (캐싱 최적화)
+COPY package*.json ./
+
+# 의존성 설치 (프로덕션 전용)
+RUN npm ci --only=production
+
+# 소스 코드 복사
+COPY . .
+
+# 포트 노출
+EXPOSE 3000
+
+# 컨테이너 실행 명령
+CMD ["node", "src/index.js"]`}
+          filename="Dockerfile (Hono/Node.js)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">멀티 스테이지 빌드 (최적화)</h3>
+
+        <p class="text-text-secondary mb-4">
+          빌드용 이미지와 실행용 이미지를 분리하여 <strong class="text-white">최종 이미지 크기를 줄입니다</strong>.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Stage 1: 빌드
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: 프로덕션
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 3000
+CMD ["node", "dist/index.js"]`}
+          filename="Dockerfile (멀티 스테이지)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">이미지 빌드 & 실행</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 이미지 빌드
+docker build -t my-api:latest .
+
+# 컨테이너 실행
+docker run -p 8000:8000 my-api:latest
+
+# 백그라운드 실행
+docker run -d -p 8000:8000 --name my-api my-api:latest
+
+# 로그 확인
+docker logs my-api
+
+# 컨테이너 중지 & 삭제
+docker stop my-api && docker rm my-api`}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- Docker Compose -->
+      <section class="mb-10" id="compose">
+        <h2 class="text-2xl font-bold text-white mb-4">Docker Compose</h2>
+
+        <p class="text-text-secondary mb-4">
+          여러 컨테이너를 <strong class="text-white">한 번에 정의하고 실행</strong>합니다.
+          프론트엔드, 백엔드, DB를 하나의 파일로 관리할 수 있습니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">왜 Compose가 필요한가?</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h4 class="text-red-400 font-bold mb-2">❌ docker run 반복</h4>
+            <div class="text-text-secondary text-xs font-mono space-y-1">
+              <p>docker run -d postgres...</p>
+              <p>docker run -d redis...</p>
+              <p>docker run -d my-api...</p>
+              <p>docker run -d my-frontend...</p>
+            </div>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h4 class="text-green-400 font-bold mb-2">✅ Compose 한 줄</h4>
+            <div class="text-text-secondary text-xs font-mono">
+              <p>docker compose up -d</p>
+              <p class="text-green-400 mt-2">모든 서비스 한 번에 시작!</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">docker-compose.yml 예시 (Python 스택)</h3>
+
+        <CodeBlock
+          client:load
+          code={`version: '3.8'
+
+services:
+  # PostgreSQL 데이터베이스
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # FastAPI 백엔드
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+    depends_on:
+      - db
+
+  # React 프론트엔드
+  web:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:`}
+          filename="docker-compose.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">docker-compose.yml 예시 (Node.js 스택)</h3>
+
+        <CodeBlock
+          client:load
+          code={`version: '3.8'
+
+services:
+  # PostgreSQL 데이터베이스
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Hono 백엔드
+  api:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+    depends_on:
+      - db
+
+  # Vite 프론트엔드
+  web:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:`}
+          filename="docker-compose.yml (Node.js)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">주요 명령어</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">명령어</th>
+                <th class="text-left py-3 px-3 text-white">설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">docker compose up -d</td>
+                <td class="py-3 px-3 text-text-secondary">모든 서비스 백그라운드 시작</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">docker compose down</td>
+                <td class="py-3 px-3 text-text-secondary">모든 서비스 중지 & 삭제</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">docker compose logs -f api</td>
+                <td class="py-3 px-3 text-text-secondary">api 서비스 로그 실시간 확인</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">docker compose exec api sh</td>
+                <td class="py-3 px-3 text-text-secondary">api 컨테이너에 쉘 접속</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-primary font-mono">docker compose build</td>
+                <td class="py-3 px-3 text-text-secondary">이미지 다시 빌드</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 이미지 레지스트리 -->
+      <section class="mb-10" id="registry">
+        <h2 class="text-2xl font-bold text-white mb-4">이미지 레지스트리</h2>
+
+        <p class="text-text-secondary mb-4">
+          빌드한 이미지를 <strong class="text-white">클라우드에 저장</strong>하면 어디서든 다운받아 실행할 수 있습니다.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">주요 레지스트리 비교</h3>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Docker Hub</h4>
+            <p class="text-text-secondary text-sm mb-2">가장 널리 사용되는 공개 레지스트리</p>
+            <ul class="text-xs text-text-secondary space-y-1">
+              <li>✅ 공개 이미지 무제한</li>
+              <li>✅ 간편한 사용법</li>
+              <li>⚠️ 비공개 1개만 무료</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">GCR / Artifact Registry</h4>
+            <p class="text-text-secondary text-sm mb-2">Google Cloud의 레지스트리</p>
+            <ul class="text-xs text-text-secondary space-y-1">
+              <li>✅ Cloud Run과 최적 연동</li>
+              <li>✅ 비공개 기본</li>
+              <li>⚠️ 스토리지 비용 발생</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">GitHub Container Registry</h4>
+            <p class="text-text-secondary text-sm mb-2">GitHub와 통합된 레지스트리</p>
+            <ul class="text-xs text-text-secondary space-y-1">
+              <li>✅ GitHub Actions 연동</li>
+              <li>✅ 공개 무료</li>
+              <li>⚠️ 비공개 500MB 무료</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">GCR에 이미지 푸시</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 1. gcloud 인증
+gcloud auth configure-docker asia-northeast3-docker.pkg.dev
+
+# 2. 이미지 태깅
+docker tag my-api:latest \\
+  asia-northeast3-docker.pkg.dev/PROJECT_ID/my-repo/my-api:latest
+
+# 3. 이미지 푸시
+docker push asia-northeast3-docker.pkg.dev/PROJECT_ID/my-repo/my-api:latest
+
+# 4. Cloud Run에서 사용
+gcloud run deploy my-api \\
+  --image=asia-northeast3-docker.pkg.dev/PROJECT_ID/my-repo/my-api:latest \\
+  --region=asia-northeast3`}
+          filename="터미널 (GCR)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">GitHub Container Registry 푸시</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 1. GitHub Personal Access Token으로 로그인
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+
+# 2. 이미지 태깅
+docker tag my-api:latest ghcr.io/USERNAME/my-api:latest
+
+# 3. 이미지 푸시
+docker push ghcr.io/USERNAME/my-api:latest`}
+          filename="터미널 (GHCR)"
+        />
+      </section>
+
+      <!-- 실전 팁 -->
+      <section class="mb-10" id="tips">
+        <h2 class="text-2xl font-bold text-white mb-4">실전 팁 & 베스트 프랙티스</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">.dockerignore 설정</h3>
+
+        <p class="text-text-secondary mb-4">
+          빌드 컨텍스트에서 <strong class="text-white">불필요한 파일을 제외</strong>하여 빌드 속도를 높입니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# 버전 관리
+.git
+.gitignore
+
+# 의존성 (이미지에서 새로 설치)
+node_modules
+__pycache__
+.venv
+venv
+
+# 빌드 산출물
+dist
+build
+*.pyc
+
+# 개발용 파일
+.env.local
+.env.development
+*.log
+
+# IDE
+.vscode
+.idea
+
+# Docker 관련
+Dockerfile
+docker-compose*.yml
+.dockerignore`}
+          filename=".dockerignore"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">레이어 캐싱 최적화</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h4 class="text-red-400 font-bold mb-2">❌ 비효율적</h4>
+            <div class="text-text-secondary text-xs font-mono space-y-1">
+              <p>COPY . .</p>
+              <p>RUN pip install -r requirements.txt</p>
+            </div>
+            <p class="text-xs text-text-secondary mt-2">
+              소스 변경 시 의존성도 매번 재설치
+            </p>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h4 class="text-green-400 font-bold mb-2">✅ 효율적</h4>
+            <div class="text-text-secondary text-xs font-mono space-y-1">
+              <p>COPY requirements.txt .</p>
+              <p>RUN pip install -r requirements.txt</p>
+              <p>COPY . .</p>
+            </div>
+            <p class="text-xs text-text-secondary mt-2">
+              의존성 파일 미변경 시 캐시 사용
+            </p>
+          </div>
+        </div>
+
+        <Callout client:load variant="warning" title="보안 주의사항">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">root 유저 피하기</strong>: USER 명령으로 non-root 사용자 설정</li>
+            <li><strong class="text-white">시크릿 주의</strong>: Dockerfile에 비밀번호 하드코딩 금지</li>
+            <li><strong class="text-white">최신 베이스 이미지</strong>: 보안 패치가 적용된 최신 버전 사용</li>
+            <li><strong class="text-white">최소 권한</strong>: 필요한 패키지만 설치</li>
+          </ul>
+        </Callout>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">디버깅 팁</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 실행 중인 컨테이너 확인
+docker ps
+
+# 컨테이너 로그 확인
+docker logs -f my-container
+
+# 컨테이너 내부 접속
+docker exec -it my-container sh
+
+# 이미지 히스토리 확인 (레이어별 크기)
+docker history my-api:latest
+
+# 사용하지 않는 리소스 정리
+docker system prune -a`}
+          filename="터미널"
+        />
+      </section>
+
+      <!-- 마무리 -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="다음 단계">
+          <p class="text-sm">
+            Docker로 컨테이너화를 완료했다면, 이제
+            <a href="/map/cicd" class="text-primary hover:underline ml-1">CI/CD</a>를
+            설정하여 코드 푸시만으로 자동 배포되도록 구성해보세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/ops"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cycle 6: Ops</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/cicd"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Cycle 8: CI/CD</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

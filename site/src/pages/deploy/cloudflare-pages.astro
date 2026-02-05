@@ -3,6 +3,8 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
 import Checklist from '../../components/Checklist';
+import SectionHeader from '../../components/SectionHeader';
+import MetaBadge from '../../components/MetaBadge';
 
 const deployChecklist = [
   { id: 'github', label: 'GitHub에 코드 푸시', description: 'git push origin main' },
@@ -54,10 +56,7 @@ const deployChecklist = [
     <article class="prose prose-invert max-w-none">
       <!-- Step 1 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          GitHub에 코드 올리기
-        </h2>
+        <SectionHeader number={1} title="GitHub에 코드 올리기" />
 
         <p class="text-text-secondary mb-4">
           배포할 코드가 GitHub 저장소에 있어야 합니다.
@@ -91,10 +90,7 @@ git push -u origin main`}
 
       <!-- Step 2 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          Cloudflare Pages 설정
-        </h2>
+        <SectionHeader number={2} title="Cloudflare Pages 설정" />
 
         <ol class="list-decimal list-inside text-text-secondary space-y-4">
           <li>
@@ -141,10 +137,7 @@ git push -u origin main`}
 
       <!-- Step 3 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          SPA 라우팅 설정
-        </h2>
+        <SectionHeader number={3} title="SPA 라우팅 설정" />
 
         <p class="text-text-secondary mb-4">
           React Router 등을 사용하는 SPA는 추가 설정이 필요합니다.
@@ -171,10 +164,7 @@ git push -u origin main`}
 
       <!-- Step 4 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          환경 변수 설정 (필요시)
-        </h2>
+        <SectionHeader number={4} title="환경 변수 설정 (필요시)" />
 
         <p class="text-text-secondary mb-4">
           API 키 등 민감한 정보는 환경 변수로 설정합니다.
@@ -197,10 +187,7 @@ git push -u origin main`}
 
       <!-- Step 5 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
-          커스텀 도메인 연결 (선택)
-        </h2>
+        <SectionHeader number={5} title="커스텀 도메인 연결 (선택)" />
 
         <p class="text-text-secondary mb-4">
           기본으로 <code class="bg-surface px-1 rounded">프로젝트명.pages.dev</code> 도메인이 제공됩니다.
@@ -253,7 +240,7 @@ git push -u origin main`}
 
     <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
       <a
-        href="/cycle/0-tools"
+        href="/map/tools"
         class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
       >
         <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

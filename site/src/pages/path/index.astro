@@ -1,0 +1,170 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+interface PathCourse {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  duration: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  href: string;
+  status: 'available' | 'coming-soon';
+  features: string[];
+}
+
+const courses: PathCourse[] = [
+  {
+    id: '60min',
+    title: '60분 완주',
+    description: 'AI와 함께 60분 만에 첫 웹서비스를 배포해보세요. 프로그래밍을 전혀 몰라도 괜찮습니다.',
+    icon: '🚀',
+    duration: '60분',
+    difficulty: 'beginner',
+    href: '/path/60min',
+    status: 'available',
+    features: ['React 프론트엔드', 'FastAPI 백엔드', 'Cloudflare 배포', 'AI 가이드'],
+  },
+  {
+    id: 'mini-saas',
+    title: '미니 SaaS 만들기',
+    description: '로그인과 데이터베이스가 있는 실제 SaaS 서비스를 만들어봅니다. 유저 인증부터 결제까지.',
+    icon: '💼',
+    duration: '2-3시간',
+    difficulty: 'intermediate',
+    href: '/path/mini-saas',
+    status: 'coming-soon',
+    features: ['사용자 인증', '데이터베이스 연동', 'API 설계', '결제 시스템'],
+  },
+  {
+    id: 'b2b-admin',
+    title: 'B2B Admin 대시보드',
+    description: '실무에서 사용하는 관리자 대시보드를 구축합니다. Reference 프로젝트 기반 실습.',
+    icon: '🏢',
+    duration: '4-6시간',
+    difficulty: 'advanced',
+    href: '/path/b2b-admin',
+    status: 'coming-soon',
+    features: ['대시보드 UI', '권한 관리', '데이터 시각화', '실무 패턴'],
+  },
+];
+
+const difficultyLabels = {
+  beginner: { label: '입문', color: 'bg-green-500/20 text-green-400' },
+  intermediate: { label: '중급', color: 'bg-yellow-500/20 text-yellow-400' },
+  advanced: { label: '고급', color: 'bg-red-500/20 text-red-400' },
+};
+---
+
+<DocsLayout
+  title="Path - 목표 기반 학습 코스"
+  description="목표에 맞는 코스를 선택해서 단계별로 완성하세요"
+  currentPath="/path"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-10">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">🎯 학습 Path</h1>
+      <p class="text-text-secondary">목표에 맞는 코스를 선택하세요. 단계별로 따라하면 완성됩니다.</p>
+    </div>
+
+    <!-- 코스 그리드 -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {courses.map((course) => (
+        <div
+          class={`relative flex flex-col bg-surface border-2 rounded-2xl overflow-hidden transition-all ${
+            course.status === 'available'
+              ? 'border-border hover:border-primary/50 hover:-translate-y-1'
+              : 'border-border/50 opacity-75'
+          }`}
+        >
+          {/* Coming Soon 배지 */}
+          {course.status === 'coming-soon' && (
+            <div class="absolute top-4 right-4 px-3 py-1 bg-text-muted/30 text-text-secondary text-xs font-bold rounded-full">
+              Coming Soon
+            </div>
+          )}
+
+          {/* 카드 헤더 */}
+          <div class="p-6 pb-0">
+            <div class="flex items-start gap-4 mb-4">
+              <span class="text-4xl">{course.icon}</span>
+              <div class="flex-1">
+                <h2 class="text-xl font-bold text-white mb-1">{course.title}</h2>
+                <div class="flex items-center gap-2">
+                  <span class={`px-2 py-0.5 rounded text-xs font-medium ${difficultyLabels[course.difficulty].color}`}>
+                    {difficultyLabels[course.difficulty].label}
+                  </span>
+                  <span class="text-text-muted text-sm">{course.duration}</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-text-secondary text-sm leading-relaxed mb-4">
+              {course.description}
+            </p>
+          </div>
+
+          {/* 기능 목록 */}
+          <div class="px-6 pb-4 flex-1">
+            <div class="flex flex-wrap gap-2">
+              {course.features.map((feature) => (
+                <span class="px-2 py-1 bg-background/50 text-text-secondary text-xs rounded">
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 시작 버튼 */}
+          <div class="p-6 pt-0 mt-auto">
+            {course.status === 'available' ? (
+              <a
+                href={course.href}
+                class="block w-full text-center px-4 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+              >
+                시작하기 →
+              </a>
+            ) : (
+              <button
+                disabled
+                class="block w-full text-center px-4 py-3 bg-border text-text-muted font-bold rounded-xl cursor-not-allowed"
+              >
+                준비 중
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- 추가 안내 -->
+    <div class="mt-12 p-6 bg-surface border border-border rounded-2xl text-center">
+      <h3 class="text-lg font-bold text-white mb-2">
+        어떤 코스가 좋을지 모르겠다면?
+      </h3>
+      <p class="text-text-secondary mb-4">
+        처음이라면 <strong class="text-white">60분 완주</strong>부터 시작하세요.
+        기본 개념을 빠르게 익힐 수 있습니다.
+      </p>
+      <a
+        href="/path/60min"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+      >
+        60분 완주 시작하기
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Map 연결 -->
+    <div class="mt-8 text-center">
+      <p class="text-text-secondary mb-2">
+        특정 주제만 골라서 학습하고 싶다면?
+      </p>
+      <a href="/map" class="text-primary hover:underline">
+        Map에서 원하는 노드 선택하기 →
+      </a>
+    </div>
+  </div>
+</DocsLayout>

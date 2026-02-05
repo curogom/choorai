@@ -6,6 +6,8 @@ import Checklist from '../../../../components/Checklist';
 import CodeBlock from '../../../../components/CodeBlock';
 import PromptBox from '../../../../components/PromptBox';
 import Callout from '../../../../components/Callout';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
 
 const steps = [
   { label: '사전 준비', status: 'completed' as const },
@@ -54,12 +56,7 @@ const checklist = [
     <!-- 페이지 제목 -->
     <header class="mb-8 pb-6 border-b border-border">
       <div class="flex items-center gap-3 mb-4">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          15분
-        </div>
+        <MetaBadge icon="clock" text="예상 소요시간: 15분" />
         <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">Hono</span>
         <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-bold">Lv.1 입문</span>
       </div>
@@ -102,10 +99,7 @@ const checklist = [
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 프로젝트 생성 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          프로젝트 생성
-        </h2>
+        <SectionHeader number={1} title="프로젝트 생성" />
 
         <p class="text-text-secondary mb-4">
           프론트엔드 폴더(<code>my-todo</code>) 옆에 백엔드 폴더를 만듭니다.
@@ -134,10 +128,7 @@ npm install -D typescript @types/node tsx`}
 
       <!-- 섹션 2: 첫 API 작성 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          첫 API 작성
-        </h2>
+        <SectionHeader number={2} title="첫 API 작성" />
 
         <p class="text-text-secondary mb-4">
           <code>src/index.ts</code> 파일을 만들고 아래 코드를 입력하세요.
@@ -202,10 +193,7 @@ curl http://localhost:8000/api/hello?name=Choorai`}
 
       <!-- 섹션 3: CRUD API -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          할 일 CRUD API
-        </h2>
+        <SectionHeader number={3} title="할 일 CRUD API" />
 
         <p class="text-text-secondary mb-4">
           이제 할 일 관리 API를 추가합니다. AI에게 아래 프롬프트로 요청하세요.
@@ -257,10 +245,7 @@ curl -X DELETE http://localhost:8000/api/v1/todos/1`}
 
       <!-- 섹션 4: 폴더 구조 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          최종 폴더 구조
-        </h2>
+        <SectionHeader number={4} title="최종 폴더 구조" />
 
         <CodeBlock
           client:load

@@ -1,0 +1,345 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ModeToggle from '../../components/ModeToggle';
+import { MAP_NODES, EXTRA_NODES } from '../../data/mapNodes';
+
+// Row 0 (상단): Step 1-4
+const row0Nodes = MAP_NODES.filter((n) => n.row === 0).sort((a, b) => a.order - b.order);
+// Row 1 (하단): Step 8-5 (역순, 뱀 형태 레이아웃)
+const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - a.order);
+---
+
+<DocsLayout
+  title="Map - 서비스 배포 로드맵"
+  description="AI와 함께 첫 서비스를 배포하기 위한 8단계 로드맵"
+  currentPath="/map"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">🗺️ 서비스 배포 로드맵</h1>
+      <p class="text-text-secondary">AI와 함께 첫 서비스를 배포하기 위한 8단계</p>
+    </div>
+
+    <!-- 모드 토글 + 진행률 -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-4 bg-surface rounded-xl border border-border">
+      <div class="flex items-center gap-4">
+        <ModeToggle client:load />
+        <div class="text-sm text-text-secondary">
+          <span id="mode-description" class="hidden sm:inline">순서대로 진행하기 (초보자 추천)</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-text-secondary">진행률:</span>
+        <div class="w-32 h-2 bg-border rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-primary rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <span id="progress-text" class="text-sm font-medium text-primary">0/8</span>
+      </div>
+    </div>
+
+    <!-- 메인 로드맵: Step-by-Step -->
+    <div class="roadmap-container">
+      <!-- Row 0: Step 1-4 -->
+      <div class="roadmap-row">
+        {row0Nodes.map((node, idx) => (
+          <div class="roadmap-step">
+            <a
+              href={node.href}
+              class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
+              data-node-id={node.id}
+              data-node-order={node.order}
+            >
+              <div class="flex items-center gap-2 mb-2">
+                <span class="step-number text-xs font-bold px-2 py-0.5 rounded bg-primary/20 text-primary">
+                  Step {node.order}
+                </span>
+                <span class="node-status text-xs px-2 py-0.5 rounded-full bg-surface-elevated text-text-secondary">
+                  대기
+                </span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xl">{node.icon}</span>
+                <h3 class="text-sm font-bold text-white group-hover:text-primary transition-colors">{node.title}</h3>
+              </div>
+              <p class="text-xs text-text-secondary line-clamp-2">{node.what}</p>
+              <div class="mt-2 text-xs text-text-muted">{node.time}</div>
+            </a>
+            {idx < row0Nodes.length - 1 && (
+              <div class="arrow-right">→</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <!-- 연결선: Row 0 → Row 1 -->
+      <div class="roadmap-connector">
+        <div class="connector-line"></div>
+        <div class="connector-arrow">↓</div>
+      </div>
+
+      <!-- Row 1: Step 8-5 (역순, 뱀 형태) -->
+      <div class="roadmap-row">
+        {row1Nodes.map((node, idx) => (
+          <div class="roadmap-step">
+            <a
+              href={node.href}
+              class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
+              data-node-id={node.id}
+              data-node-order={node.order}
+            >
+              <div class="flex items-center gap-2 mb-2">
+                <span class="step-number text-xs font-bold px-2 py-0.5 rounded bg-primary/20 text-primary">
+                  Step {node.order}
+                </span>
+                <span class="node-status text-xs px-2 py-0.5 rounded-full bg-surface-elevated text-text-secondary">
+                  대기
+                </span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xl">{node.icon}</span>
+                <h3 class="text-sm font-bold text-white group-hover:text-primary transition-colors">{node.title}</h3>
+              </div>
+              <p class="text-xs text-text-secondary line-clamp-2">{node.what}</p>
+              <div class="mt-2 text-xs text-text-muted">{node.time}</div>
+            </a>
+            {idx < row1Nodes.length - 1 && (
+              <div class="arrow-right">←</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- 추가 학습 영역 -->
+    <div class="mt-12 pt-8 border-t border-border">
+      <h2 class="text-lg font-bold text-white mb-4">추가 학습</h2>
+      <p class="text-sm text-text-secondary mb-6">기본 8단계를 완주한 후 도전해보세요</p>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        {EXTRA_NODES.map(node => (
+          <a
+            href={node.href}
+            class="extra-node block p-4 bg-surface/50 border border-border rounded-xl hover:border-primary/30 transition-all group"
+            data-node-id={node.id}
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-xl">{node.icon}</span>
+              <h3 class="font-bold text-white group-hover:text-primary transition-colors">{node.title}</h3>
+            </div>
+            <p class="text-xs text-text-secondary">{node.what}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- 빠른 시작 CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20 text-center">
+      <h2 class="text-lg font-bold text-white mb-2">처음이신가요?</h2>
+      <p class="text-sm text-text-secondary mb-4">60분 완주 코스로 처음부터 끝까지 안내받으세요</p>
+      <a
+        href="/path/60min"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-lg transition-all hover:scale-[1.02]"
+      >
+        60분 완주 시작하기
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <style>
+    /* 로드맵 컨테이너 */
+    .roadmap-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* 로드맵 행 */
+    .roadmap-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    /* 각 스텝 (노드 + 화살표) */
+    .roadmap-step {
+      display: flex;
+      align-items: center;
+    }
+
+    .roadmap-step .map-node {
+      width: 200px;
+      min-height: 150px;
+    }
+
+    /* 화살표 */
+    .arrow-right {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      padding: 0 0.75rem;
+      font-weight: bold;
+    }
+
+    /* 행 연결선 */
+    .roadmap-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding-right: calc(200px / 2 + 0.5rem);
+      margin: 0.5rem 0;
+    }
+
+    .connector-line {
+      width: 2px;
+      height: 20px;
+      background: var(--color-primary);
+    }
+
+    .connector-arrow {
+      font-size: 1.25rem;
+      color: var(--color-primary);
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    /* 모바일 대응 */
+    @media (max-width: 900px) {
+      .roadmap-row {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .roadmap-step {
+        flex-direction: column;
+      }
+
+      .roadmap-step .map-node {
+        width: 100%;
+        max-width: 300px;
+        min-height: auto;
+      }
+
+      .arrow-right {
+        transform: rotate(90deg);
+        padding: 0.5rem 0;
+      }
+
+      .roadmap-connector {
+        align-items: center;
+        padding-right: 0;
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1100px) {
+      .roadmap-step .map-node {
+        width: 180px;
+        min-height: 140px;
+      }
+
+      .arrow-right {
+        padding: 0 0.5rem;
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+
+  <script>
+    // Map 페이지 클라이언트 로직
+    const STORAGE_KEY = 'choorai-map-completed-nodes';
+    const MODE_KEY = 'choorai-learning-mode';
+
+    function getCompletedNodes(): string[] {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
+    }
+
+    function getMode(): 'guided' | 'explore' {
+      return localStorage.getItem(MODE_KEY) === 'explore' ? 'explore' : 'guided';
+    }
+
+    function updateUI() {
+      const completed = getCompletedNodes();
+      const mode = getMode();
+      const totalNodes = 8;
+
+      // 진행률 업데이트
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      const progress = Math.round((completed.length / totalNodes) * 100);
+      if (progressBar) progressBar.style.width = `${progress}%`;
+      if (progressText) progressText.textContent = `${completed.length}/${totalNodes}`;
+
+      // 모드 설명 업데이트
+      const modeDesc = document.getElementById('mode-description');
+      if (modeDesc) {
+        modeDesc.textContent = mode === 'guided'
+          ? '순서대로 진행하기 (초보자 추천)'
+          : '자유롭게 탐색하기';
+      }
+
+      // 노드 상태 업데이트
+      document.querySelectorAll('.map-node').forEach(el => {
+        const nodeId = el.getAttribute('data-node-id');
+        const nodeOrder = parseInt(el.getAttribute('data-node-order') || '1');
+        const statusEl = el.querySelector('.node-status');
+        const stepEl = el.querySelector('.step-number');
+
+        if (!nodeId || !statusEl) return;
+
+        const isCompleted = completed.includes(nodeId);
+        const isLocked = mode === 'guided' && !isCompleted && completed.length < nodeOrder - 1;
+        const isCurrent = mode === 'guided' && !isCompleted && completed.length >= nodeOrder - 1;
+
+        // 스타일 초기화
+        el.classList.remove('border-success/50', 'border-primary', 'opacity-50', 'pointer-events-none', 'ring-2', 'ring-primary');
+        statusEl.classList.remove('bg-success/20', 'text-success', 'bg-primary/20', 'text-primary', 'bg-red-500/20', 'text-red-400');
+        if (stepEl) {
+          stepEl.classList.remove('bg-success/20', 'text-success', 'bg-red-500/20', 'text-red-400');
+          stepEl.classList.add('bg-primary/20', 'text-primary');
+        }
+
+        if (isCompleted) {
+          el.classList.add('border-success/50');
+          statusEl.classList.add('bg-success/20', 'text-success');
+          statusEl.textContent = '✓ 완료';
+          if (stepEl) {
+            stepEl.classList.remove('bg-primary/20', 'text-primary');
+            stepEl.classList.add('bg-success/20', 'text-success');
+          }
+        } else if (isLocked) {
+          el.classList.add('opacity-50', 'pointer-events-none');
+          statusEl.classList.add('bg-red-500/20', 'text-red-400');
+          statusEl.textContent = '🔒 잠김';
+          if (stepEl) {
+            stepEl.classList.remove('bg-primary/20', 'text-primary');
+            stepEl.classList.add('bg-red-500/20', 'text-red-400');
+          }
+        } else if (isCurrent) {
+          el.classList.add('border-primary', 'ring-2', 'ring-primary');
+          statusEl.classList.add('bg-primary/20', 'text-primary');
+          statusEl.textContent = '→ 현재';
+        } else {
+          statusEl.textContent = '대기';
+        }
+      });
+    }
+
+    // 초기화
+    updateUI();
+
+    // 이벤트 리스너
+    window.addEventListener('map-progress-change', updateUI);
+    window.addEventListener('learning-mode-change', updateUI);
+    window.addEventListener('storage', updateUI);
+  </script>
+</DocsLayout>

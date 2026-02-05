@@ -2,6 +2,8 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
+import SectionHeader from '../../components/SectionHeader';
+import MetaBadge from '../../components/MetaBadge';
 ---
 
 <DocsLayout
@@ -43,10 +45,7 @@ import CodeBlock from '../../components/CodeBlock';
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 사전 준비 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          사전 준비
-        </h2>
+        <SectionHeader number={1} title="사전 준비" />
 
         <p class="text-text-secondary mb-4">
           Cloud Run 배포에 필요한 것들:
@@ -61,10 +60,7 @@ import CodeBlock from '../../components/CodeBlock';
 
       <!-- 섹션 2: Dockerfile -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          Dockerfile 작성
-        </h2>
+        <SectionHeader number={2} title="Dockerfile 작성" />
 
         <p class="text-text-secondary mb-4">
           백엔드 폴더에 <code>Dockerfile</code>을 생성합니다:
@@ -95,10 +91,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]`}
 
       <!-- 섹션 3: 배포 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          배포하기
-        </h2>
+        <SectionHeader number={3} title="배포하기" />
 
         <CodeBlock
           client:load
@@ -123,10 +116,7 @@ gcloud run deploy my-admin-api \\
 
       <!-- 섹션 4: 프론트엔드 연결 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          프론트엔드 연결
-        </h2>
+        <SectionHeader number={4} title="프론트엔드 연결" />
 
         <p class="text-text-secondary mb-4">
           Cloudflare Pages의 환경변수에 백엔드 URL을 설정합니다:
@@ -173,7 +163,7 @@ gcloud run deploy my-admin-api \\
       </a>
 
       <a
-        href="/cycle/0-overview"
+        href="/map/overview"
         class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
       >
         <div class="text-right">

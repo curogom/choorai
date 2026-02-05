@@ -6,6 +6,8 @@ import Checklist from '../../../../components/Checklist';
 import CodeBlock from '../../../../components/CodeBlock';
 import PromptBox from '../../../../components/PromptBox';
 import Callout from '../../../../components/Callout';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
 
 const steps = [
   { label: '사전 준비', status: 'completed' as const },
@@ -54,12 +56,7 @@ const checklist = [
     <!-- 페이지 제목 -->
     <header class="mb-8 pb-6 border-b border-border">
       <div class="flex items-center gap-3 mb-4">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          15분
-        </div>
+        <MetaBadge icon="clock" text="예상 소요시간: 15분" />
         <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 text-xs font-bold">React</span>
       </div>
       <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
@@ -86,10 +83,7 @@ const checklist = [
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 프로젝트 생성 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          프로젝트 생성
-        </h2>
+        <SectionHeader number={1} title="프로젝트 생성" />
 
         <p class="text-text-secondary mb-4">
           터미널을 열고 원하는 폴더로 이동한 뒤, 아래 명령어를 실행하세요.
@@ -118,10 +112,7 @@ npm install`}
 
       <!-- 섹션 2: Tailwind CSS -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          Tailwind CSS 설치
-        </h2>
+        <SectionHeader number={2} title="Tailwind CSS 설치" />
 
         <p class="text-text-secondary mb-4">
           Tailwind CSS를 설치하면 클래스만으로 예쁜 UI를 만들 수 있습니다.
@@ -172,10 +163,7 @@ export default {
 
       <!-- 섹션 3: 개발 서버 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          개발 서버 실행
-        </h2>
+        <SectionHeader number={3} title="개발 서버 실행" />
 
         <CodeBlock
           client:load
@@ -202,10 +190,7 @@ export default {
 
       <!-- 섹션 4: AI로 UI 만들기 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          AI로 UI 만들기
-        </h2>
+        <SectionHeader number={4} title="AI로 UI 만들기" />
 
         <p class="text-text-secondary mb-6">
           이제 AI에게 프로젝트 관리 UI를 만들어달라고 요청합니다.
@@ -248,10 +233,7 @@ export default {
 
       <!-- 섹션 5: 예상 결과물 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">5</span>
-          예상 결과물
-        </h2>
+        <SectionHeader number={5} title="예상 결과물" />
 
         <p class="text-text-secondary mb-4">
           AI가 만들어준 코드를 적용하면 이런 화면이 나옵니다:

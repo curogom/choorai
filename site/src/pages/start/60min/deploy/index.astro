@@ -5,6 +5,8 @@ import ChallengeProgressBar from '../../../../components/ChallengeProgressBar';
 import Checklist from '../../../../components/Checklist';
 import CodeBlock from '../../../../components/CodeBlock';
 import Callout from '../../../../components/Callout';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
 
 const steps = [
   { label: '사전 준비', status: 'completed' as const },
@@ -50,12 +52,7 @@ const checklist = [
 
     <!-- 페이지 제목 -->
     <header class="mb-8 pb-6 border-b border-border">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        10분
-      </div>
+      <MetaBadge icon="clock" text="예상 소요시간: 10분" />
       <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
         배포: Cloudflare Pages
       </h1>
@@ -80,10 +77,7 @@ const checklist = [
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: GitHub 저장소 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">1</span>
-          GitHub에 코드 올리기
-        </h2>
+        <SectionHeader number={1} title="GitHub에 코드 올리기" />
 
         <p class="text-text-secondary mb-4">
           먼저 프론트엔드 코드를 GitHub에 올립니다.
@@ -137,10 +131,7 @@ git push -u origin main`}
 
       <!-- 섹션 2: Cloudflare Pages -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">2</span>
-          Cloudflare Pages 배포
-        </h2>
+        <SectionHeader number={2} title="Cloudflare Pages 배포" />
 
         <p class="text-text-secondary mb-4">
           Cloudflare Pages는 무료로 정적 사이트를 호스팅해줍니다.
@@ -212,10 +203,7 @@ git push -u origin main`}
 
       <!-- 섹션 3: 배포 확인 -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">3</span>
-          배포 확인
-        </h2>
+        <SectionHeader number={3} title="배포 확인" />
 
         <p class="text-text-secondary mb-4">
           빌드가 완료되면 URL이 생성됩니다:
@@ -249,10 +237,7 @@ git push -u origin main`}
 
       <!-- 섹션 4: 백엔드 배포 (간략) -->
       <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-background text-sm font-bold">4</span>
-          백엔드 배포 (다음 단계)
-        </h2>
+        <SectionHeader number={4} title="백엔드 배포 (다음 단계)" />
 
         <p class="text-text-secondary mb-4">
           현재 프론트엔드만 배포된 상태입니다.
