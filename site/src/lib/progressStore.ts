@@ -1,4 +1,9 @@
-// 60분 완주 챌린지 진행률 관리
+// 60분 완주 챌린지 진행률 관리 + Map 노드 완료 상태
+
+import type { MapNode } from '../data/mapNodes';
+
+// Map 노드 완료 상태 키
+const MAP_NODE_STORAGE_KEY = 'choorai-map-completed-nodes';
 
 export const CHALLENGE_STEPS = {
   '60min-step1': { totalItems: 3 },
@@ -87,4 +92,103 @@ export function resetProgress(): void {
   });
 
   notifyProgressChange();
+}
+
+// ===== Map 노드 완료 상태 관리 =====
+
+// 완료된 Map 노드 목록 가져오기
+export function getCompletedMapNodes(): string[] {
+  if (typeof window === 'undefined') return [];
+  const saved = localStorage.getItem(MAP_NODE_STORAGE_KEY);
+  if (!saved) return [];
+  try {
+    return JSON.parse(saved) as string[];
+  } catch {
+    return [];
+  }
+}
+
+// Map 노드 완료 여부 확인
+export function isMapNodeCompleted(nodeId: string): boolean {
+  return getCompletedMapNodes().includes(nodeId);
+}
+
+// Map 노드 완료 처리
+export function completeMapNode(nodeId: string): void {
+  if (typeof window === 'undefined') return;
+  const completed = getCompletedMapNodes();
+  if (!completed.includes(nodeId)) {
+    completed.push(nodeId);
+    localStorage.setItem(MAP_NODE_STORAGE_KEY, JSON.stringify(completed));
+    notifyMapProgressChange();
+  }
+}
+
+// Map 노드 완료 취소
+export function uncompleteMapNode(nodeId: string): void {
+  if (typeof window === 'undefined') return;
+  const completed = getCompletedMapNodes().filter((id) => id !== nodeId);
+  localStorage.setItem(MAP_NODE_STORAGE_KEY, JSON.stringify(completed));
+  notifyMapProgressChange();
+}
+
+// Map 노드 완료 상태 토글
+export function toggleMapNodeCompletion(nodeId: string): void {
+  if (isMapNodeCompleted(nodeId)) {
+    uncompleteMapNode(nodeId);
+  } else {
+    completeMapNode(nodeId);
+  }
+}
+
+// Map 진행률 변경 알림
+export function notifyMapProgressChange(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('map-progress-change'));
+}
+
+// Map 노드 상태 계산 (Guided 모드용)
+export type MapNodeStatus = 'completed' | 'current' | 'locked' | 'available';
+
+export function getMapNodeStatus(
+  nodeId: string,
+  nodeOrder: number,
+  mode: 'guided' | 'explore'
+): MapNodeStatus {
+  const completedNodes = getCompletedMapNodes();
+
+  if (completedNodes.includes(nodeId)) {
+    return 'completed';
+  }
+
+  if (mode === 'explore') {
+    return 'available';
+  }
+
+  // Guided 모드: 이전 노드가 모두 완료되어야 접근 가능
+  // order가 1인 노드는 항상 available
+  if (nodeOrder === 1) {
+    return 'current';
+  }
+
+  // 이전 order까지의 노드들이 완료되었는지 확인
+  // 간단히 completedNodes.length >= nodeOrder - 1 로 체크
+  if (completedNodes.length >= nodeOrder - 1) {
+    return 'current';
+  }
+
+  return 'locked';
+}
+
+// Map 전체 초기화
+export function resetMapProgress(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(MAP_NODE_STORAGE_KEY);
+  notifyMapProgressChange();
+}
+
+// 전체 초기화 (60분 챌린지 + Map)
+export function resetAllProgress(): void {
+  resetProgress();
+  resetMapProgress();
 }

@@ -1,0 +1,258 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+// 트러블슈팅 이슈 데이터
+const issues = [
+  {
+    id: 'cors',
+    title: 'CORS 에러',
+    description: '백엔드 API 호출 시 "has been blocked by CORS policy" 에러',
+    category: '배포',
+    symptoms: ['CORS', 'blocked', 'cross-origin', 'preflight'],
+    href: '/fix/cors',
+    frequency: 'high',
+  },
+  {
+    id: 'spa-404',
+    title: 'SPA 404 에러',
+    description: '새로고침하면 404 Not Found가 뜨는 문제',
+    category: '배포',
+    symptoms: ['404', 'refresh', 'route', 'SPA', 'history'],
+    href: '/fix/spa-404',
+    frequency: 'high',
+  },
+  {
+    id: 'env',
+    title: '환경변수 문제',
+    description: 'process.env 또는 import.meta.env가 undefined인 문제',
+    category: '환경변수',
+    symptoms: ['env', 'undefined', 'environment', 'VITE_', 'process.env'],
+    href: '/fix/env',
+    frequency: 'medium',
+  },
+  {
+    id: 'auth-cookie',
+    title: '인증 쿠키 문제',
+    description: '로그인은 되는데 쿠키가 저장되지 않는 문제',
+    category: '인증',
+    symptoms: ['cookie', 'session', 'login', 'auth', 'credentials'],
+    href: '/fix/auth-cookie',
+    frequency: 'medium',
+  },
+  {
+    id: 'build-fail',
+    title: '빌드 실패',
+    description: 'npm run build 또는 docker build가 실패하는 문제',
+    category: '빌드',
+    symptoms: ['build', 'fail', 'error', 'npm', 'docker', 'compile'],
+    href: '/fix/build-fail',
+    frequency: 'medium',
+  },
+];
+
+const categories = ['전체', '배포', '인증', '환경변수', '빌드', '라우팅'];
+---
+
+<DocsLayout
+  title="Fix - 트러블슈팅"
+  description="에러 메시지나 증상을 검색해서 해결책을 찾아보세요"
+  currentPath="/fix"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">🛠️ 트러블슈팅</h1>
+      <p class="text-text-secondary">에러 메시지나 증상을 검색해서 해결책을 찾아보세요</p>
+    </div>
+
+    <!-- 검색 박스 -->
+    <div class="relative mb-6">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="에러 메시지, 증상을 입력하세요... (예: CORS, 404, env)"
+        class="w-full pl-12 pr-4 py-4 bg-surface border border-border rounded-xl text-white placeholder-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+      />
+    </div>
+
+    <!-- 카테고리 필터 -->
+    <div class="flex flex-wrap gap-2 mb-8">
+      {categories.map((cat, index) => (
+        <button
+          class={`category-btn px-4 py-2 text-sm font-medium rounded-lg border transition-all ${
+            index === 0
+              ? 'bg-primary/20 border-primary/30 text-primary'
+              : 'bg-surface border-border text-text-secondary hover:border-primary/30 hover:text-white'
+          }`}
+          data-category={cat}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <!-- 자주 발생하는 문제 -->
+    <div class="mb-8">
+      <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        자주 발생하는 문제
+      </h2>
+
+      <div id="issues-list" class="space-y-3">
+        {issues.map(issue => (
+          <a
+            href={issue.href}
+            class="issue-card block p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all group"
+            data-category={issue.category}
+            data-symptoms={issue.symptoms.join(',')}
+            data-title={issue.title.toLowerCase()}
+            data-description={issue.description.toLowerCase()}
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-bold text-white group-hover:text-primary transition-colors">
+                    {issue.title}
+                  </h3>
+                  {issue.frequency === 'high' && (
+                    <span class="px-2 py-0.5 text-xs font-medium bg-red-500/10 text-red-400 rounded-full">
+                      자주 발생
+                    </span>
+                  )}
+                </div>
+                <p class="text-sm text-text-secondary">{issue.description}</p>
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                  <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-muted">
+                    {issue.category}
+                  </span>
+                  {issue.symptoms.slice(0, 3).map(sym => (
+                    <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-muted">
+                      {sym}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <svg class="w-5 h-5 text-text-muted group-hover:text-primary transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- 검색 결과 없음 -->
+      <div id="no-results" class="hidden text-center py-12">
+        <div class="p-4 rounded-full bg-surface inline-block mb-4">
+          <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">검색 결과가 없습니다</h3>
+        <p class="text-sm text-text-secondary mb-4">
+          다른 키워드로 검색하거나 AI에게 직접 물어보세요
+        </p>
+        <a
+          href="/recipes"
+          class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+        >
+          AI 프롬프트 레시피 보기
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- AI에게 물어보기 CTA -->
+    <div class="p-6 bg-gradient-to-r from-purple-500/10 to-purple-500/5 rounded-xl border border-purple-500/20">
+      <div class="flex items-start gap-4">
+        <div class="p-3 rounded-lg bg-purple-500/20">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold text-white mb-1">원하는 해결책을 못 찾으셨나요?</h3>
+          <p class="text-sm text-text-secondary mb-3">
+            AI 프롬프트 레시피를 사용해서 ChatGPT나 Claude에게 직접 물어보세요
+          </p>
+          <a
+            href="/recipes"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-medium rounded-lg border border-purple-500/30 transition-all"
+          >
+            AI 프롬프트 레시피
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 검색 및 필터 로직
+    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    const issueCards = document.querySelectorAll('.issue-card');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const noResults = document.getElementById('no-results');
+
+    let activeCategory = '전체';
+
+    function filterIssues() {
+      const searchTerm = searchInput?.value.toLowerCase() || '';
+      let visibleCount = 0;
+
+      issueCards.forEach(card => {
+        const category = card.getAttribute('data-category') || '';
+        const symptoms = card.getAttribute('data-symptoms') || '';
+        const title = card.getAttribute('data-title') || '';
+        const description = card.getAttribute('data-description') || '';
+
+        const matchesCategory = activeCategory === '전체' || category === activeCategory;
+        const matchesSearch = !searchTerm ||
+          symptoms.toLowerCase().includes(searchTerm) ||
+          title.includes(searchTerm) ||
+          description.includes(searchTerm);
+
+        if (matchesCategory && matchesSearch) {
+          (card as HTMLElement).style.display = 'block';
+          visibleCount++;
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+
+      // 결과 없음 표시
+      if (noResults) {
+        noResults.classList.toggle('hidden', visibleCount > 0);
+      }
+    }
+
+    // 검색 입력
+    searchInput?.addEventListener('input', filterIssues);
+
+    // 카테고리 버튼
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 활성 상태 변경
+        categoryBtns.forEach(b => {
+          b.classList.remove('bg-primary/20', 'border-primary/30', 'text-primary');
+          b.classList.add('bg-surface', 'border-border', 'text-text-secondary');
+        });
+        btn.classList.remove('bg-surface', 'border-border', 'text-text-secondary');
+        btn.classList.add('bg-primary/20', 'border-primary/30', 'text-primary');
+
+        activeCategory = btn.getAttribute('data-category') || '전체';
+        filterIssues();
+      });
+    });
+  </script>
+</DocsLayout>
