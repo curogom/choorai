@@ -10,7 +10,7 @@ import CodeBlock from '../../../components/CodeBlock';
   currentPath="/cycle/3-backend/hono"
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
-    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
       <a href="/" class="hover:text-white transition-colors">홈</a>
       <span>/</span>
       <a href="/cycle/3-backend" class="hover:text-white transition-colors">Backend 배포</a>
@@ -243,7 +243,7 @@ gcloud run deploy my-hono-api --image gcr.io/YOUR_PROJECT/my-hono-api`}
       </section>
     </article>
 
-    <nav class="flex items-center justify-between pt-8 border-t border-border">
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
       <a
         href="/cycle/3-backend"
         class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
