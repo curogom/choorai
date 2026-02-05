@@ -8,10 +8,30 @@ interface Props {
   currentPath?: string;
 }
 
+interface NavItem {
+  label: string;
+  href?: string;
+  badge?: string;
+  indent?: number;
+}
+
+interface NavGroupType {
+  title: string;
+  storageKey: string;
+  items: NavItem[];
+}
+
+interface NavSection {
+  title: string;
+  href?: string;
+  groups?: NavGroupType[];
+  items?: NavItem[];
+}
+
 const { title, description, currentPath } = Astro.props;
 
 // 새로운 IA: Path / Map / Fix / Recipes / Reference
-const navigation = [
+const navigation: NavSection[] = [
   {
     title: '🎯 Path',
     href: '/path',
@@ -416,7 +436,7 @@ const navigation = [
 
     // 사이드바에서 현재 활성 항목으로 스크롤
     const sidebar = document.getElementById('sidebar');
-    const activeItem = sidebar?.querySelector('.border-primary');
+    const activeItem = sidebar?.querySelector('.border-primary') as HTMLElement | null;
     if (sidebar && activeItem) {
       const sidebarRect = sidebar.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
