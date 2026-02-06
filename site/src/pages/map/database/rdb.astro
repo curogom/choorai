@@ -1,0 +1,259 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+
+const fastapiCode = `# app/database.py
+import asyncpg
+from contextlib import asynccontextmanager
+
+DATABASE_URL = "postgresql://user:password@localhost:5432/mydb"
+
+pool = None
+
+async def init_db():
+    global pool
+    pool = await asyncpg.create_pool(DATABASE_URL)
+
+async def close_db():
+    await pool.close()
+
+async def get_connection():
+    async with pool.acquire() as conn:
+        yield conn`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI, Depends
+from app.database import init_db, close_db, get_connection
+
+app = FastAPI()
+
+@app.on_event("startup")
+async def startup():
+    await init_db()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_db()
+
+@app.get("/users")
+async def get_users():
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("SELECT id, name, email FROM users")
+        return [dict(r) for r in rows]
+
+@app.post("/users")
+async def create_user(name: str, email: str):
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+            name, email
+        )
+        return dict(row)`;
+
+const honoCode = `// src/db.ts
+import postgres from 'postgres';
+
+const sql = postgres('postgresql://user:password@localhost:5432/mydb');
+
+export default sql;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import sql from './db';
+
+const app = new Hono();
+
+app.get('/users', async (c) => {
+  const users = await sql\`SELECT id, name, email FROM users\`;
+  return c.json(users);
+});
+
+app.post('/users', async (c) => {
+  const { name, email } = await c.req.json();
+  const [user] = await sql\`
+    INSERT INTO users (name, email)
+    VALUES (\${name}, \${email})
+    RETURNING *
+  \`;
+  return c.json(user, 201);
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="관계형 데이터베이스 (RDB)"
+  description="PostgreSQL, MySQL 등 관계형 데이터베이스 기초"
+  currentPath="/map/database/rdb"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/database" class="hover:text-white transition-colors">데이터베이스</a>
+      <span>/</span>
+      <span class="text-primary font-medium">RDB</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold">
+          Lv.2
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        관계형 데이터베이스 (RDB)
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        가장 널리 쓰이는 데이터베이스 유형입니다.
+        테이블 간의 관계를 정의하고 SQL로 데이터를 조회합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이게 뭐야?">
+        <p class="mt-1">
+          테이블과 행으로 데이터를 저장하는 가장 보편적인 DB. SQL로 조회.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 언제 필요해? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="언제 필요해?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">사용자/주문/상품</strong> 같은 정형 데이터를 저장할 때</li>
+          <li><strong class="text-white">데이터 간 관계</strong>가 중요할 때 (사용자 - 주문 - 상품)</li>
+          <li><strong class="text-white">복잡한 조회</strong>가 필요할 때 (JOIN, GROUP BY, 집계)</li>
+          <li><strong class="text-white">트랜잭션 보장</strong>이 필요할 때 (결제, 재고 관리)</li>
+        </ul>
+      </section>
+
+      <!-- 주요 서비스 -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="주요 서비스" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">PostgreSQL</h3>
+            <span class="text-xs text-primary font-medium">무료, 가장 인기</span>
+            <p class="text-text-secondary text-sm mt-2">
+              오픈소스. JSON, 전문검색, 확장 기능이 풍부합니다.
+              대부분의 신규 프로젝트에 추천됩니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">MySQL</h3>
+            <span class="text-xs text-text-secondary font-medium">무료, 레거시 많음</span>
+            <p class="text-text-secondary text-sm mt-2">
+              오랜 역사와 거대한 생태계. WordPress, 기존 시스템에서 많이 사용됩니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Supabase</h3>
+            <span class="text-xs text-green-400 font-medium">PostgreSQL 관리형</span>
+            <p class="text-text-secondary text-sm mt-2">
+              PostgreSQL 기반의 BaaS. 인증, 스토리지, 실시간 기능을 함께 제공합니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">PlanetScale</h3>
+            <span class="text-xs text-green-400 font-medium">MySQL 관리형</span>
+            <p class="text-text-secondary text-sm mt-2">
+              MySQL 호환. 브랜칭으로 스키마 변경을 안전하게 관리합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 비용 -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="비용" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">PostgreSQL / MySQL</strong> - 자체 설치 시 무료 (서버 비용은 별도)</li>
+            <li><strong class="text-white">Supabase</strong> - 무료 티어 500MB 스토리지, 월 50K API 요청</li>
+            <li><strong class="text-white">PlanetScale</strong> - 무료 티어 5GB 스토리지, 월 1B 행 읽기</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 연결 예제 -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="연결 예제" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + asyncpg (Python)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/database.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + postgres.js (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/db.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="ORM을 사용하면 더 편합니다">
+          <p class="text-sm mt-1">
+            실제 프로젝트에서는 SQL을 직접 쓰기보다
+            <strong class="text-white">SQLAlchemy</strong>(Python)나
+            <strong class="text-white">Drizzle ORM</strong>(TypeScript)을 사용하는 것이 일반적입니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/database"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">데이터베이스 개요</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/database/nosql"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">NoSQL</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

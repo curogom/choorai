@@ -1,0 +1,239 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+
+const fastapiCode = `# app/database.py
+from motor.motor_asyncio import AsyncIOMotorClient
+
+MONGO_URL = "mongodb+srv://user:password@cluster.mongodb.net/mydb"
+
+client = AsyncIOMotorClient(MONGO_URL)
+db = client.mydb`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI
+from app.database import db
+from bson import ObjectId
+
+app = FastAPI()
+
+@app.get("/posts")
+async def get_posts():
+    posts = []
+    async for post in db.posts.find().limit(20):
+        post["_id"] = str(post["_id"])
+        posts.append(post)
+    return posts
+
+@app.post("/posts")
+async def create_post(title: str, content: str, tags: list[str] = []):
+    doc = {"title": title, "content": content, "tags": tags}
+    result = await db.posts.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return doc`;
+
+const honoCode = `// src/db.ts
+import { MongoClient } from 'mongodb';
+
+const MONGO_URL = 'mongodb+srv://user:password@cluster.mongodb.net/mydb';
+const client = new MongoClient(MONGO_URL);
+const db = client.db('mydb');
+
+export default db;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import db from './db';
+
+const app = new Hono();
+
+app.get('/posts', async (c) => {
+  const posts = await db.collection('posts').find().limit(20).toArray();
+  return c.json(posts);
+});
+
+app.post('/posts', async (c) => {
+  const { title, content, tags } = await c.req.json();
+  const result = await db.collection('posts').insertOne({
+    title,
+    content,
+    tags: tags || [],
+    createdAt: new Date(),
+  });
+  return c.json({ _id: result.insertedId, title, content, tags }, 201);
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="NoSQL 데이터베이스"
+  description="MongoDB, Firestore 등 비관계형 데이터베이스"
+  currentPath="/map/database/nosql"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/database" class="hover:text-white transition-colors">데이터베이스</a>
+      <span>/</span>
+      <span class="text-primary font-medium">NoSQL</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        NoSQL 데이터베이스
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        스키마를 미리 정의하지 않고 유연하게 데이터를 저장합니다.
+        JSON과 유사한 문서(Document) 형태가 대표적입니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이게 뭐야?">
+        <p class="mt-1">
+          스키마 없이 JSON 형태로 데이터를 저장. 유연한 구조.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 언제 필요해? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="언제 필요해?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">데이터 구조가 자주 변경</strong>될 때 (프로토타이핑, MVP)</li>
+          <li><strong class="text-white">중첩된 데이터</strong>를 통째로 저장할 때 (블로그 포스트 + 댓글)</li>
+          <li><strong class="text-white">수평 확장</strong>이 필요할 때 (대량 트래픽 처리)</li>
+          <li><strong class="text-white">실시간 동기화</strong>가 필요할 때 (Firestore + 모바일 앱)</li>
+        </ul>
+      </section>
+
+      <!-- 주요 서비스 -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="주요 서비스" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">MongoDB Atlas</h3>
+            <span class="text-xs text-primary font-medium">가장 인기</span>
+            <p class="text-text-secondary text-sm mt-2">
+              문서형 NoSQL의 대표. 클라우드 관리형(Atlas)으로 시작이 쉽습니다.
+              강력한 쿼리와 집계(aggregation) 파이프라인을 제공합니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Firestore</h3>
+            <span class="text-xs text-text-secondary font-medium">Firebase 내장</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Google Firebase에 포함된 NoSQL DB. 실시간 리스너로
+              데이터 변경 시 클라이언트에 자동 반영됩니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">DynamoDB</h3>
+            <span class="text-xs text-text-secondary font-medium">AWS</span>
+            <p class="text-text-secondary text-sm mt-2">
+              AWS의 완전 관리형 NoSQL. 키-값 및 문서 모델을 지원합니다.
+              대규모 트래픽에서 일관된 성능을 보장합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 비용 -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="비용" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">MongoDB Atlas</strong> - 무료 티어 512MB 스토리지, 공유 클러스터</li>
+            <li><strong class="text-white">Firestore</strong> - 일 50K 읽기 / 20K 쓰기 / 20K 삭제 무료</li>
+            <li><strong class="text-white">DynamoDB</strong> - 월 25GB 스토리지, 25 읽기/쓰기 유닛 무료</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 연결 예제 -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="연결 예제" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + motor (Python, MongoDB)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/database.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + mongodb (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/db.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="RDB vs NoSQL 선택 기준">
+          <p class="text-sm mt-1">
+            데이터 간 관계가 복잡하면 <a href="/map/database/rdb" class="text-primary hover:underline">RDB</a>,
+            데이터 구조가 자주 바뀌거나 빠른 개발이 우선이면 NoSQL이 적합합니다.
+            둘 다 사용하는 것도 흔한 패턴입니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/database/rdb"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">RDB</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/database/cache"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Cache</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

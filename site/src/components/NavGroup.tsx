@@ -4,6 +4,7 @@ interface NavItem {
   label: string;
   href?: string;
   badge?: string;
+  tags?: string[];
   indent?: number;
 }
 
@@ -95,11 +96,18 @@ export default function NavGroup({
                   `}
                 >
                   <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
-                      {item.badge}
-                    </span>
-                  )}
+                  <span className="flex items-center gap-1">
+                    {item.badge && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.tags?.map((tag, i) => (
+                      <span key={i} className="text-xs leading-none" title={tag === '🌱' ? '입문' : tag === '👍' ? '추천' : tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </span>
                 </a>
               </li>
             ) : (
@@ -112,11 +120,18 @@ export default function NavGroup({
                   `}
                 >
                   <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-surface text-text-secondary/60 rounded">
-                      {item.badge}
-                    </span>
-                  )}
+                  <span className="flex items-center gap-1">
+                    {item.badge && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-surface text-text-secondary/60 rounded">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.tags?.map((tag, i) => (
+                      <span key={i} className="text-xs leading-none opacity-50">
+                        {tag}
+                      </span>
+                    ))}
+                  </span>
                 </span>
               </li>
             )

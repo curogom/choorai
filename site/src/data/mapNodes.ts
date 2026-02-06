@@ -74,6 +74,7 @@ export const MAP_NODES: MapNode[] = [
       { id: 'fastapi', label: 'FastAPI', href: '/map/backend' },
       { id: 'hono', label: 'Hono', href: '/map/backend/hono' },
       { id: 'go', label: 'Go', href: '/map/backend/go' },
+      { id: 'dotnet', label: '.NET', href: '/map/backend/dotnet' },
       { id: 'nest', label: 'NestJS', href: '/map/backend/nest' },
     ],
   },
@@ -91,6 +92,10 @@ export const MAP_NODES: MapNode[] = [
     group: 'dev',
     subNodes: [
       { id: 'database-overview', label: '개요', href: '/map/database' },
+      { id: 'rdb', label: 'RDB', href: '/map/database/rdb' },
+      { id: 'nosql', label: 'NoSQL', href: '/map/database/nosql' },
+      { id: 'cache', label: 'Cache', href: '/map/database/cache' },
+      { id: 'vector', label: 'Vector DB', href: '/map/database/vector' },
       { id: 'supabase', label: 'Supabase', href: '/baas/supabase' },
     ],
   },

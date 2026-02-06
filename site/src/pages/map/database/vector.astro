@@ -1,0 +1,292 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+
+const fastapiCode = `# app/vector_db.py
+from pinecone import Pinecone
+
+pc = Pinecone(api_key="your-api-key")
+index = pc.Index("my-index")`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI
+from app.vector_db import index
+import openai
+
+app = FastAPI()
+openai_client = openai.OpenAI()
+
+def get_embedding(text: str) -> list[float]:
+    """텍스트를 벡터로 변환"""
+    response = openai_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text
+    )
+    return response.data[0].embedding
+
+@app.post("/documents")
+async def upsert_document(doc_id: str, text: str):
+    vector = get_embedding(text)
+    index.upsert(vectors=[{
+        "id": doc_id,
+        "values": vector,
+        "metadata": {"text": text}
+    }])
+    return {"id": doc_id, "status": "indexed"}
+
+@app.get("/search")
+async def search(query: str, top_k: int = 5):
+    query_vector = get_embedding(query)
+    results = index.query(
+        vector=query_vector,
+        top_k=top_k,
+        include_metadata=True
+    )
+    return [
+        {"id": m.id, "score": m.score, "text": m.metadata["text"]}
+        for m in results.matches
+    ]`;
+
+const honoCode = `// src/vector.ts
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'your-api-key' });
+const index = pc.index('my-index');
+
+export default index;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import index from './vector';
+import OpenAI from 'openai';
+
+const app = new Hono();
+const openai = new OpenAI();
+
+async function getEmbedding(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  });
+  return response.data[0].embedding;
+}
+
+app.post('/documents', async (c) => {
+  const { id, text } = await c.req.json();
+  const vector = await getEmbedding(text);
+  await index.upsert([{
+    id,
+    values: vector,
+    metadata: { text },
+  }]);
+  return c.json({ id, status: 'indexed' }, 201);
+});
+
+app.get('/search', async (c) => {
+  const query = c.req.query('q') || '';
+  const vector = await getEmbedding(query);
+  const results = await index.query({
+    vector,
+    topK: 5,
+    includeMetadata: true,
+  });
+  return c.json(
+    results.matches?.map((m) => ({
+      id: m.id,
+      score: m.score,
+      text: m.metadata?.text,
+    })) || []
+  );
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="벡터 데이터베이스"
+  description="AI/검색을 위한 벡터 임베딩 저장소"
+  currentPath="/map/database/vector"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/database" class="hover:text-white transition-colors">데이터베이스</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Vector DB</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold">
+          Lv.4
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        벡터 데이터베이스
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        텍스트, 이미지 등을 벡터(숫자 배열)로 변환해 저장하고,
+        의미 기반 유사도 검색을 수행하는 특수 목적 데이터베이스입니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이게 뭐야?">
+        <p class="mt-1">
+          텍스트/이미지를 벡터(숫자 배열)로 변환해 저장. 유사도 검색(시맨틱 검색)에 사용.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 언제 필요해? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="언제 필요해?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">시맨틱 검색</strong> - 키워드가 아닌 의미로 문서 검색 ("강아지" 검색 시 "반려견" 문서도 반환)</li>
+          <li><strong class="text-white">RAG (검색 증강 생성)</strong> - LLM에 관련 문서를 컨텍스트로 제공</li>
+          <li><strong class="text-white">추천 시스템</strong> - 유사한 상품/콘텐츠 추천</li>
+          <li><strong class="text-white">이미지 검색</strong> - 유사한 이미지를 찾는 역이미지 검색</li>
+        </ul>
+      </section>
+
+      <!-- 주요 서비스 -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="주요 서비스" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">Pinecone</h3>
+            <span class="text-xs text-primary font-medium">SaaS, 가장 쉬움</span>
+            <p class="text-text-secondary text-sm mt-2">
+              완전 관리형 벡터 DB. 설정이 간단하고 확장이 자동입니다.
+              서버리스 모델로 사용한 만큼만 과금됩니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">pgvector</h3>
+            <span class="text-xs text-green-400 font-medium">PostgreSQL 확장</span>
+            <p class="text-text-secondary text-sm mt-2">
+              기존 PostgreSQL에 벡터 검색 기능을 추가하는 확장.
+              별도 서비스 없이 SQL로 벡터 검색이 가능합니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Qdrant</h3>
+            <span class="text-xs text-text-secondary font-medium">오픈소스</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Rust로 작성된 고성능 벡터 DB. 자체 호스팅 또는
+              클라우드 서비스로 사용할 수 있습니다. 필터링이 강력합니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">ChromaDB</h3>
+            <span class="text-xs text-text-secondary font-medium">로컬 개발용</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Python 네이티브 벡터 DB. 로컬에서 바로 실행 가능하여
+              프로토타이핑과 개발 단계에 적합합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 비용 -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="비용" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">Pinecone</strong> - 무료 티어 100K 벡터 (서버리스), 1개 인덱스</li>
+            <li><strong class="text-white">pgvector</strong> - PostgreSQL에 포함 (무료, 별도 비용 없음)</li>
+            <li><strong class="text-white">Qdrant Cloud</strong> - 무료 티어 1GB 스토리지</li>
+            <li><strong class="text-white">ChromaDB</strong> - 오픈소스 무료 (로컬 실행)</li>
+          </ul>
+        </div>
+
+        <Callout client:load variant="warning" title="임베딩 API 비용에 주의">
+          <p class="text-sm mt-1">
+            벡터 DB 자체는 무료/저렴하지만, 텍스트를 벡터로 변환하는
+            임베딩 API(OpenAI 등)에 별도 비용이 발생합니다.
+            OpenAI text-embedding-3-small 기준 약 $0.02/1M 토큰입니다.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 연결 예제 -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="연결 예제" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + pinecone-client (Python)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/vector_db.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + @pinecone-database/pinecone (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/vector.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="임베딩 모델 선택">
+          <p class="text-sm mt-1">
+            OpenAI <code class="bg-surface px-1 rounded">text-embedding-3-small</code>이 가성비가 좋습니다.
+            오픈소스 모델을 원하면 <code class="bg-surface px-1 rounded">sentence-transformers</code>(Python)로
+            로컬에서 임베딩을 생성할 수도 있습니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/database/cache"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">Cache</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/database"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">데이터베이스 개요</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

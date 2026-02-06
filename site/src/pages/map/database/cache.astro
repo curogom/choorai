@@ -1,0 +1,255 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+
+const fastapiCode = `# app/cache.py
+import redis.asyncio as redis
+
+REDIS_URL = "redis://localhost:6379"
+
+redis_client = redis.from_url(REDIS_URL, decode_responses=True)`;
+
+const fastapiQueryCode = `# app/main.py
+import json
+from fastapi import FastAPI
+from app.cache import redis_client
+
+app = FastAPI()
+
+@app.get("/products/{product_id}")
+async def get_product(product_id: str):
+    # 캐시 확인
+    cached = await redis_client.get(f"product:{product_id}")
+    if cached:
+        return json.loads(cached)
+
+    # DB에서 조회 (여기서는 예시)
+    product = {"id": product_id, "name": "노트북", "price": 1200000}
+
+    # 캐시에 저장 (TTL 1시간)
+    await redis_client.set(
+        f"product:{product_id}",
+        json.dumps(product),
+        ex=3600
+    )
+    return product
+
+@app.post("/leaderboard")
+async def update_score(user_id: str, score: int):
+    # Sorted Set으로 실시간 순위
+    await redis_client.zadd("leaderboard", {user_id: score})
+    rank = await redis_client.zrevrank("leaderboard", user_id)
+    return {"user_id": user_id, "score": score, "rank": rank + 1}`;
+
+const honoCode = `// src/cache.ts
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url: 'https://your-endpoint.upstash.io',
+  token: 'your-token',
+});
+
+export default redis;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import redis from './cache';
+
+const app = new Hono();
+
+app.get('/products/:id', async (c) => {
+  const id = c.req.param('id');
+
+  // 캐시 확인
+  const cached = await redis.get<string>(\`product:\${id}\`);
+  if (cached) {
+    return c.json(JSON.parse(cached));
+  }
+
+  // DB에서 조회 (여기서는 예시)
+  const product = { id, name: '노트북', price: 1200000 };
+
+  // 캐시에 저장 (TTL 1시간)
+  await redis.set(\`product:\${id}\`, JSON.stringify(product), { ex: 3600 });
+  return c.json(product);
+});
+
+app.get('/leaderboard', async (c) => {
+  const top10 = await redis.zrange('leaderboard', 0, 9, { rev: true });
+  return c.json(top10);
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="인메모리/캐시 데이터베이스"
+  description="Redis, Memcached 등 초고속 캐시 시스템"
+  currentPath="/map/database/cache"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/database" class="hover:text-white transition-colors">데이터베이스</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cache</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold">
+          Lv.3
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        인메모리/캐시 데이터베이스
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        메모리에 데이터를 저장하여 초고속 읽기/쓰기를 구현합니다.
+        세션 관리, 캐싱, 실시간 순위표에 주로 사용됩니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이게 뭐야?">
+        <p class="mt-1">
+          메모리에 데이터를 저장해 초고속(~1ms) 읽기. 세션, 캐시, 실시간 순위에 사용.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 언제 필요해? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="언제 필요해?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">API 응답 캐싱</strong> - DB 쿼리 결과를 캐시해 응답 속도 향상</li>
+          <li><strong class="text-white">세션 저장</strong> - 로그인 세션을 여러 서버 간 공유</li>
+          <li><strong class="text-white">실시간 순위/카운터</strong> - 조회수, 좋아요, 리더보드</li>
+          <li><strong class="text-white">Rate Limiting</strong> - API 요청 횟수 제한</li>
+        </ul>
+      </section>
+
+      <!-- 주요 서비스 -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="주요 서비스" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">Redis (Upstash)</h3>
+            <span class="text-xs text-primary font-medium">가장 인기, 서버리스 무료</span>
+            <p class="text-text-secondary text-sm mt-2">
+              키-값 저장소의 표준. 문자열, 해시, 리스트, 셋, 정렬 셋 등
+              다양한 자료구조를 지원합니다. Upstash는 서버리스 Redis 서비스입니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Memcached</h3>
+            <span class="text-xs text-text-secondary font-medium">단순 캐싱 전용</span>
+            <p class="text-text-secondary text-sm mt-2">
+              단순 키-값 캐싱에 특화. Redis보다 기능이 적지만
+              단순 캐시 용도에서는 약간 더 빠를 수 있습니다.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Valkey</h3>
+            <span class="text-xs text-text-secondary font-medium">Redis 포크, 오픈소스</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Redis의 오픈소스 포크. Redis와 API 호환되며
+              Linux Foundation에서 관리합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 비용 -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="비용" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">Upstash Redis</strong> - 무료 티어 10K 명령/일, 256MB 스토리지</li>
+            <li><strong class="text-white">Redis Cloud</strong> - 무료 티어 30MB (소규모 캐시에 적합)</li>
+            <li><strong class="text-white">자체 Redis</strong> - Docker로 로컬 설치 시 무료 (서버 비용은 별도)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 연결 예제 -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="연결 예제" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + redis-py (Python)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/cache.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + @upstash/redis (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/cache.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="warning" title="캐시는 보조 저장소입니다">
+          <p class="text-sm mt-1">
+            캐시 데이터는 언제든 사라질 수 있습니다.
+            항상 원본 데이터(RDB/NoSQL)를 함께 사용하고,
+            캐시 미스(miss) 시 원본에서 다시 읽는 로직을 구현하세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
+      <a
+        href="/map/database/nosql"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
+      >
+        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="text-left">
+          <span class="text-xs text-text-secondary">이전</span>
+          <span class="block text-sm text-white font-medium">NoSQL</span>
+        </div>
+      </a>
+
+      <a
+        href="/map/database/vector"
+        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
+      >
+        <div class="text-right">
+          <span class="text-xs opacity-70">다음</span>
+          <span class="block text-sm font-bold">Vector DB</span>
+        </div>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </nav>
+  </div>
+</DocsLayout>

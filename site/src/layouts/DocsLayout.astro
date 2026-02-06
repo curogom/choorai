@@ -12,6 +12,7 @@ interface NavItem {
   label: string;
   href?: string;
   badge?: string;
+  tags?: string[];
   indent?: number;
 }
 
@@ -40,7 +41,7 @@ const navigation: NavSection[] = [
         title: '코스 목록',
         storageKey: 'path-courses',
         items: [
-          { label: '60분 완주', href: '/path/60min', badge: '입문', indent: 1 },
+          { label: '60분 완주', href: '/path/60min', tags: ['🌱'], indent: 1 },
           { label: 'React', href: '/start/60min/frontend/react', indent: 2 },
           { label: 'Vue', href: '/start/60min/frontend/vue', indent: 2 },
           { label: 'FastAPI', href: '/start/60min/backend/fastapi', indent: 2 },
@@ -68,16 +69,17 @@ const navigation: NavSection[] = [
           { label: '전체 로드맵', href: '/map' },
           { label: '도메인 & DNS', href: '/map/dns' },
           { label: '프론트엔드', href: '/map/frontend', indent: 1 },
-          { label: 'Vue', href: '/map/frontend/vue', indent: 2 },
+          { label: 'Vue', href: '/map/frontend/vue', badge: 'Lv.2', indent: 2 },
           { label: '백엔드', href: '/map/backend', indent: 1 },
-          { label: 'Hono', href: '/map/backend/hono', indent: 2 },
-          { label: 'Go', href: '/map/backend/go', indent: 2 },
-          { label: 'NestJS', href: '/map/backend/nest', indent: 2 },
+          { label: 'Hono', href: '/map/backend/hono', badge: 'Lv.1', tags: ['🌱'], indent: 2 },
+          { label: 'Go', href: '/map/backend/go', badge: 'Lv.3', indent: 2 },
+          { label: '.NET', href: '/map/backend/dotnet', badge: 'Lv.3', indent: 2 },
+          { label: 'NestJS', href: '/map/backend/nest', badge: 'Lv.4', indent: 2 },
           { label: '데이터베이스', href: '/map/database', indent: 1 },
-          { label: 'RDB', badge: '준비중', indent: 2 },
-          { label: 'NoSQL', badge: '준비중', indent: 2 },
-          { label: 'In-Memory/Cache', badge: '준비중', indent: 2 },
-          { label: 'Vector DB', badge: '준비중', indent: 2 },
+          { label: 'RDB', href: '/map/database/rdb', badge: 'Lv.2', indent: 2 },
+          { label: 'NoSQL', href: '/map/database/nosql', badge: 'Lv.2', indent: 2 },
+          { label: 'Cache', href: '/map/database/cache', badge: 'Lv.3', indent: 2 },
+          { label: 'Vector DB', href: '/map/database/vector', badge: 'Lv.4', indent: 2 },
           { label: '환경변수', href: '/map/runtime', indent: 1 },
           { label: '모니터링', href: '/map/ops', indent: 1 },
         ],
@@ -95,18 +97,18 @@ const navigation: NavSection[] = [
   {
     title: '☁️ BaaS',
     items: [
-      { label: 'Supabase', href: '/baas/supabase' },
-      { label: 'Firebase', badge: '준비중' },
+      { label: 'Supabase', href: '/baas/supabase', badge: 'Lv.3', tags: ['👍'] },
+      { label: 'Firebase', href: '/baas/firebase', badge: 'Lv.2' },
     ],
   },
   {
     title: '🔐 인증',
     items: [
       { label: '개요', href: '/map/auth' },
-      { label: 'Clerk', href: '/map/auth/clerk', badge: '추천', indent: 1 },
-      { label: 'NextAuth', href: '/map/auth/nextauth', indent: 1 },
-      { label: 'Auth0', href: '/map/auth/auth0', indent: 1 },
-      { label: 'Firebase', href: '/map/auth/firebase', indent: 1 },
+      { label: 'Clerk', href: '/map/auth/clerk', badge: 'Lv.2', tags: ['👍'], indent: 1 },
+      { label: 'NextAuth', href: '/map/auth/nextauth', badge: 'Lv.3', indent: 1 },
+      { label: 'Auth0', href: '/map/auth/auth0', badge: 'Lv.3', indent: 1 },
+      { label: 'Firebase', href: '/map/auth/firebase', badge: 'Lv.2', indent: 1 },
     ],
   },
   {
