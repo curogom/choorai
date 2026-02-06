@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://choorai.com/sitemap-index.xml
