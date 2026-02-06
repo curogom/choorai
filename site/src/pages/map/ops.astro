@@ -2,6 +2,7 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
+import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
 <DocsLayout
@@ -301,39 +302,13 @@ gcloud alpha monitoring policies create \\
           <p class="text-sm">
             모든 학습 사이클을 완료했습니다! 이제 웹 서비스를 만들고 배포하고 운영하는
             기본기를 갖추었습니다.
-            <a href="/agent-recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>를
+            <a href="/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>를
             활용해서 실제 프로젝트를 시작해보세요.
           </p>
         </Callout>
       </section>
     </article>
 
-    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
-      <a
-        href="/map/runtime"
-        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
-      >
-        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        <div class="text-left">
-          <span class="text-xs text-text-secondary">이전</span>
-          <span class="block text-sm text-white font-medium">Cycle 5: Runtime</span>
-        </div>
-      </a>
-
-      <a
-        href="/agent-recipes"
-        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
-      >
-        <div class="text-right">
-          <span class="text-xs opacity-70">다음</span>
-          <span class="block text-sm font-bold">Agent Recipes</span>
-        </div>
-        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </nav>
+    <PageNavigation currentPath="/map/ops" />
   </div>
 </DocsLayout>

@@ -6,6 +6,7 @@ import Checklist from '../../components/Checklist';
 import EditorCard from '../../components/EditorCard';
 import SectionHeader from '../../components/SectionHeader';
 import MetaBadge from '../../components/MetaBadge';
+import PageNavigation from '../../components/PageNavigation.astro';
 
 const toolsChecklist = [
   { id: 'editor', label: '코드 에디터 설치', description: 'Antigravity, VS Code, 또는 Cursor' },
@@ -256,32 +257,6 @@ git config --global user.email "my@email.com"`}
       </section>
     </article>
 
-    <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
-      <a
-        href="/map"
-        class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
-      >
-        <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        <div class="text-left">
-          <span class="text-xs text-text-secondary">이전</span>
-          <span class="block text-sm text-white font-medium">Cycle 0: 개요</span>
-        </div>
-      </a>
-
-      <a
-        href="/start/60min"
-        class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
-      >
-        <div class="text-right">
-          <span class="text-xs opacity-70">다음</span>
-          <span class="block text-sm font-bold">60분 완주 시작!</span>
-        </div>
-        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </nav>
+    <PageNavigation currentPath="/map/tools" />
   </div>
 </DocsLayout>

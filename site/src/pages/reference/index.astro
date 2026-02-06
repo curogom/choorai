@@ -1,6 +1,7 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import testCounts from '../../data/test-counts.json';
+import PageNavigation from '../../components/PageNavigation.astro';
 
 const projects = [
   {
@@ -169,6 +170,8 @@ const projects = [
         </svg>
       </a>
     </div>
+
+    <PageNavigation currentPath="/reference" />
   </div>
 
   <script>

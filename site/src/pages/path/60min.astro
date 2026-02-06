@@ -9,6 +9,7 @@ import Callout from '../../components/Callout';
 import EditorCard from '../../components/EditorCard';
 import SectionHeader from '../../components/SectionHeader';
 import MetaBadge from '../../components/MetaBadge';
+import PageNavigation from '../../components/PageNavigation.astro';
 
 const steps = [
   { label: '사전 준비', status: 'current' as const },
@@ -254,33 +255,7 @@ python3 --version`}
       </section>
 
       <!-- 네비게이션 -->
-      <nav class="flex items-center justify-between pt-8 border-t border-border" aria-label="페이지 이동">
-        <a
-          href="/"
-          class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
-        >
-          <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <div class="text-left">
-            <span class="text-xs text-text-secondary">이전</span>
-            <span class="block text-sm text-white font-medium">홈으로</span>
-          </div>
-        </a>
-
-        <a
-          href="/start/60min/frontend/react"
-          class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
-        >
-          <div class="text-right">
-            <span class="text-xs opacity-70">다음 단계</span>
-            <span class="block text-sm font-bold">프론트엔드 (React)</span>
-          </div>
-          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
-      </nav>
+      <PageNavigation currentPath="/path/60min" />
     </article>
   </div>
 </DocsLayout>
