@@ -1,0 +1,169 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Build Failures"
+  description="How to fix npm run build errors"
+  currentPath="/fix/build-fail"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Build Failure</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Must Fix Before Deploy
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Build Failures
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Getting "npm run build exited with code 1"?
+        There may be issues in your code or missing dependencies.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Read the error message carefully (which file, which line)
+          2) If TypeScript error, it's a type issue
+          3) If Module not found, install the package
+          4) Run <code class="bg-surface px-1 rounded">npm install</code> then build again
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage='Error: Command "npm run build" exited with 1'
+        errorCode="BUILD_FAIL"
+        severity="critical"
+        cause="An error occurred during build script execution. This could be caused by TypeScript type errors, missing modules, or syntax errors."
+        solution={[
+          "Check the full error message in the terminal",
+          "Find the file and line number where the error occurred",
+          "Run npm run build locally to see if the same error occurs",
+          "Copy the error message and ask AI about it"
+        ]}
+        aiPrompt="I ran npm run build and got an error. Error message: [paste error here]. How do I fix it?"
+      />
+
+      <ErrorCard
+        client:load
+        errorMessage="Module not found: Can't resolve 'package-name'"
+        severity="warning"
+        cause="A package imported in your code is not installed."
+        solutionCode="npm install package-name"
+        aiPrompt="I'm getting Module not found: Can't resolve 'axios' error. How do I fix it?"
+      />
+
+      <ErrorCard
+        client:load
+        errorMessage="Type error: Property 'xxx' does not exist on type 'yyy'"
+        severity="warning"
+        cause="TypeScript detected a type mismatch. The type of a variable or function doesn't match."
+        solution={[
+          "Check the type of the variable",
+          "Add the type definition if it's missing",
+          "Can temporarily fix with any type (not recommended)"
+        ]}
+        aiPrompt="I'm getting TypeScript error: Property 'name' does not exist on type 'never'. My code is [paste code]. How do I fix it?"
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Common Build Errors</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">1. Dependency Issues</h3>
+        <CodeBlock
+          client:load
+          filename="Terminal"
+          code={`# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Or clear the cache
+npm cache clean --force
+npm install`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">2. Missing Environment Variables</h3>
+        <p class="text-text-secondary mb-3">
+          If required environment variables are missing during build, it will fail.
+          Verify that environment variables are set in your CI/CD environment.
+        </p>
+        <Callout client:load locale="en" variant="info">
+          Set them in Settings → Environment Variables on Cloudflare Pages, Vercel, etc.
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">3. TypeScript Strict Mode</h3>
+        <p class="text-text-secondary mb-3">
+          To temporarily relax TypeScript's strict type checking:
+        </p>
+        <CodeBlock
+          client:load
+          filename="tsconfig.json"
+          code={`{
+  "compilerOptions": {
+    "strict": false,           // Temporary fix (not recommended)
+    "noImplicitAny": false,    // Allow any
+    "skipLibCheck": true       // Skip library type checking
+  }
+}`}
+        />
+        <Callout client:load locale="en" variant="warning" title="Warning">
+          <p class="mt-2">
+            This is a temporary workaround. It's best to fix type errors at their root cause.
+          </p>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">4. Test Build Locally</h3>
+        <p class="text-text-secondary mb-3">
+          Always verify that the build succeeds locally before deploying:
+        </p>
+        <CodeBlock
+          client:load
+          filename="Terminal"
+          code={`# Run build
+npm run build
+
+# Preview build output
+npm run preview`}
+        />
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Environment Variable Error</h4>
+          <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
+        </a>
+        <a href="/en/fix/spa-404" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SPA 404 Error</h4>
+          <p class="text-text-secondary text-sm">404 on page refresh after deployment</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

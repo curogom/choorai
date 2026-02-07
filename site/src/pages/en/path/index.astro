@@ -1,0 +1,171 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+interface PathCourse {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  duration: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  href: string;
+  status: 'available' | 'coming-soon';
+  features: string[];
+}
+
+const courses: PathCourse[] = [
+  {
+    id: '60min',
+    title: '60-Minute Challenge',
+    description: 'Deploy your first web service in 60 minutes with AI. No prior programming experience needed.',
+    icon: '🚀',
+    duration: '60 min',
+    difficulty: 'beginner',
+    href: '/path/60min',
+    status: 'available',
+    features: ['React Frontend', 'FastAPI Backend', 'Cloudflare Deploy', 'AI Guide'],
+  },
+  {
+    id: 'mini-saas',
+    title: 'Build a Mini SaaS',
+    description: 'Build a real SaaS service with login and database. From user auth to payments.',
+    icon: '💼',
+    duration: '2-3 hours',
+    difficulty: 'intermediate',
+    href: '/path/mini-saas',
+    status: 'coming-soon',
+    features: ['User Auth', 'Database Integration', 'API Design', 'Payment System'],
+  },
+  {
+    id: 'b2b-admin',
+    title: 'B2B Admin Dashboard',
+    description: 'Build an admin dashboard used in real-world production. Hands-on practice based on reference projects.',
+    icon: '🏢',
+    duration: '4-6 hours',
+    difficulty: 'advanced',
+    href: '/path/b2b-admin',
+    status: 'coming-soon',
+    features: ['Dashboard UI', 'Permission Management', 'Data Visualization', 'Production Patterns'],
+  },
+];
+
+const difficultyLabels = {
+  beginner: { label: 'Beginner', color: 'bg-green-500/20 text-green-400' },
+  intermediate: { label: 'Intermediate', color: 'bg-yellow-500/20 text-yellow-400' },
+  advanced: { label: 'Advanced', color: 'bg-red-500/20 text-red-400' },
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Path - Goal-Based Learning Courses"
+  description="Choose a course that matches your goal and complete it step by step"
+  currentPath="/path"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">🎯 Learning Path</h1>
+      <p class="text-text-secondary">Choose a course that fits your goal. Follow along step by step to completion.</p>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {courses.map((course) => (
+        <div
+          class={`relative flex flex-col bg-surface border-2 rounded-2xl overflow-hidden transition-all ${
+            course.status === 'available'
+              ? 'border-border hover:border-primary/50 hover:-translate-y-1'
+              : 'border-border/50 opacity-75'
+          }`}
+        >
+          {/* Coming Soon Badge */}
+          {course.status === 'coming-soon' && (
+            <div class="absolute top-4 right-4 px-3 py-1 bg-text-muted/30 text-text-secondary text-xs font-bold rounded-full">
+              Coming Soon
+            </div>
+          )}
+
+          {/* Card Header */}
+          <div class="p-6 pb-0">
+            <div class="flex items-start gap-4 mb-4">
+              <span class="text-4xl">{course.icon}</span>
+              <div class="flex-1">
+                <h2 class="text-xl font-bold text-white mb-1">{course.title}</h2>
+                <div class="flex items-center gap-2">
+                  <span class={`px-2 py-0.5 rounded text-xs font-medium ${difficultyLabels[course.difficulty].color}`}>
+                    {difficultyLabels[course.difficulty].label}
+                  </span>
+                  <span class="text-text-muted text-sm">{course.duration}</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-text-secondary text-sm leading-relaxed mb-4">
+              {course.description}
+            </p>
+          </div>
+
+          {/* Feature List */}
+          <div class="px-6 pb-4 flex-1">
+            <div class="flex flex-wrap gap-2">
+              {course.features.map((feature) => (
+                <span class="px-2 py-1 bg-background/50 text-text-secondary text-xs rounded">
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Start Button */}
+          <div class="p-6 pt-0 mt-auto">
+            {course.status === 'available' ? (
+              <a
+                href={course.href}
+                class="block w-full text-center px-4 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+              >
+                Get Started →
+              </a>
+            ) : (
+              <button
+                disabled
+                class="block w-full text-center px-4 py-3 bg-border text-text-muted font-bold rounded-xl cursor-not-allowed"
+              >
+                Coming Soon
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Additional Guide -->
+    <div class="mt-12 p-6 bg-surface border border-border rounded-2xl text-center">
+      <h3 class="text-lg font-bold text-white mb-2">
+        Not sure which course to take?
+      </h3>
+      <p class="text-text-secondary mb-4">
+        If you're new, start with the <strong class="text-white">60-Minute Challenge</strong>.
+        You'll quickly learn the fundamentals.
+      </p>
+      <a
+        href="/path/60min"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+      >
+        Start the 60-Minute Challenge
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Map Link -->
+    <div class="mt-8 text-center">
+      <p class="text-text-secondary mb-2">
+        Want to pick specific topics to learn?
+      </p>
+      <a href="/map" class="text-primary hover:underline">
+        Choose from the Map →
+      </a>
+    </div>
+  </div>
+</DocsLayout>

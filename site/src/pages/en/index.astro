@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button';
+import NextActionCard from '../../components/NextActionCard';
+import MiniMap from '../../components/MiniMap';
+import ModeToggle from '../../components/ModeToggle';
+import testCounts from '../../data/test-counts.json';
+
+const currentYear = new Date().getFullYear();
+---
+
+<BaseLayout title="No Coding Experience? No Problem" lang="en">
+  <div class="relative min-h-screen flex flex-col">
+    <!-- Background grid pattern -->
+    <div class="absolute inset-0 z-0 bg-grid-pattern opacity-[0.07] pointer-events-none h-[800px]"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-3">
+            <img src="/favicon.png" alt="Choorai" class="w-8 h-8" />
+            <span class="text-xl font-bold tracking-tight">Choorai</span>
+          </div>
+          <!-- Navigation -->
+          <nav class="hidden md:flex items-center gap-6">
+            <a href="/map" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/path/60min" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/fix" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/recipes" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
+          </nav>
+          <div class="flex items-center gap-4">
+            <a
+              href="https://github.com/curogom/choorai"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-2 rounded-lg bg-surface border border-border px-4 py-2 text-sm font-bold text-white hover:bg-surface-elevated transition-colors"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              <span class="hidden sm:inline">GitHub</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow z-10 flex flex-col">
+      <!-- Hero Section (simplified) -->
+      <section class="relative pt-12 pb-8 sm:pt-16 sm:pb-12 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+          <!-- Background blur -->
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-6">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <span>Level 1: Beginners Welcome</span>
+          </div>
+
+          <!-- Headline -->
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight max-w-3xl mx-auto">
+            <span class="text-gradient">No Coding Experience? No Problem</span>
+          </h1>
+
+          <p class="text-base sm:text-lg text-text-secondary max-w-xl mx-auto leading-relaxed">
+            Deploy your own web service in 60 minutes with AI
+          </p>
+        </div>
+      </section>
+
+      <!-- Main 2-column layout: Next Action + MiniMap -->
+      <section class="py-8 sm:py-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Left: 60-Minute Completion Challenge -->
+            <div>
+              <div class="mb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                  <span class="text-xl">⚡</span> 60-Minute Completion Challenge
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  From start to deployment, follow along step by step with AI
+                </p>
+              </div>
+              <NextActionCard client:load />
+            </div>
+
+            <!-- Right: Learning Roadmap -->
+            <div>
+              <div class="mb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                  <span class="text-xl">🗺️</span> Learning Roadmap
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  See the entire learning cycle at a glance
+                </p>
+              </div>
+              <div class="space-y-4">
+                <MiniMap client:load showModeToggle={true} />
+
+                <!-- Learning Mode Description -->
+                <div class="p-4 bg-surface/50 rounded-lg border border-border">
+                  <div class="flex items-start gap-3">
+                    <div class="p-2 rounded-lg bg-primary/10">
+                      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div class="text-sm">
+                      <p class="text-text-secondary">
+                        <strong class="text-white">Guided</strong>: Follow the recommended order (for beginners)
+                      </p>
+                      <p class="text-text-secondary mt-1">
+                        <strong class="text-white">Explore</strong>: Pick what you want (for experienced users)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions Section -->
+      <section class="py-8 sm:py-12 border-t border-border/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-lg font-bold text-white mb-6 text-center">Quick Actions</h2>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Map -->
+            <a href="/map" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Map</h3>
+                  <p class="text-xs text-text-secondary mt-1">Full Roadmap</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Fix -->
+            <a href="/fix" class="group p-4 bg-surface border border-border rounded-xl hover:border-green-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-green-500/10 text-green-400 group-hover:bg-green-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Fix</h3>
+                  <p class="text-xs text-text-secondary mt-1">Troubleshooting</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Recipes -->
+            <a href="/recipes" class="group p-4 bg-surface border border-border rounded-xl hover:border-purple-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Recipes</h3>
+                  <p class="text-xs text-text-secondary mt-1">AI Prompts</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Reference -->
+            <a href="/reference" class="group p-4 bg-surface border border-border rounded-xl hover:border-yellow-500/50 transition-all hover:-translate-y-1">
+              <div class="flex flex-col items-center text-center gap-3">
+                <div class="p-3 rounded-lg bg-yellow-500/10 text-yellow-400 group-hover:bg-yellow-500/20 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-white text-sm">Reference</h3>
+                  <p class="text-xs text-text-secondary mt-1">Example Projects</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- One Cycle Standard Section (simplified) -->
+      <section class="py-12 sm:py-16 border-t border-border/50 bg-surface/30">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-purple/10 border border-accent-purple/20 text-accent-purple text-xs font-bold mb-3">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>The One Cycle Standard</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
+              Why do 90% of people get stuck at deployment?
+            </h2>
+            <p class="text-sm text-text-secondary max-w-xl mx-auto">
+              Complete this cycle once, and the second time you'll only need 30 minutes
+            </p>
+          </div>
+
+          <!-- Cycle Flow (simplified) -->
+          <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+            {[
+              { name: 'DNS', icon: '🌐' },
+              { name: 'Frontend', icon: '🎨' },
+              { name: 'Backend', icon: '⚙️' },
+              { name: 'Database', icon: '🗄️' },
+              { name: 'Runtime', icon: '🐳' },
+              { name: 'Ops', icon: '📊' },
+            ].map((item, index) => (
+              <div class="flex items-center">
+                <div class="bg-surface border border-border rounded-lg px-3 py-2 text-center hover:border-primary/50 transition-all">
+                  <div class="text-lg mb-0.5">{item.icon}</div>
+                  <div class="text-xs font-medium text-white">{item.name}</div>
+                </div>
+                {index < 5 && (
+                  <svg class="w-4 h-4 text-text-muted mx-1 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div class="text-center mt-6">
+            <a href="/map" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
+              View Full Roadmap
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Example Projects Section -->
+      <section class="py-12 sm:py-16 border-t border-border/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">Real-World Examples</h2>
+            <p class="text-sm text-text-secondary">Follow the 60-minute tutorial to build projects like these</p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <!-- B2B Admin -->
+            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-white">B2B Admin Console</h3>
+                  <p class="text-xs text-text-secondary mt-0.5">Project management dashboard</p>
+                </div>
+                <span class="px-2 py-0.5 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
+                  {testCounts.b2bAdmin} tests
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">CRUD</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">API Integration</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">Routing</span>
+              </div>
+            </a>
+
+            <!-- B2C Todo -->
+            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-white">B2C Todo App</h3>
+                  <p class="text-xs text-text-secondary mt-0.5">Personal task management</p>
+                </div>
+                <span class="px-2 py-0.5 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
+                  {testCounts.b2cTodo} tests
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">Filtering</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">Completion Toggle</span>
+                <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">State Management</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Proof Section -->
+      <section class="py-8 sm:py-12 border-t border-border/50 bg-surface/20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Open Source</div>
+                <div class="text-sm font-medium text-white">curogom/choorai</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Tests</div>
+                <div class="text-sm font-medium text-white">{testCounts.total}+ tests</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-surface border border-border">
+                <svg class="w-4 h-4 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs text-text-secondary">Stack</div>
+                <div class="text-sm font-medium text-white">React + Hono + FastAPI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border bg-background py-8">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="flex items-center gap-2">
+            <img src="/favicon.png" alt="" class="w-5 h-5" aria-hidden="true" />
+            <span class="text-white font-bold">Choorai</span>
+          </div>
+          <div class="flex items-center gap-4 sm:gap-6 text-sm">
+            <a href="/map" class="text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/path/60min" class="text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/fix" class="text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/recipes" class="text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors">GitHub</a>
+          </div>
+        </div>
+        <div class="mt-6 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-3">
+          <p class="text-xs text-text-secondary">
+            &copy; {currentYear} CuroGom
+          </p>
+          <div class="flex items-center gap-1 text-xs text-text-secondary">
+            <span>Made by</span>
+            <a href="https://curogom.dev" target="_blank" rel="noopener noreferrer" class="text-white hover:text-primary transition-colors font-medium">curogom</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>

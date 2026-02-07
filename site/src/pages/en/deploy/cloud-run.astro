@@ -1,0 +1,155 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cloud Run Deployment Guide"
+  description="How to deploy a FastAPI backend to Google Cloud Run"
+  currentPath="/deploy/cloud-run"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/deploy" class="hover:text-white transition-colors">Deploy</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cloud Run</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold mb-4">
+        Google Cloud
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Cloud Run Deployment Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Deploy your FastAPI backend to Google Cloud Run and create a globally accessible API.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Write a Dockerfile</li>
+          <li>Create a Google Cloud project</li>
+          <li>Deploy with <code>gcloud run deploy</code> command</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Section 1: Prerequisites -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Prerequisites" />
+
+        <p class="text-text-secondary mb-4">
+          What you need for Cloud Run deployment:
+        </p>
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2 mb-4">
+          <li><a href="https://console.cloud.google.com" class="text-primary hover:underline">Google Cloud account</a> ($300 free credits provided)</li>
+          <li><a href="https://cloud.google.com/sdk/docs/install" class="text-primary hover:underline">Google Cloud CLI (gcloud)</a> installed</li>
+          <li>Docker (optional - for local testing)</li>
+        </ul>
+      </section>
+
+      <!-- Section 2: Dockerfile -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Write the Dockerfile" />
+
+        <p class="text-text-secondary mb-4">
+          Create a <code>Dockerfile</code> in your backend folder:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Cloud Run uses the PORT environment variable
+ENV PORT=8080
+EXPOSE 8080
+
+# Start server
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]`}
+          filename="Dockerfile"
+        />
+      </section>
+
+      <!-- Section 3: Deploy -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Deploy" />
+
+        <CodeBlock
+          client:load
+          code={`# Log in to Google Cloud
+gcloud auth login
+
+# Set project (replace YOUR_PROJECT_ID with your project ID)
+gcloud config set project YOUR_PROJECT_ID
+
+# Deploy to Cloud Run
+gcloud run deploy my-admin-api \\
+  --source . \\
+  --region asia-northeast3 \\
+  --allow-unauthenticated`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          Once deployment is complete, a URL in the format <code>https://my-admin-api-xxxxx.run.app</code> will be generated.
+        </p>
+      </section>
+
+      <!-- Section 4: Frontend Connection -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Connect Frontend" />
+
+        <p class="text-text-secondary mb-4">
+          Set the backend URL as an environment variable in Cloudflare Pages:
+        </p>
+
+        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div class="space-y-2">
+            <div>
+              <span class="text-gray-400 text-sm">Variable name</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 font-mono text-green-400">VITE_API_URL</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Value</span>
+              <div class="bg-gray-900 rounded px-3 py-2 mt-1 font-mono text-green-400">https://my-admin-api-xxxxx.run.app</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing info -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Pricing Info">
+          <p class="text-sm">
+            Cloud Run costs nothing when there are no requests (scale to zero).
+            The free tier covers up to 2 million requests per month.
+            <a href="https://cloud.google.com/run/pricing" class="text-primary hover:underline ml-1">Detailed pricing policy →</a>
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/deploy/cloud-run" />
+  </div>
+</DocsLayout>

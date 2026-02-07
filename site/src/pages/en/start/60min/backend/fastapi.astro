@@ -1,0 +1,321 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../../components/Stepper';
+import ChallengeProgressBar from '../../../../../components/ChallengeProgressBar';
+import Checklist from '../../../../../components/Checklist';
+import CodeBlock from '../../../../../components/CodeBlock';
+import PromptBox from '../../../../../components/PromptBox';
+import Callout from '../../../../../components/Callout';
+import SectionHeader from '../../../../../components/SectionHeader';
+import MetaBadge from '../../../../../components/MetaBadge';
+import PageNavigation from '../../../../../components/PageNavigation.astro';
+
+const steps = [
+  { label: 'Preparation', status: 'completed' as const },
+  { label: 'Frontend', status: 'completed' as const },
+  { label: 'Backend', status: 'current' as const },
+  { label: 'Connect', status: 'upcoming' as const },
+  { label: 'Deploy', status: 'upcoming' as const },
+  { label: 'Complete', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'venv', label: 'Create Python virtual environment', description: 'python -m venv' },
+  { id: 'fastapi', label: 'Install FastAPI', description: 'pip install fastapi uvicorn' },
+  { id: 'server', label: 'Run server', description: 'uvicorn main:app --reload' },
+  { id: 'api', label: 'Create API endpoints', description: 'Implement CRUD' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="60-Minute Challenge - FastAPI Backend"
+  description="Let's build a backend with FastAPI"
+  currentPath="/start/60min/backend/fastapi"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/start/60min" class="hover:text-white transition-colors">60-Min Challenge</a>
+      <span>/</span>
+      <span class="text-text-secondary">Backend</span>
+      <span>/</span>
+      <span class="text-primary font-medium">FastAPI</span>
+    </nav>
+
+    <!-- Progress -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ChallengeProgressBar client:load />
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} locale="en" />
+    </div>
+
+    <!-- Page Title -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 mb-4">
+        <MetaBadge icon="clock" text="Estimated time: 15 min" />
+        <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold">FastAPI</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Backend: FastAPI
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Build an API server with Python FastAPI.
+        We'll start with a simple in-memory storage approach without a database.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (Summary)" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Create a Python virtual environment and install FastAPI</li>
+          <li>Create project CRUD API endpoints</li>
+          <li>Test the API at <code>/docs</code></li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- Main Content -->
+    <article class="prose prose-invert max-w-none">
+      <!-- Section 1: Environment Setup -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Environment Setup" />
+
+        <p class="text-text-secondary mb-4">
+          Create a backend folder next to the frontend folder (<code>my-admin</code>).
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Navigate to the parent folder (where my-admin is located)
+cd ..
+
+# Create backend folder
+mkdir my-admin-api
+cd my-admin-api
+
+# Create Python virtual environment (recommended)
+python3 -m venv venv
+
+# Activate virtual environment
+# Mac/Linux:
+source venv/bin/activate
+# Windows:
+# venv\\Scripts\\activate`}
+          filename="Terminal"
+        />
+
+        <Callout client:load variant="info" title="Don't have Python?" locale="en">
+          <p class="text-sm">
+            Install Python 3.10 or later from <a href="https://www.python.org/downloads/" class="text-primary hover:underline">python.org</a>.
+            Mac users can also use <code>brew install python</code>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Section 2: Install FastAPI -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Install FastAPI" />
+
+        <CodeBlock
+          client:load
+          code={`# Install FastAPI and server
+pip install fastapi uvicorn
+
+# Generate dependencies file
+pip freeze > requirements.txt`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          A <code>requirements.txt</code> file will be created. You'll use this file later for deployment.
+        </p>
+      </section>
+
+      <!-- Section 3: Create First API -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Create Your First API" />
+
+        <p class="text-text-secondary mb-4">
+          Create a <code>main.py</code> file and paste the following code:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(title="My Admin API")
+
+# CORS setup - required for communicating with the frontend!
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "version": "1.0.0"}
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to My Admin API"}`}
+          filename="main.py"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          Let's run the server:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`uvicorn main:app --reload --port 8000`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          Open <code>http://localhost:8000/docs</code> in your browser and you'll see the Swagger UI!
+        </p>
+
+        <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            Success!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            If you see the Swagger documentation, the API server is running correctly.
+          </p>
+        </div>
+      </section>
+
+      <!-- Section 4: Create CRUD API with AI -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Create CRUD API with AI" />
+
+        <p class="text-text-secondary mb-6">
+          Ask AI to create the project CRUD API for you.
+        </p>
+
+        <PromptBox
+          client:load
+          locale="en"
+          prompt={`Create a project CRUD API with FastAPI.
+
+Requirements:
+1. Store data in memory (dictionary) without a database
+2. Use Pydantic models for type validation
+
+API Endpoints:
+- GET /api/v1/projects - Project list (pagination)
+- POST /api/v1/projects - Create project
+- GET /api/v1/projects/{id} - Project details
+- PUT /api/v1/projects/{id} - Update project
+- DELETE /api/v1/projects/{id} - Delete project
+
+Project Fields:
+- id: UUID (auto-generated)
+- name: string (required)
+- description: string (optional)
+- created_at: datetime (auto)
+- updated_at: datetime (auto)
+
+File structure:
+- main.py (add router to existing file)
+- schemas.py (Pydantic models)
+- storage.py (in-memory storage)`}
+          title="AI Prompt"
+          description="Send the prompt above to your AI assistant."
+        />
+      </section>
+
+      <!-- Section 5: Verify Results -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Verify Results" />
+
+        <p class="text-text-secondary mb-4">
+          After applying the AI-generated code and restarting the server,
+          you can test all APIs at <code>/docs</code>.
+        </p>
+
+        <!-- API Test Visualization -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+          <div class="bg-gray-900 px-4 py-2 border-b border-gray-700 flex items-center gap-2">
+            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span class="text-gray-400 text-sm ml-2">localhost:8000/docs</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center gap-3 p-3 bg-green-500/10 rounded border border-green-500/30">
+              <span class="px-2 py-1 bg-green-600 text-white text-xs font-bold rounded">GET</span>
+              <code class="text-green-300">/api/v1/projects</code>
+              <span class="text-gray-400 text-sm ml-auto">Project list</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-blue-500/10 rounded border border-blue-500/30">
+              <span class="px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded">POST</span>
+              <code class="text-blue-300">/api/v1/projects</code>
+              <span class="text-gray-400 text-sm ml-auto">Create project</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-green-500/10 rounded border border-green-500/30">
+              <span class="px-2 py-1 bg-green-600 text-white text-xs font-bold rounded">GET</span>
+              <code class="text-green-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">Project details</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-yellow-500/10 rounded border border-yellow-500/30">
+              <span class="px-2 py-1 bg-yellow-600 text-white text-xs font-bold rounded">PUT</span>
+              <code class="text-yellow-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">Update project</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-red-500/10 rounded border border-red-500/30">
+              <span class="px-2 py-1 bg-red-600 text-white text-xs font-bold rounded">DELETE</span>
+              <code class="text-red-300">/api/v1/projects/{'{id}'}</code>
+              <span class="text-gray-400 text-sm ml-auto">Delete project</span>
+            </div>
+          </div>
+        </div>
+
+        <Callout client:load variant="info" title="Testing in Swagger" locale="en">
+          <ol class="list-decimal list-inside space-y-1 mt-2 text-sm">
+            <li>Click on POST /api/v1/projects</li>
+            <li>Click the "Try it out" button</li>
+            <li>Enter a name and description</li>
+            <li>Click the "Execute" button</li>
+            <li>Verify the 201 response and created project!</li>
+          </ol>
+        </Callout>
+
+        <p class="text-text-secondary mt-4 text-sm">
+          The completed example code is available on the
+          <a href="https://github.com/choorai/examples/tree/main/b2b-admin/api" class="text-primary hover:underline">
+            GitHub repository
+          </a>.
+        </p>
+      </section>
+
+      <!-- Checklist -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          locale="en"
+          storageKey="60min-backend-fastapi"
+          title="FastAPI Backend Completion Checklist"
+          items={checklist}
+        />
+      </section>
+
+      <!-- Navigation -->
+      <PageNavigation currentPath="/start/60min/backend/fastapi" />
+    </article>
+  </div>
+</DocsLayout>

@@ -1,0 +1,449 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const installCode = `npm install next-auth`;
+
+const envCode = `# .env.local
+NEXTAUTH_SECRET=your-secret-key-here
+NEXTAUTH_URL=http://localhost:3000
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+
+# GitHub OAuth (optional)
+GITHUB_ID=xxx
+GITHUB_SECRET=xxx`;
+
+const routeHandlerCode = `// app/api/auth/[...nextauth]/route.ts
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import GitHubProvider from 'next-auth/providers/github';
+import CredentialsProvider from 'next-auth/providers/credentials';
+
+const handler = NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+    // Email/password login (custom implementation)
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        // Query DB and verify password here
+        // In practice, use bcrypt for hash comparison
+        const user = await findUserByEmail(credentials?.email);
+        if (user && verifyPassword(credentials?.password, user.password)) {
+          return { id: user.id, email: user.email, name: user.name };
+        }
+        return null;
+      },
+    }),
+  ],
+  pages: {
+    signIn: '/login',  // Custom login page
+    error: '/auth/error',
+  },
+  callbacks: {
+    async session({ session, token }) {
+      // Add user ID to session
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+  },
+});
+
+export { handler as GET, handler as POST };`;
+
+const sessionProviderCode = `// app/providers.tsx
+'use client';
+
+import { SessionProvider } from 'next-auth/react';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
+}
+
+// app/layout.tsx
+import { Providers } from './providers';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}`;
+
+const useSessionCode = `// components/AuthStatus.tsx
+'use client';
+
+import { useSession, signIn, signOut } from 'next-auth/react';
+
+export function AuthStatus() {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className="flex gap-2">
+        <button
+          onClick={() => signIn('google')}
+          className="px-4 py-2 bg-white text-gray-800 rounded-lg border"
+        >
+          Sign in with Google
+        </button>
+        <button
+          onClick={() => signIn('github')}
+          className="px-4 py-2 bg-gray-800 text-white rounded-lg"
+        >
+          Sign in with GitHub
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <span>Hello, {session?.user?.name}!</span>
+      <button
+        onClick={() => signOut()}
+        className="px-4 py-2 bg-red-600 text-white rounded-lg"
+      >
+        Sign Out
+      </button>
+    </div>
+  );
+}`;
+
+const serverSessionCode = `// app/dashboard/page.tsx
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome, {session.user?.name}!</p>
+    </div>
+  );
+}`;
+
+const middlewareCode = `// middleware.ts
+import { withAuth } from 'next-auth/middleware';
+
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => !!token,
+  },
+});
+
+// Specify routes to protect
+export const config = {
+  matcher: ['/dashboard/:path*', '/settings/:path*', '/api/protected/:path*'],
+};`;
+
+const prismaAdapterCode = `// 1. Install packages
+// npm install @prisma/client @next-auth/prisma-adapter
+// npm install -D prisma
+
+// 2. Prisma schema
+// prisma/schema.prisma
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 3. Add adapter to NextAuth config
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from '@/lib/prisma';
+
+const handler = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [...],
+});`;
+---
+
+<DocsLayout
+  title="NextAuth.js Auth Guide (Lv.3)"
+  description="How to add authentication to a Next.js app with NextAuth.js"
+  currentPath="/map/auth/nextauth"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <a href="/en/map/auth" class="hover:text-white transition-colors">Auth Guide</a>
+      <span>/</span>
+      <span class="text-primary font-medium">NextAuth</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold">
+          Lv.3
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 text-white text-xs font-bold border border-gray-700">
+          Next.js
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        NextAuth.js Auth Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        NextAuth.js (Auth.js) is a <strong class="text-white">full-stack authentication solution</strong> for Next.js.
+        It supports OAuth, email login, and DB sessions.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="warning" title="Next.js Only" locale="en">
+        <p class="text-sm">
+          NextAuth.js can only be used with Next.js.
+          For plain React apps, use <a href="/en/map/auth/clerk" class="text-primary hover:underline">Clerk</a>.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="Why NextAuth?" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Full support for Next.js App Router</li>
+          <li>50+ OAuth provider support</li>
+          <li>Session access in Server Components</li>
+          <li>DB adapters for Prisma, Drizzle, etc.</li>
+          <li>Free & open-source</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Step 1: Installation -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Installation & Environment Variables" />
+
+        <CodeBlock
+          client:load
+          code={installCode}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Environment Variables</h3>
+        <CodeBlock
+          client:load
+          code={envCode}
+          filename=".env.local"
+        />
+
+        <Callout client:load variant="info" locale="en">
+          <p class="text-sm">
+            <code class="bg-surface px-1 rounded">NEXTAUTH_SECRET</code> can be generated with
+            <code class="bg-surface px-1 rounded">openssl rand -base64 32</code>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Step 2: Route Handler -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="API Route Setup" />
+
+        <p class="text-text-secondary mb-4">
+          NextAuth uses the <code class="bg-surface px-1 rounded">/api/auth/*</code> route.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={routeHandlerCode}
+          filename="app/api/auth/[...nextauth]/route.ts"
+        />
+      </section>
+
+      <!-- Step 3: SessionProvider -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="SessionProvider Setup" />
+
+        <p class="text-text-secondary mb-4">
+          To use sessions in client components, <code class="bg-surface px-1 rounded">SessionProvider</code> is required.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={sessionProviderCode}
+          filename="app/providers.tsx & app/layout.tsx"
+        />
+      </section>
+
+      <!-- Step 4: Client Usage -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Using Sessions on the Client" />
+
+        <CodeBlock
+          client:load
+          code={useSessionCode}
+          filename="components/AuthStatus.tsx"
+        />
+      </section>
+
+      <!-- Step 5: Server Components -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Using Sessions in Server Components" />
+
+        <p class="text-text-secondary mb-4">
+          In Server Components, use <code class="bg-surface px-1 rounded">getServerSession</code>.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={serverSessionCode}
+          filename="app/dashboard/page.tsx"
+        />
+      </section>
+
+      <!-- Step 6: Middleware -->
+      <section class="mb-10">
+        <SectionHeader number={6} title="Route Protection with Middleware" />
+
+        <p class="text-text-secondary mb-4">
+          Use middleware to protect specific routes in bulk.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={middlewareCode}
+          filename="middleware.ts"
+        />
+      </section>
+
+      <!-- Step 7: Prisma Adapter -->
+      <section class="mb-10">
+        <SectionHeader number={7} title="Database Integration (Optional)" />
+
+        <p class="text-text-secondary mb-4">
+          To store user information in a database, use an adapter.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={prismaAdapterCode}
+          filename="Prisma Adapter Setup"
+        />
+      </section>
+
+      <!-- When to Use -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">When Should You Choose NextAuth?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">NextAuth Recommended</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Next.js full-stack projects</li>
+              <li>Need sessions in Server Components</li>
+              <li>Need to store user info in DB</li>
+              <li>Prefer a free solution</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Consider Alternatives</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>React SPA → <a href="/en/map/auth/clerk" class="text-primary hover:underline">Clerk</a></li>
+              <li>Need quick UI → <a href="/en/map/auth/clerk" class="text-primary hover:underline">Clerk</a></li>
+              <li>Enterprise → <a href="/en/map/auth/auth0" class="text-primary hover:underline">Auth0</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="Next Steps" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>
+              <a href="https://next-auth.js.org/providers" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                More Providers
+              </a> - Configure 50+ OAuth providers
+            </li>
+            <li>
+              <a href="https://next-auth.js.org/configuration/callbacks" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                Callbacks
+              </a> - Customize sessions/tokens
+            </li>
+            <li>
+              <a href="/en/map/database/supabase" class="text-primary hover:underline">
+                Supabase Integration
+              </a> - Use with a database
+            </li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/auth/nextauth" />
+  </div>
+</DocsLayout>

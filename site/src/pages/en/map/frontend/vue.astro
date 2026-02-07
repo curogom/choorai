@@ -1,0 +1,333 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+// Define code blocks in frontmatter to avoid parsing issues
+const reactStateCode = `const [name, setName] = useState('');
+
+<input
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+/>`;
+
+const vueStateCode = `const name = ref('');
+
+<input v-model="name" />`;
+
+const vueComposableCode = `// composables/useProjects.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import { computed, type Ref } from 'vue';
+import { apiClient } from '../api/client';
+
+export function useProjects(page: Ref<number> = ref(1)) {
+  return useQuery({
+    queryKey: computed(() => ['projects', page.value]),
+    queryFn: () =>
+      apiClient.get(\`/api/v1/projects?page=\${page.value}\`),
+  });
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) =>
+      apiClient.post('/api/v1/projects', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}`;
+
+const vueComponentCode = `<script setup lang="ts">
+import { ref } from 'vue';
+import { useCreateProject } from '../composables/useProjects';
+
+const name = ref('');
+const description = ref('');
+const { mutate: createProject, isPending } = useCreateProject();
+
+const handleSubmit = () => {
+  if (!name.value.trim()) return;
+
+  createProject(
+    { name: name.value.trim(), description: description.value.trim() },
+    {
+      onSuccess: () => {
+        name.value = '';
+        description.value = '';
+      },
+    }
+  );
+};
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Project Name
+      </label>
+      <input
+        v-model="name"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        placeholder="Enter project name"
+        required
+      />
+    </div>
+    <button
+      type="submit"
+      :disabled="isPending"
+      class="w-full bg-blue-600 text-white py-2 rounded-lg"
+    >
+      {{ isPending ? 'Creating...' : 'Create Project' }}
+    </button>
+  </form>
+</template>`;
+
+const folderStructureCode = `examples/b2b-admin/web-vue/
+├── src/
+│   ├── main.ts              # App entry point
+│   ├── App.vue              # Root component
+│   ├── api/
+│   │   └── client.ts        # API client (same as React)
+│   ├── types/
+│   │   └── api.ts           # Type definitions (same as React)
+│   ├── composables/         # Vue Hooks (React's hooks/)
+│   │   ├── useHealth.ts
+│   │   └── useProjects.ts
+│   ├── router/
+│   │   └── index.ts         # Vue Router setup
+│   ├── components/
+│   │   ├── HealthStatus.vue
+│   │   ├── AppLayout.vue
+│   │   ├── ProjectForm.vue
+│   │   └── ProjectCard.vue
+│   └── pages/
+│       ├── ProjectsPage.vue
+│       └── ProjectDetailPage.vue
+├── package.json
+├── vite.config.ts
+└── tailwind.config.js`;
+
+const runCommandCode = `# 1. Start the backend (Hono recommended)
+cd examples/b2b-admin/api-hono
+npm install
+npm run dev
+
+# 2. Start the Vue frontend (new terminal)
+cd examples/b2b-admin/web-vue
+npm install
+npm run dev
+
+# Open http://localhost:5174 in your browser`;
+---
+
+<DocsLayout
+  title="Vue 3 Frontend (Lv.2)"
+  description="How to build a B2B Admin with Vue 3 + Composition API"
+  currentPath="/map/frontend/vue"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <a href="/en/map/frontend" class="hover:text-white transition-colors">Cycle 2: Frontend</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Vue</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          Vue 3
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Vue 3 Frontend
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Build the same features as React using HTML-like template syntax.
+        Experience the <strong class="text-white">same API, different frontend</strong> philosophy firsthand.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Why Vue?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>HTML-like template syntax makes it beginner-friendly</li>
+          <li>Two-way binding is simple with v-model</li>
+          <li>Uses the same TanStack Query as React</li>
+          <li>Composition API follows patterns similar to React Hooks</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- React vs Vue comparison -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">React vs Vue 3 Comparison</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">React</th>
+                <th class="text-left py-2 px-3 text-white">Vue 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">useState</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">ref()</code> / <code class="bg-surface px-1 rounded">reactive()</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">useEffect</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">onMounted()</code> / <code class="bg-surface px-1 rounded">watch()</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">@tanstack/react-query</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">@tanstack/vue-query</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">react-router-dom</code></td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">vue-router</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3">JSX</td>
+                <td class="py-2 px-3">SFC Template (.vue)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">children</code> props</td>
+                <td class="py-2 px-3"><code class="bg-surface px-1 rounded">&lt;slot /&gt;</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Project structure -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Project Structure</h2>
+
+        <CodeBlock
+          client:load
+          code={folderStructureCode}
+          filename="Folder Structure"
+        />
+      </section>
+
+      <!-- Composition API examples -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Composition API Examples</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">State Management (ref)</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <p class="text-xs text-text-secondary mb-2">React</p>
+            <CodeBlock
+              client:load
+              code={reactStateCode}
+              filename="React"
+            />
+          </div>
+          <div>
+            <p class="text-xs text-text-secondary mb-2">Vue 3</p>
+            <CodeBlock
+              client:load
+              code={vueStateCode}
+              filename="Vue"
+            />
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Vue Query Composable</h3>
+
+        <CodeBlock
+          client:load
+          code={vueComposableCode}
+          filename="composables/useProjects.ts"
+        />
+      </section>
+
+      <!-- Component example -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Vue Component Example</h2>
+
+        <CodeBlock
+          client:load
+          code={vueComponentCode}
+          filename="components/ProjectForm.vue"
+        />
+      </section>
+
+      <!-- Running locally -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Running Locally</h2>
+
+        <CodeBlock
+          client:load
+          code={runCommandCode}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- Deployment -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cloudflare Pages Deployment</h2>
+
+        <p class="text-text-secondary mb-4">
+          You can deploy to Cloudflare Pages just like React.
+          The <code class="bg-surface px-1 rounded">public/_redirects</code> file is already included,
+          which resolves SPA routing issues.
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Framework preset</td>
+                <td class="py-2 px-3 text-text-secondary">Vite</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Build command</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">npm run build</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Build output directory</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">dist</code></td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3 text-white font-medium">Root directory</td>
+                <td class="py-2 px-3"><code class="bg-background px-1 rounded">examples/b2b-admin/web-vue</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Key points -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Key Points">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>The <strong class="text-white">API client</strong> and <strong class="text-white">type definitions</strong> are 100% identical to React</li>
+            <li>TanStack Query supports both React and Vue</li>
+            <li>The same backend API works regardless of the frontend framework</li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/frontend/vue" />
+  </div>
+</DocsLayout>

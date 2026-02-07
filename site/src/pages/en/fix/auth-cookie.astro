@@ -1,0 +1,211 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Auth/Cookie Issues"
+  description="How to fix cookies not saving or authentication not persisting after login"
+  currentPath="/fix/auth-cookie"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Auth/Cookie</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        Security-Related Caution
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Auth/Cookie Issues
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Logged in but get logged out on refresh?
+        This could be a cookie configuration or CORS-related issue.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Set <code class="bg-surface px-1 rounded">credentials: 'include'</code>
+          2) Set <code class="bg-surface px-1 rounded">allow_credentials=True</code> in server CORS
+          3) Add <code class="bg-surface px-1 rounded">SameSite=None; Secure</code> attributes to cookies
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Cookies not saving / Authentication not persisting"
+        severity="warning"
+        cause="Configuration for cookie transmission is missing when the frontend and backend are on different domains."
+        solution={[
+          "Frontend: Set credentials: 'include' in fetch/axios",
+          "Backend: Set allow_credentials=True in CORS, specify exact domain in allow_origins",
+          "Cookie: Set SameSite=None, Secure=True (HTTPS required)"
+        ]}
+        aiPrompt="I implemented login with React and FastAPI, but cookies aren't being saved after login. I've set up CORS."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Frontend Configuration</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Fetch API</h3>
+        <CodeBlock
+          client:load
+          filename="api.js"
+          code={`// Send request with cookies included
+fetch('https://api.example.com/login', {
+  method: 'POST',
+  credentials: 'include',  // Important!
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ email, password }),
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Axios</h3>
+        <CodeBlock
+          client:load
+          filename="api.js"
+          code={`import axios from 'axios';
+
+// Global configuration
+axios.defaults.withCredentials = true;
+
+// Or per request
+axios.post('https://api.example.com/login', data, {
+  withCredentials: true  // Important!
+});`}
+        />
+      </section>
+
+      <h2 class="text-2xl font-bold text-white mb-4 mt-10">Backend Configuration</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Python</span>
+          FastAPI
+        </h3>
+        <CodeBlock
+          client:load
+          filename="main.py"
+          code={`from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://your-frontend.com"],  # Cannot use *!
+    allow_credentials=True,  # Important!
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/login")
+async def login(response: Response):
+    # Set cookie
+    response.set_cookie(
+        key="session",
+        value="token-value",
+        httponly=True,
+        secure=True,        # HTTPS required
+        samesite="none",    # Allow cross-site
+        max_age=3600 * 24 * 7  # 7 days
+    )
+    return {"message": "Login successful"}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">Node.js</span>
+          Express
+        </h3>
+        <CodeBlock
+          client:load
+          filename="server.js"
+          code={`const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+app.use(cors({
+  origin: 'https://your-frontend.com',
+  credentials: true  // Important!
+}));
+
+app.post('/login', (req, res) => {
+  res.cookie('session', 'token-value', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+  });
+  res.json({ message: 'Login successful' });
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="HTTPS Required!">
+          <p class="mt-2">
+            <code class="bg-surface px-1 rounded">SameSite=None</code> must be used with <code class="bg-surface px-1 rounded">Secure=True</code>.
+            This means it only works in HTTPS environments.
+            During development, localhost is exceptionally allowed.
+          </p>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="error" title="Never do this!">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>Use <code class="bg-surface px-1 rounded">allow_origins=["*"]</code> together with <code class="bg-surface px-1 rounded">allow_credentials=True</code></li>
+            <li>Store sensitive tokens in localStorage</li>
+            <li>Set session cookies without httpOnly</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Debugging Methods</h2>
+        <ol class="list-decimal list-inside text-text-secondary space-y-2">
+          <li>Open browser DevTools (F12) → Application → Cookies to check</li>
+          <li>In the Network tab, verify that the Cookie header is included in request headers</li>
+          <li>Check if Set-Cookie is present in response headers</li>
+          <li>Verify there are no CORS-related errors in the Console</li>
+        </ol>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Error</h4>
+          <p class="text-text-secondary text-sm">CORS issue when calling API</p>
+        </a>
+        <a href="/en/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Environment Variable Error</h4>
+          <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

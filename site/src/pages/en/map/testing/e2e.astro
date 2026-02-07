@@ -1,0 +1,497 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const playwrightConfig = `// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:5173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    // Mobile testing
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+  ],
+  // Start server before tests
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
+});`;
+
+const basicTest = `// e2e/todo.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Todo App', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('should display the home page', async ({ page }) => {
+    // Verify page title
+    await expect(page).toHaveTitle(/Todo/);
+
+    // Verify main heading
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
+
+  test('should create a new todo', async ({ page }) => {
+    // Type text in the input field
+    await page.getByPlaceholder('Enter a todo').fill('New todo item');
+
+    // Click the add button
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    // Verify it was added to the list
+    await expect(page.getByText('New todo item')).toBeVisible();
+  });
+
+  test('should toggle todo completion', async ({ page }) => {
+    // Create a todo
+    await page.getByPlaceholder('Enter a todo').fill('Test todo');
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    // Click the checkbox
+    await page.getByRole('checkbox').first().click();
+
+    // Verify completed state (strikethrough style)
+    await expect(page.getByText('Test todo')).toHaveClass(/line-through/);
+  });
+
+  test('should delete a todo', async ({ page }) => {
+    // Create a todo
+    await page.getByPlaceholder('Enter a todo').fill('Todo to delete');
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    // Click the delete button
+    await page.getByRole('button', { name: 'Delete' }).click();
+
+    // Verify it was removed from the list
+    await expect(page.getByText('Todo to delete')).not.toBeVisible();
+  });
+});`;
+
+const apiMocking = `// e2e/with-mock.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('should display mocked todos', async ({ page }) => {
+  // Mock API response
+  await page.route('**/api/v1/todos**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        items: [
+          { id: '1', title: 'Mocked Todo 1', is_completed: false },
+          { id: '2', title: 'Mocked Todo 2', is_completed: true },
+        ],
+        total: 2,
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Verify mocked data
+  await expect(page.getByText('Mocked Todo 1')).toBeVisible();
+  await expect(page.getByText('Mocked Todo 2')).toBeVisible();
+});
+
+test('should handle API error', async ({ page }) => {
+  // Mock API error
+  await page.route('**/api/v1/todos**', async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Server error' }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Verify error message
+  await expect(page.getByText(/error|failed/i)).toBeVisible();
+});`;
+
+const visualTest = `// e2e/visual.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('visual regression test', async ({ page }) => {
+  await page.goto('/');
+
+  // Compare full page screenshot
+  await expect(page).toHaveScreenshot('home-page.png');
+});
+
+test('component screenshot', async ({ page }) => {
+  await page.goto('/');
+
+  // Screenshot of a specific component only
+  const todoList = page.locator('[data-testid="todo-list"]');
+  await expect(todoList).toHaveScreenshot('todo-list.png');
+});
+
+test('full page screenshot with interactions', async ({ page }) => {
+  await page.goto('/');
+
+  // Screenshot after adding a todo
+  await page.getByPlaceholder('Enter a todo').fill('Screenshot test');
+  await page.getByRole('button', { name: 'Add' }).click();
+
+  await expect(page).toHaveScreenshot('with-todo.png');
+});`;
+
+const ciConfig = `# .github/workflows/e2e.yml
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npx playwright test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30`;
+---
+
+<DocsLayout
+  lang="en"
+  title="E2E Test Guide"
+  description="Writing E2E tests with Playwright"
+  currentPath="/map/testing/e2e"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/testing" class="hover:text-white transition-colors">Testing</a>
+      <span>/</span>
+      <span class="text-primary font-medium">E2E Tests</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-bold">E2E</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Playwright</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        E2E Test Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Test user scenarios in real browsers with Playwright.
+        Automate cross-browser testing and visual regression testing.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Why Playwright?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><strong class="text-white">Cross-browser</strong>: Chrome, Firefox, Safari, Edge</li>
+          <li><strong class="text-white">Auto-wait</strong>: Automatically waits until elements are ready</li>
+          <li><strong class="text-white">Powerful selectors</strong>: Based on text, role, and test ID</li>
+          <li><strong class="text-white">Screenshots/Videos</strong>: Automatic capture on failure</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Installation & Setup -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Installation & Setup</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Project Initialization</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Install Playwright
+npm init playwright@latest
+
+# Or add to an existing project
+npm install -D @playwright/test
+npx playwright install`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Configuration File</h3>
+
+        <CodeBlock
+          client:load
+          code={playwrightConfig}
+          filename="playwright.config.ts"
+        />
+
+        <Callout client:load locale="en" variant="info" title="webServer option">
+          <p class="text-sm mt-1">
+            The <code class="bg-surface px-1 rounded">webServer</code> config
+            automatically starts the dev server before running tests.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Writing Basic Tests -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Writing Basic Tests</h2>
+
+        <CodeBlock
+          client:load
+          code={basicTest}
+          filename="e2e/todo.spec.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Running Tests</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Run all tests
+npx playwright test
+
+# Run in UI mode (useful for debugging)
+npx playwright test --ui
+
+# Specific browser only
+npx playwright test --project=chromium
+
+# Specific file only
+npx playwright test e2e/todo.spec.ts
+
+# Disable headless mode (show browser)
+npx playwright test --headed
+
+# Open test report
+npx playwright show-report`}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- Selector Best Practices -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Selector Best Practices</h2>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-green-400 font-bold mb-2">Recommended</h3>
+            <ul class="text-text-secondary text-sm space-y-2">
+              <li><code class="bg-surface px-1 rounded">getByRole('button', {'{'}name: 'Add'{'}'})</code></li>
+              <li><code class="bg-surface px-1 rounded">getByText('Todo List')</code></li>
+              <li><code class="bg-surface px-1 rounded">getByPlaceholder('Enter...')</code></li>
+              <li><code class="bg-surface px-1 rounded">getByTestId('todo-list')</code></li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-red-400 font-bold mb-2">Avoid</h3>
+            <ul class="text-text-secondary text-sm space-y-2">
+              <li><code class="bg-surface px-1 rounded">locator('.btn-primary')</code></li>
+              <li><code class="bg-surface px-1 rounded">locator('#submit-btn')</code></li>
+              <li><code class="bg-surface px-1 rounded">locator('div > button:nth-child(2)')</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <Callout client:load locale="en" variant="tip" title="Priority order">
+          <p class="text-sm mt-1">
+            <code class="bg-surface px-1 rounded">getByRole</code> &gt;
+            <code class="bg-surface px-1 rounded">getByText</code> &gt;
+            <code class="bg-surface px-1 rounded">getByTestId</code> &gt;
+            <code class="bg-surface px-1 rounded">locator</code>
+          </p>
+        </Callout>
+      </section>
+
+      <!-- API Mocking -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">API Mocking</h2>
+
+        <p class="text-text-secondary mb-4">
+          You can test the frontend without a real backend.
+          Use <code class="bg-surface px-1 rounded">page.route()</code> to mock API responses.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={apiMocking}
+          filename="e2e/with-mock.spec.ts"
+        />
+      </section>
+
+      <!-- Visual Regression Testing -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Visual Regression Testing</h2>
+
+        <p class="text-text-secondary mb-4">
+          Compare screenshots to detect unintended UI changes.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={visualTest}
+          filename="e2e/visual.spec.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={`# First run: generate baseline screenshots
+npx playwright test --update-snapshots
+
+# Subsequent runs: compare against baseline
+npx playwright test`}
+          filename="Terminal"
+        />
+
+        <Callout client:load locale="en" variant="warning" title="OS-specific differences">
+          <p class="text-sm mt-1">
+            Screenshots may render differently across operating systems.
+            For consistent results in CI, use Docker or configure a
+            <code class="bg-surface px-1 rounded">threshold</code>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- CI/CD Integration -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">CI/CD Integration</h2>
+
+        <CodeBlock
+          client:load
+          code={ciConfig}
+          filename=".github/workflows/e2e.yml"
+        />
+
+        <Callout client:load locale="en" variant="info" title="Playwright browser caching">
+          <p class="text-sm mt-1">
+            To reduce browser installation time in CI, refer to the
+            <a href="https://playwright.dev/docs/ci-intro#caching-browsers" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">caching guide</a>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Debugging -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Debugging Tips</h2>
+
+        <CodeBlock
+          client:load
+          code={`# UI mode (most recommended)
+npx playwright test --ui
+
+# Debug mode (breakpoint support)
+npx playwright test --debug
+
+# Trace recording (trace.zip)
+npx playwright test --trace on
+
+# Codegen: convert browser actions to code
+npx playwright codegen localhost:5173`}
+          filename="Terminal"
+        />
+
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">UI Mode</h3>
+            <p class="text-text-secondary text-sm">
+              Run tests step by step and inspect the DOM state at each step.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Codegen</h3>
+            <p class="text-text-secondary text-sm">
+              Interact with the browser directly and test code is automatically generated.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Best Practices -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Best Practices</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-green-400 font-bold mb-2">DO</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>✅ Test only critical user scenarios</li>
+              <li>✅ Use meaningful selectors</li>
+              <li>✅ Ensure stability with API mocking</li>
+              <li>✅ Capture screenshots on failure</li>
+              <li>✅ Run in parallel on CI</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-red-400 font-bold mb-2">DON'T</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>❌ Test everything with E2E</li>
+              <li>❌ Rely on CSS selectors</li>
+              <li>❌ Use fixed wait times</li>
+              <li>❌ Share data between tests</li>
+              <li>❌ Write too many E2E tests</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Testing complete!">
+          <p class="text-sm">
+            You've completed the entire testing guide.
+            Now go back to the <a href="/en/map" class="text-primary hover:underline">Learning Roadmap</a> to
+            explore other topics, or start writing tests in your own projects.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/testing/e2e" />
+  </div>
+</DocsLayout>

@@ -1,0 +1,233 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const recipes = [
+  {
+    id: 1,
+    category: 'Project Setup',
+    title: 'Create a React Project',
+    description: 'Start a new project with Vite + React + TypeScript + Tailwind stack',
+    prompt: 'Create a new project with Vite + React + TypeScript + Tailwind. Include ESLint and Prettier config, and use a feature-based folder structure.',
+    tags: ['React', 'Vite', 'TypeScript'],
+  },
+  {
+    id: 2,
+    category: 'Project Setup',
+    title: 'FastAPI Boilerplate',
+    description: 'Initial setup for a Python FastAPI backend project',
+    prompt: 'Create a FastAPI project. Include SQLAlchemy, Alembic, and Pydantic setup. Also add a /health endpoint and basic CORS configuration.',
+    tags: ['FastAPI', 'Python', 'SQLAlchemy'],
+  },
+  {
+    id: 3,
+    category: 'Project Setup',
+    title: 'Project Architecture Design',
+    description: 'Design a project architecture based on requirements',
+    prompt: 'Design a project structure for these requirements: [enter requirements here]. Suggest a folder structure, tech stack, and data models.',
+    tags: ['Architecture', 'Design'],
+  },
+  {
+    id: 4,
+    category: 'Development',
+    title: 'Create a Component',
+    description: 'Create a React component with Props types',
+    prompt: 'Create a [feature description] component. Define Props types, consider responsive design and accessibility (a11y).',
+    tags: ['React', 'Component', 'TypeScript'],
+  },
+  {
+    id: 5,
+    category: 'Development',
+    title: 'Add API Endpoint',
+    description: 'Create CRUD API endpoints',
+    prompt: 'Create a CRUD API for [resource name]. Include Pydantic schemas, error handling, and pagination.',
+    tags: ['FastAPI', 'REST API', 'CRUD'],
+  },
+  {
+    id: 6,
+    category: 'Development',
+    title: 'Debug Errors',
+    description: 'Analyze error messages and provide solutions',
+    prompt: 'Analyze this error message: [paste error message here]. Explain the cause and solution step by step.',
+    tags: ['Debugging', 'Troubleshooting'],
+  },
+  {
+    id: 7,
+    category: 'Development',
+    title: 'TypeScript Type Definitions',
+    description: 'Generate types matching API responses',
+    prompt: 'Define TypeScript types for this API response: [paste JSON response here]. Also create reusable utility types.',
+    tags: ['TypeScript', 'Types'],
+  },
+  {
+    id: 8,
+    category: 'Deployment',
+    title: 'Deploy to Cloudflare Pages',
+    description: 'Deploy a React app to Cloudflare Pages',
+    prompt: 'Show me how to deploy this React project to Cloudflare Pages. Include environment variable setup and custom domain connection.',
+    tags: ['Cloudflare', 'Deployment', 'Frontend'],
+  },
+  {
+    id: 9,
+    category: 'Deployment',
+    title: 'Deploy to Cloud Run',
+    description: 'Deploy a FastAPI app to Google Cloud Run',
+    prompt: 'Deploy this FastAPI project to Cloud Run. Provide the Dockerfile, build, and deploy commands in order.',
+    tags: ['Cloud Run', 'Deployment', 'Docker'],
+  },
+  {
+    id: 10,
+    category: 'Deployment',
+    title: 'Environment Variable Setup',
+    description: 'Organize environment-specific config files',
+    prompt: 'Organize the environment variables for this project. Separate them by development/staging/production, and also create a .env.example file.',
+    tags: ['Environment Variables', 'DevOps'],
+  },
+];
+
+const categories = ['Project Setup', 'Development', 'Deployment'];
+---
+
+<DocsLayout
+  title="Recipes - AI Prompt Collection"
+  description="Proven prompt recipes to use with AI agents"
+  currentPath="/recipes"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Recipes</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-bold mb-4">
+        Core Pack
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Agent Recipes
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Proven prompt recipes you can use with AI agents.
+        Copy and use them right away.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="How to Use" locale="en">
+        <ol class="list-decimal list-inside space-y-1 mt-2 text-sm">
+          <li>Click the <strong class="text-white">Copy</strong> button on the recipe you want</li>
+          <li>Paste it into an AI chat like Antigravity, ChatGPT, Claude, etc.</li>
+          <li>Replace the <code class="bg-surface px-1 rounded">[bracketed]</code> parts with your actual content</li>
+        </ol>
+      </Callout>
+    </section>
+
+    {categories.map((category) => (
+      <section class="mb-12">
+        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+          {category === 'Project Setup' && (
+            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500/20 text-green-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </span>
+          )}
+          {category === 'Development' && (
+            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </span>
+          )}
+          {category === 'Deployment' && (
+            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </span>
+          )}
+          {category}
+        </h2>
+
+        <div class="grid gap-4">
+          {recipes
+            .filter((r) => r.category === category)
+            .map((recipe) => (
+              <div
+                class="group p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all"
+                data-recipe-id={recipe.id}
+              >
+                <div class="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <h3 class="text-white font-bold mb-1">{recipe.title}</h3>
+                    <p class="text-text-secondary text-sm">{recipe.description}</p>
+                  </div>
+                  <button
+                    class="copy-btn shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary-hover text-background text-sm font-bold rounded-lg transition-all"
+                    data-prompt={recipe.prompt}
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+
+                <div class="bg-background/50 border border-border/50 rounded-lg p-3 mb-3">
+                  <p class="text-slate-300 text-sm font-mono leading-relaxed">
+                    "{recipe.prompt}"
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5">
+                  {recipe.tags.map((tag) => (
+                    <span class="px-2 py-0.5 bg-background rounded text-xs text-text-secondary">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Need more recipes?" locale="en">
+        <p class="mt-2 text-sm">
+          If you can't find the prompt you need for your project,
+          please request it via
+          <a href="https://github.com/curogom/choorai/issues" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+            GitHub Issues
+          </a>.
+        </p>
+      </Callout>
+    </section>
+
+    <PageNavigation currentPath="/recipes" />
+  </div>
+</DocsLayout>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const prompt = btn.getAttribute('data-prompt');
+      const copyText = btn.querySelector('.copy-text');
+
+      try {
+        await navigator.clipboard.writeText(prompt || '');
+        if (copyText) {
+          copyText.textContent = 'Copied!';
+          setTimeout(() => {
+            copyText.textContent = 'Copy';
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    });
+  });
+</script>

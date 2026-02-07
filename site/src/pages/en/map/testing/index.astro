@@ -1,0 +1,312 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+import testCountsData from '../../../../data/test-counts.json';
+
+// Use test counts from generated JSON file
+const testCounts = testCountsData.breakdown;
+const totalTests = testCountsData.total;
+---
+
+<DocsLayout
+  lang="en"
+  title="Testing Guide"
+  description="Testing pyramid and practical test strategies"
+  currentPath="/map/testing"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Testing</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Quality Assurance
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Testing Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        The Choorai project ensures quality with <strong class="text-white">{totalTests}+ tests</strong>.
+        Understand the testing pyramid and learn practical test strategies.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this guide">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Understanding the testing pyramid (Unit → Integration → E2E)</li>
+          <li>Backend testing with Python pytest</li>
+          <li>Frontend/Node.js testing with Vitest</li>
+          <li>E2E testing with Playwright</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Testing Pyramid -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Testing Pyramid</h2>
+
+        <div class="relative mb-6">
+          <div class="flex flex-col items-center gap-2">
+            <!-- E2E -->
+            <div class="w-32 h-16 bg-red-500/20 border border-red-500/50 rounded-t-xl flex items-center justify-center">
+              <span class="text-red-400 font-bold text-sm">E2E</span>
+            </div>
+            <!-- Integration -->
+            <div class="w-48 h-16 bg-yellow-500/20 border border-yellow-500/50 flex items-center justify-center">
+              <span class="text-yellow-400 font-bold text-sm">Integration</span>
+            </div>
+            <!-- Unit -->
+            <div class="w-64 h-16 bg-green-500/20 border border-green-500/50 rounded-b-xl flex items-center justify-center">
+              <span class="text-green-400 font-bold text-sm">Unit</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-green-400 font-bold mb-2">Unit Tests</h3>
+            <p class="text-text-secondary text-sm mb-2">Test individual functions/components</p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>✅ Fast execution (ms)</li>
+              <li>✅ Isolated tests</li>
+              <li>✅ Most frequently written</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+            <h3 class="text-yellow-400 font-bold mb-2">Integration Tests</h3>
+            <p class="text-text-secondary text-sm mb-2">Test interactions between modules</p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>✅ API endpoints</li>
+              <li>✅ DB integration</li>
+              <li>⚠️ Setup required</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-red-400 font-bold mb-2">E2E Tests</h3>
+            <p class="text-text-secondary text-sm mb-2">Full user scenarios</p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>✅ Real browser</li>
+              <li>⚠️ Slow execution (s)</li>
+              <li>⚠️ Keep to a minimum</li>
+            </ul>
+          </div>
+        </div>
+
+        <Callout client:load locale="en" variant="info" title="Recommended ratio">
+          <p class="text-sm mt-1">
+            <strong class="text-green-400">Unit 70%</strong> ·
+            <strong class="text-yellow-400">Integration 20%</strong> ·
+            <strong class="text-red-400">E2E 10%</strong>
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Choorai Test Status -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Choorai Project Test Status</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-2 text-white">Project</th>
+                <th class="text-left py-3 px-2 text-white">API (Python)</th>
+                <th class="text-left py-3 px-2 text-white">API (Hono)</th>
+                <th class="text-left py-3 px-2 text-white">API (NestJS)</th>
+                <th class="text-left py-3 px-2 text-white">Web (React)</th>
+                <th class="text-left py-3 px-2 text-white">Web (Vue)</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2 text-white font-medium">B2B Admin</td>
+                <td class="py-3 px-2">{testCounts.b2bAdmin.api}</td>
+                <td class="py-3 px-2">{testCounts.b2bAdmin.apiHono}</td>
+                <td class="py-3 px-2">{testCounts.b2bAdmin.apiNest}</td>
+                <td class="py-3 px-2">{testCounts.b2bAdmin.web}</td>
+                <td class="py-3 px-2">{testCounts.b2bAdmin.webVue}</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-2 text-white font-medium">B2C Todo</td>
+                <td class="py-3 px-2">{testCounts.b2cTodo.api}</td>
+                <td class="py-3 px-2">{testCounts.b2cTodo.apiHono}</td>
+                <td class="py-3 px-2">{testCounts.b2cTodo.apiNest}</td>
+                <td class="py-3 px-2">{testCounts.b2cTodo.web || '-'}</td>
+                <td class="py-3 px-2">{testCounts.b2cTodo.webVue}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border-t border-border">
+                <td class="py-3 px-2 text-white font-bold">Total</td>
+                <td colspan="5" class="py-3 px-2 text-primary font-bold">{totalTests} tests</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- Test Tools -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Test Tools</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <a href="/en/map/testing/unit" class="block p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded">Unit</span>
+              <span class="text-white font-bold">Unit Tests</span>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">Test functions/components with pytest and Vitest</p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>• Python: pytest + pytest-asyncio</li>
+              <li>• Node.js: Vitest</li>
+              <li>• React/Vue: @testing-library</li>
+            </ul>
+          </a>
+
+          <a href="/en/map/testing/e2e" class="block p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs font-bold rounded">E2E</span>
+              <span class="text-white font-bold">E2E Tests</span>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">Browser automation testing with Playwright</p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>• Cross-browser testing</li>
+              <li>• Screenshot comparison</li>
+              <li>• CI/CD integration</li>
+            </ul>
+          </a>
+        </div>
+      </section>
+
+      <!-- Running Tests -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Running Tests</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Python (pytest)</h3>
+        <CodeBlock
+          client:load
+          code={`# B2B Admin API tests
+cd examples/b2b-admin/api
+pip install -r requirements.txt
+pytest -v
+
+# B2C Todo API tests
+cd examples/b2c-todo/api
+pytest -v`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Node.js (Vitest)</h3>
+        <CodeBlock
+          client:load
+          code={`# Hono API tests
+cd examples/b2b-admin/api-hono
+npm install
+npm run test:run
+
+# Vue frontend tests
+cd examples/b2b-admin/web-vue
+npm install
+npm run test:run`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">NestJS (Jest)</h3>
+        <CodeBlock
+          client:load
+          code={`# NestJS E2E tests
+cd examples/b2b-admin/api-nest
+npm install
+npm run test:e2e`}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- CI/CD -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">CI/CD Integration</h2>
+
+        <p class="text-text-secondary mb-4">
+          Choorai uses GitHub Actions to automatically run tests on every PR.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python tests
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Python tests
+        run: |
+          cd examples/b2b-admin/api
+          pip install -r requirements.txt
+          pytest -v
+
+      # Node.js tests
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Hono tests
+        run: |
+          cd examples/b2b-admin/api-hono
+          npm ci
+          npm run test:run`}
+          filename=".github/workflows/ci.yml"
+        />
+
+        <Callout client:load locale="en" variant="tip" title="Merge only after all tests pass">
+          <p class="text-sm mt-1">
+            All tests must pass before a PR can be merged.
+            Check the execution status on <a href="https://github.com/curogom/choorai/actions" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">GitHub Actions</a>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Next steps">
+          <div class="mt-2 space-y-2 text-sm">
+            <p>
+              Learn how to use pytest and Vitest in detail in the
+              <a href="/en/map/testing/unit" class="text-primary hover:underline">Unit Test Guide</a>.
+            </p>
+            <p>
+              Write browser tests with Playwright in the
+              <a href="/en/map/testing/e2e" class="text-primary hover:underline">E2E Test Guide</a>.
+            </p>
+          </div>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/testing" />
+  </div>
+</DocsLayout>

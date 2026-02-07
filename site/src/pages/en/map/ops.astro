@@ -1,0 +1,316 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 6: Ops - Operations Basics"
+  description="Deployment strategies, monitoring, incident response, and cost management"
+  currentPath="/map/ops"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 6: Ops</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 6
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Operations (Ops) Basics
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Learn about deployment strategies, monitoring, incident response, and cost management
+        to operate your service reliably.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Deployment strategies (Blue-Green, Rolling)</li>
+          <li>Monitoring and alert setup</li>
+          <li>Incident response process</li>
+          <li>Cost management and optimization</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Deployment Strategies -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Deployment Strategies</h2>
+
+        <p class="text-text-secondary mb-4">
+          Methods for safely deploying new versions <strong class="text-white">without downtime</strong>.
+        </p>
+
+        <div class="space-y-4 mb-6">
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Blue-Green Deployment</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Prepare two identical environments (Blue/Green) and switch traffic all at once.
+            </p>
+            <div class="flex items-center gap-4 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">Blue (current)</span>
+              </div>
+              <span class="text-text-secondary">→ Switch →</span>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">Green (new version)</span>
+              </div>
+            </div>
+            <p class="text-xs text-text-secondary mt-3">
+              Pros: Fast rollback | Cons: Requires 2x resources
+            </p>
+          </div>
+
+          <div class="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Rolling Update</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Replaces instances sequentially. This is Cloud Run's default strategy.
+            </p>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="px-2 py-1 rounded bg-blue-500/30 text-blue-300">v1</span>
+              <span class="px-2 py-1 rounded bg-blue-500/30 text-blue-300">v1</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+              <span class="text-text-secondary">→</span>
+              <span class="px-2 py-1 rounded bg-blue-500/30 text-blue-300">v1</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+              <span class="text-text-secondary">→</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+              <span class="px-2 py-1 rounded bg-green-500/30 text-green-300">v2</span>
+            </div>
+            <p class="text-xs text-text-secondary mt-3">
+              Pros: Resource efficient | Cons: Rollback is the same as a new deployment
+            </p>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Rollback Method</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Rollback to a previous version on Cloud Run
+gcloud run services update-traffic my-api \\
+  --to-revisions=my-api-00001-abc=100 \\
+  --region=asia-northeast3
+
+# Cloudflare Pages rollback (from the dashboard)
+# Deployments → Previous deployment → Rollback to this deploy`}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- Monitoring Basics -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Monitoring Basics</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Log Collection</h3>
+
+        <p class="text-text-secondary mb-4">
+          Cloud Run automatically collects logs in <strong class="text-white">Cloud Logging</strong>.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Output structured logs in FastAPI
+import logging
+import json
+
+logger = logging.getLogger(__name__)
+
+@app.get("/api/users/{user_id}")
+def get_user(user_id: int):
+    logger.info(json.dumps({
+        "action": "get_user",
+        "user_id": user_id,
+        "status": "success"
+    }))
+    return {"id": user_id}`}
+          filename="main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Key Metrics</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Response Time</h4>
+            <p class="text-text-secondary text-sm">Check p50, p95, p99</p>
+            <p class="text-xs text-green-400 mt-1">Target: p95 &lt; 200ms</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Error Rate</h4>
+            <p class="text-text-secondary text-sm">Percentage of 5xx errors</p>
+            <p class="text-xs text-green-400 mt-1">Target: &lt; 0.1%</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Request Count</h4>
+            <p class="text-text-secondary text-sm">Requests per minute/hour</p>
+            <p class="text-xs text-text-secondary mt-1">Understand traffic patterns</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h4 class="text-white font-bold mb-2">Resource Usage</h4>
+            <p class="text-text-secondary text-sm">CPU, Memory</p>
+            <p class="text-xs text-text-secondary mt-1">Scaling criteria</p>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Alert Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Create alert policy on GCP (CLI)
+gcloud alpha monitoring policies create \\
+  --display-name="High Error Rate Alert" \\
+  --condition-display-name="Error rate > 1%" \\
+  --condition-filter='resource.type="cloud_run_revision" AND metric.type="run.googleapis.com/request_count"'`}
+          filename="Terminal (example)"
+        />
+
+        <Callout client:load locale="en" variant="tip" title="Recommended Alert Channels">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">Slack</strong>: Instant alerts to team channels</li>
+            <li><strong class="text-white">Email</strong>: Daily summary reports</li>
+            <li><strong class="text-white">PagerDuty</strong>: On-call escalation for critical incidents</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Incident Response -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Incident Response</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Incident Response Process</h3>
+
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold shrink-0">1</span>
+            <div>
+              <h4 class="text-white font-bold">Detect</h4>
+              <p class="text-text-secondary text-sm">Monitoring alerts or user reports</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white text-xs font-bold shrink-0">2</span>
+            <div>
+              <h4 class="text-white font-bold">Classify</h4>
+              <p class="text-text-secondary text-sm">Determine severity (Critical/High/Medium/Low)</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-white text-xs font-bold shrink-0">3</span>
+            <div>
+              <h4 class="text-white font-bold">Mitigate</h4>
+              <p class="text-text-secondary text-sm">Rollback, scale up, block traffic, etc.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white text-xs font-bold shrink-0">4</span>
+            <div>
+              <h4 class="text-white font-bold">Resolve</h4>
+              <p class="text-text-secondary text-sm">Identify and fix the root cause</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-surface border border-border rounded-lg">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold shrink-0">5</span>
+            <div>
+              <h4 class="text-white font-bold">Retrospect</h4>
+              <p class="text-text-secondary text-sm">Write a postmortem, establish prevention measures</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Rollback Decision Criteria</h3>
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Error rate increases by <strong class="text-white">more than 1%</strong></li>
+          <li>p95 response time increases by <strong class="text-white">more than 2x</strong></li>
+          <li>Core functionality is <strong class="text-white">down for more than 5 minutes</strong></li>
+          <li>Estimated fix time is <strong class="text-white">more than 15 minutes</strong></li>
+        </ul>
+      </section>
+
+      <!-- Cost Management -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cost Management</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Leveraging Free Tiers</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">Service</th>
+                <th class="text-left py-3 px-3 text-white">Free Allowance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Cloudflare Pages</td>
+                <td class="py-3 px-3 text-green-400">Unlimited requests, 500 builds/month</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Cloud Run</td>
+                <td class="py-3 px-3 text-green-400">2M requests/month, 180,000 vCPU-seconds/month</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Supabase</td>
+                <td class="py-3 px-3 text-green-400">500MB DB, 1GB storage</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-text-secondary">Neon</td>
+                <td class="py-3 px-3 text-green-400">0.5GB storage, 191 hours/month compute</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Budget Alert Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# GCP budget alert setup (via console)
+# 1. Billing → Budgets & alerts → Create budget
+# 2. Set thresholds at $10, $50, $100/month etc.
+# 3. Email alerts at 50%, 90%, 100% of budget`}
+          filename="Budget Alerts"
+        />
+
+        <Callout client:load locale="en" variant="warning" title="Watch out for unexpected costs">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li>Data transfer (Egress) costs can be surprisingly high</li>
+            <li>Log storage costs are not negligible</li>
+            <li>Don't forget to shut down development instances</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Wrap-up -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Congratulations!">
+          <p class="text-sm">
+            You have completed all learning cycles! You now have the fundamentals to build,
+            deploy, and operate a web service.
+            Try starting a real project using
+            <a href="/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/ops" />
+  </div>
+</DocsLayout>

@@ -1,0 +1,340 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="NestJS - Lv.4 Production Backend"
+  description="Learn enterprise-grade Node.js backend architecture"
+  currentPath="/map/backend/nest"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/backend" class="hover:text-white transition-colors">Backend Deployment</a>
+      <span>/</span>
+      <span class="text-primary font-medium">NestJS</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold">Lv.4 Production</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Node.js</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">TypeScript</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Learn Production Architecture with NestJS
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        NestJS is an enterprise-grade Node.js framework inspired by Angular.
+        It uses modules, dependency injection, and decorator patterns.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="warning" title="Try Hono First">
+        <p class="mt-2 text-sm">
+          NestJS has a complex structure. If you're new to backend development,
+          start with <a href="/en/map/backend/hono" class="text-primary hover:underline">Hono (Lv.1)</a> first.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Why NestJS -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Why NestJS?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Pros</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Clear structure (Module/Controller/Service)</li>
+              <li>Dependency Injection (DI) support</li>
+              <li>Popular in the job market</li>
+              <li>Well-suited for large teams</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Cons</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Steep learning curve</li>
+              <li>Lots of boilerplate code</li>
+              <li>Overkill for small projects</li>
+              <li>Must be familiar with decorator syntax</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Project structure -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Project Structure</h2>
+
+        <p class="text-text-secondary mb-4">
+          NestJS uses a <strong class="text-white">module-based</strong> architecture.
+          Each feature is separated into modules, and modules consist of controllers and services.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`src/
+├── main.ts                    # Entry point
+├── app.module.ts              # Root module
+├── health/
+│   ├── health.module.ts       # Health module
+│   └── health.controller.ts   # Health controller
+└── projects/
+    ├── projects.module.ts     # Projects module
+    ├── projects.controller.ts # Handles routing
+    ├── projects.service.ts    # Business logic
+    └── dto/
+        ├── create-project.dto.ts
+        └── update-project.dto.ts`}
+          filename="Project Structure"
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h4 class="text-white font-bold mb-2">Core Concepts</h4>
+          <ul class="text-text-secondary text-sm space-y-2">
+            <li><strong class="text-blue-400">Module</strong>: A unit that groups related features. Manages dependencies via imports/exports</li>
+            <li><strong class="text-green-400">Controller</strong>: Handles HTTP requests. Responsible for routing and responses</li>
+            <li><strong class="text-purple-400">Service</strong>: Business logic. Injected into controllers</li>
+            <li><strong class="text-yellow-400">DTO</strong>: Data Transfer Object. Used for input validation</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code examples -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Code Examples</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">1. Main Entry Point</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // CORS configuration
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    credentials: true,
+  });
+
+  // Global validation pipe
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  }));
+
+  await app.listen(8000);
+  console.log('🚀 NestJS running on http://localhost:8000');
+}
+
+bootstrap();`}
+          filename="src/main.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2. Root Module</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { Module } from '@nestjs/common';
+import { HealthModule } from './health/health.module';
+import { ProjectsModule } from './projects/projects.module';
+
+@Module({
+  imports: [HealthModule, ProjectsModule],
+})
+export class AppModule {}`}
+          filename="src/app.module.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">3. DTO (Input Validation)</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { IsString, IsOptional, MinLength, MaxLength } from 'class-validator';
+
+export class CreateProjectDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(100)
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  description?: string;
+}`}
+          filename="src/projects/dto/create-project.dto.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">4. Controller</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { Controller, Get, Post, Body, Param, Delete, HttpCode } from '@nestjs/common';
+import { ProjectsService } from './projects.service';
+import { CreateProjectDto } from './dto/create-project.dto';
+
+@Controller('api/v1/projects')  // Route prefix
+export class ProjectsController {
+  // Dependency injection
+  constructor(private readonly projectsService: ProjectsService) {}
+
+  @Post()
+  @HttpCode(201)
+  create(@Body() createProjectDto: CreateProjectDto) {
+    return this.projectsService.create(createProjectDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.projectsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.projectsService.findOne(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.projectsService.remove(id);
+  }
+}`}
+          filename="src/projects/projects.controller.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">5. Service</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateProjectDto } from './dto/create-project.dto';
+
+@Injectable()  // Register in DI container
+export class ProjectsService {
+  private projects = new Map();
+
+  create(dto: CreateProjectDto) {
+    const project = {
+      id: crypto.randomUUID(),
+      name: dto.name,
+      description: dto.description || null,
+      created_at: new Date().toISOString(),
+    };
+    this.projects.set(project.id, project);
+    return project;
+  }
+
+  findAll() {
+    return {
+      items: Array.from(this.projects.values()),
+      total: this.projects.size,
+    };
+  }
+
+  findOne(id: string) {
+    const project = this.projects.get(id);
+    if (!project) throw new NotFoundException('Project not found');
+    return project;
+  }
+
+  remove(id: string) {
+    if (!this.projects.delete(id)) {
+      throw new NotFoundException('Project not found');
+    }
+  }
+}`}
+          filename="src/projects/projects.service.ts"
+        />
+      </section>
+
+      <!-- Hono vs NestJS -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Hono vs NestJS Comparison</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left p-3 text-text-secondary">Category</th>
+                <th class="text-left p-3 text-green-400">Hono (Lv.1)</th>
+                <th class="text-left p-3 text-purple-400">NestJS (Lv.4)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border">
+                <td class="p-3 text-text-secondary">File Count</td>
+                <td class="p-3 text-white">5</td>
+                <td class="p-3 text-white">12</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 text-text-secondary">Lines of Code</td>
+                <td class="p-3 text-white">~150 lines</td>
+                <td class="p-3 text-white">~300 lines</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 text-text-secondary">Learning Curve</td>
+                <td class="p-3 text-white">Low</td>
+                <td class="p-3 text-white">High</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 text-text-secondary">Structure</td>
+                <td class="p-3 text-white">Flexible</td>
+                <td class="p-3 text-white">Opinionated</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 text-text-secondary">Team Size</td>
+                <td class="p-3 text-white">1-3 people</td>
+                <td class="p-3 text-white">5+ people</td>
+              </tr>
+              <tr>
+                <td class="p-3 text-text-secondary">Best For</td>
+                <td class="p-3 text-white">Quick prototypes, simple APIs</td>
+                <td class="p-3 text-white">Complex domains, long-term maintenance</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Example code -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Full Example Code">
+          <p class="text-sm mt-2">
+            Check out the NestJS version of the B2B Admin API:
+            <a href="https://github.com/curogom/choorai/tree/main/examples/b2b-admin/api-nest" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">
+              examples/b2b-admin/api-nest
+            </a>
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Next steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="tip" title="Next Steps">
+          <p class="text-sm mt-2">
+            Once backend deployment is complete,
+            learn how to connect PostgreSQL in
+            <a href="/en/map/database" class="text-primary hover:underline">Cycle 4: Database</a>.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/backend/nest" />
+  </div>
+</DocsLayout>

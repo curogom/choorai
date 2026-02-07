@@ -1,0 +1,248 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 1: DNS - Domain Basics"
+  description="Understand the basics of domains and DNS and learn how to connect a custom domain"
+  currentPath="/map/dns"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 1: DNS</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 1
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Domain and DNS Basics
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Learn how to use a domain like
+        <code class="bg-surface px-1 rounded">myapp.com</code> instead of
+        an IP address like <code class="bg-surface px-1 rounded">192.168.1.1</code>.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Understanding URL structure</li>
+          <li>DNS record types (A, CNAME, TXT)</li>
+          <li>Comparing domain registrars</li>
+          <li>Connecting a domain with Cloudflare</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- What is a domain? -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">What is a Domain?</h2>
+
+        <p class="text-text-secondary mb-4">
+          A domain is a <strong class="text-white">human-readable name</strong> attached to an IP address.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">IP Address (hard)</h3>
+            <code class="text-red-400 text-lg">142.250.207.14</code>
+            <p class="text-text-secondary text-sm mt-2">Hard to remember, changes when servers change</p>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Domain (easy)</h3>
+            <code class="text-green-400 text-lg">google.com</code>
+            <p class="text-text-secondary text-sm mt-2">Easy to remember, stays the same even if IP changes</p>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">URL Structure Breakdown</h3>
+
+        <div class="bg-surface border border-border rounded-xl p-6 mb-4">
+          <div class="font-mono text-sm md:text-base overflow-x-auto">
+            <span class="text-blue-400">https://</span><span class="text-yellow-400">api</span>.<span class="text-green-400">myapp</span>.<span class="text-purple-400">com</span><span class="text-orange-400">:8080</span><span class="text-pink-400">/users</span><span class="text-gray-400">?page=1</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 text-sm">
+            <div><span class="text-blue-400">https://</span> <span class="text-text-secondary">Protocol</span></div>
+            <div><span class="text-yellow-400">api</span> <span class="text-text-secondary">Subdomain</span></div>
+            <div><span class="text-green-400">myapp</span> <span class="text-text-secondary">Domain</span></div>
+            <div><span class="text-purple-400">com</span> <span class="text-text-secondary">TLD</span></div>
+            <div><span class="text-orange-400">:8080</span> <span class="text-text-secondary">Port</span></div>
+            <div><span class="text-pink-400">/users</span> <span class="text-text-secondary">Path</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DNS Record Types -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">DNS Record Types</h2>
+
+        <p class="text-text-secondary mb-4">
+          DNS (Domain Name System) is a system that translates domains into IP addresses.
+          There are several types of records:
+        </p>
+
+        <div class="space-y-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-bold">A</span>
+              <h3 class="text-white font-bold">Address Record</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">Maps a domain to an IPv4 address.</p>
+            <CodeBlock
+              client:load
+              code={`myapp.com → 192.168.1.1`}
+              filename="Example"
+            />
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-bold">CNAME</span>
+              <h3 class="text-white font-bold">Canonical Name</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">Maps a domain to another domain (alias).</p>
+            <CodeBlock
+              client:load
+              code={`www.myapp.com → myapp.com
+api.myapp.com → myapp.pages.dev`}
+              filename="Example"
+            />
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-bold">TXT</span>
+              <h3 class="text-white font-bold">Text Record</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">Stores text information. Mainly used for domain ownership verification.</p>
+            <CodeBlock
+              client:load
+              code={`_verification.myapp.com → "google-site-verification=abc123"`}
+              filename="Example"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Domain Registrars -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Comparing Domain Registrars</h2>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">Recommended</span>
+              <h3 class="text-white font-bold">Cloudflare</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">At-cost pricing, free DNS/CDN included</p>
+            <span class="text-primary text-sm">registrar.cloudflare.com →</span>
+          </a>
+
+          <a href="https://www.namecheap.com" target="_blank" rel="noopener noreferrer" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <h3 class="text-white font-bold mb-2">Namecheap</h3>
+            <p class="text-text-secondary text-sm mb-2">Wide range of TLDs, reasonable pricing</p>
+            <span class="text-primary text-sm">namecheap.com →</span>
+          </a>
+
+          <a href="https://www.gabia.com" target="_blank" rel="noopener noreferrer" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <h3 class="text-white font-bold mb-2">Gabia</h3>
+            <p class="text-text-secondary text-sm mb-2">Korean language support, .kr domains</p>
+            <span class="text-primary text-sm">gabia.com →</span>
+          </a>
+        </div>
+
+        <Callout client:load locale="en" variant="tip" title="Free domains?">
+          <p class="mt-2 text-sm">
+            Cloudflare Pages, Vercel, Netlify, and others provide free subdomains.
+            Example: <code class="bg-surface px-1 rounded">myapp.pages.dev</code>
+            This is sufficient when you are just getting started.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Hands-on -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Hands-on: Connecting a Domain with Cloudflare</h2>
+
+        <div class="space-y-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3">1. Change Nameservers</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Change the nameservers at your domain registrar to Cloudflare.
+            </p>
+            <CodeBlock
+              client:load
+              code={`# Cloudflare nameserver example
+ns1.cloudflare.com
+ns2.cloudflare.com`}
+              filename="Nameserver Settings"
+            />
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3">2. Add DNS Records</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Add DNS records in the Cloudflare dashboard.
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-border">
+                    <th class="text-left py-2 px-3 text-white">Type</th>
+                    <th class="text-left py-2 px-3 text-white">Name</th>
+                    <th class="text-left py-2 px-3 text-white">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-border/50">
+                    <td class="py-2 px-3"><span class="text-blue-400">CNAME</span></td>
+                    <td class="py-2 px-3 text-text-secondary">@</td>
+                    <td class="py-2 px-3 text-text-secondary">myapp.pages.dev</td>
+                  </tr>
+                  <tr class="border-b border-border/50">
+                    <td class="py-2 px-3"><span class="text-blue-400">CNAME</span></td>
+                    <td class="py-2 px-3 text-text-secondary">www</td>
+                    <td class="py-2 px-3 text-text-secondary">myapp.pages.dev</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3">3. SSL/TLS Configuration</h3>
+            <p class="text-text-secondary text-sm">
+              Set SSL/TLS encryption to <strong class="text-white">"Full (strict)"</strong> in Cloudflare.
+              HTTPS will be automatically enabled.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Next Steps">
+          <p class="text-sm">
+            If your domain setup is complete, let's deploy a frontend app next.
+            In <a href="/map/frontend" class="text-primary hover:underline ml-1">Cycle 2: Frontend Deployment</a>,
+            you will learn how to deploy a React app to Cloudflare Pages.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/dns" />
+  </div>
+</DocsLayout>

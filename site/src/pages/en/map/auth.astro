@@ -1,0 +1,227 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Implementing User Authentication"
+  description="How to implement login and signup features"
+  currentPath="/map/auth"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <span class="text-primary font-medium">User Authentication</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold mb-4">
+        Advanced Topic
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Implementing User Authentication
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Implement user authentication features including login, signup, and password management.
+        Learn the correct, security-conscious approach.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="What You'll Learn in This Guide" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Authentication method comparison (Session vs JWT)</li>
+          <li>Password hashing (bcrypt)</li>
+          <li>OAuth social login</li>
+          <li>Authentication services (Clerk, Auth0)</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Authentication Method Comparison -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Authentication Method Comparison</h2>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Session-Based</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Stores sessions on the server and passes session ID via cookies
+            </p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>Simple implementation</li>
+              <li>Can be invalidated immediately</li>
+              <li>Requires session sharing when scaling servers</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">JWT (Token-Based)</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Client holds a signed token
+            </p>
+            <ul class="text-text-secondary text-xs space-y-1">
+              <li>No server state needed</li>
+              <li>Ideal for microservices</li>
+              <li>Difficult to handle token theft</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Build vs Service -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Build Your Own vs Auth Services</h2>
+
+        <Callout client:load variant="warning" title="Recommended: Use an Auth Service" locale="en">
+          <p class="text-sm mb-2">
+            Authentication is a security-sensitive area. We recommend using a proven auth service, especially when starting out.
+          </p>
+          <p class="text-sm">
+            Building your own can easily introduce security vulnerabilities and adds significant maintenance burden.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Recommended Auth Services -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Recommended Auth Services</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <a href="/en/map/auth/clerk" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Lv.2</span>
+              <span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">Recommended</span>
+              <h3 class="text-white font-bold">Clerk</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">
+              Auth service optimized for React.
+              Includes social login, MFA, and organization management.
+            </p>
+            <span class="text-primary text-xs">View Guide →</span>
+          </a>
+          <a href="/en/map/auth/nextauth" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">Lv.3</span>
+              <h3 class="text-white font-bold">NextAuth.js</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">
+              Full-stack auth solution for Next.js.
+              Supports 50+ OAuth providers.
+            </p>
+            <span class="text-primary text-xs">View Guide →</span>
+          </a>
+          <a href="/en/map/auth/auth0" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">Lv.3</span>
+              <h3 class="text-white font-bold">Auth0</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">
+              Enterprise-grade auth platform.
+              RBAC, SSO, and MFA built-in.
+            </p>
+            <span class="text-primary text-xs">View Guide →</span>
+          </a>
+          <a href="/en/map/auth/firebase" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Lv.2</span>
+              <h3 class="text-white font-bold">Firebase Auth</h3>
+            </div>
+            <p class="text-text-secondary text-sm mb-2">
+              Google's free auth service.
+              Supports both web and mobile apps.
+            </p>
+            <span class="text-primary text-xs">View Guide →</span>
+          </a>
+        </div>
+
+        <div class="mt-4 p-4 bg-surface/50 border border-border rounded-xl">
+          <p class="text-text-secondary text-sm">
+            Looking for <strong class="text-white">Supabase Auth</strong>?
+            Check the <a href="/en/map/database/supabase" class="text-primary hover:underline">Supabase Guide</a> for
+            auth integration instructions.
+          </p>
+        </div>
+      </section>
+
+      <!-- FastAPI + JWT Example -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">FastAPI + JWT Example (Reference)</h2>
+
+        <p class="text-text-secondary mb-4">
+          If you must build your own, refer to the structure below:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# JWT configuration
+SECRET_KEY = "your-secret-key"  # Use environment variables in production!
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return user_id
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")`}
+          filename="app/auth.py"
+        />
+
+        <Callout client:load variant="error" title="Caution: Production Requires More Considerations" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li>HTTPS is required</li>
+            <li>Manage secret keys with environment variables</li>
+            <li>Implement Refresh Tokens</li>
+            <li>Rate Limiting</li>
+            <li>Login attempt throttling</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="Which service should you choose?" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong class="text-white">React SPA</strong> → <a href="/en/map/auth/clerk" class="text-primary hover:underline">Clerk</a> (quick start)</li>
+            <li><strong class="text-white">Next.js</strong> → <a href="/en/map/auth/nextauth" class="text-primary hover:underline">NextAuth</a> (full-stack)</li>
+            <li><strong class="text-white">Enterprise/RBAC</strong> → <a href="/en/map/auth/auth0" class="text-primary hover:underline">Auth0</a></li>
+            <li><strong class="text-white">Mobile + Web</strong> → <a href="/en/map/auth/firebase" class="text-primary hover:underline">Firebase Auth</a></li>
+            <li><strong class="text-white">Using Supabase</strong> → <a href="/en/map/database/supabase" class="text-primary hover:underline">Supabase Auth</a></li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/auth" />
+  </div>
+</DocsLayout>

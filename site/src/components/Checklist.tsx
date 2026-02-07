@@ -11,15 +11,23 @@ interface ChecklistProps {
   items: ChecklistItem[];
   storageKey: string;
   title?: string;
+  locale?: 'ko' | 'en';
   onAllComplete?: () => void;
 }
+
+const labels = {
+  ko: { title: '완료 체크리스트', done: '완료', progress: '진행률', allDone: '모든 항목을 완료했습니다!' },
+  en: { title: 'Completion Checklist', done: 'done', progress: 'Progress', allDone: 'All items completed!' },
+};
 
 export default function Checklist({
   items,
   storageKey,
-  title = '완료 체크리스트',
+  title,
+  locale,
   onAllComplete,
 }: ChecklistProps) {
+  const l = labels[locale || 'ko'];
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -71,9 +79,9 @@ export default function Checklist({
     <div className="flex flex-col gap-4">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
-        <h3 className="text-white text-lg font-bold">{title}</h3>
+        <h3 className="text-white text-lg font-bold">{title ?? l.title}</h3>
         <span className="text-text-secondary text-sm">
-          {checked.size}/{items.length} 완료
+          {checked.size}/{items.length} {l.done}
         </span>
       </div>
 
@@ -84,7 +92,7 @@ export default function Checklist({
         aria-valuenow={progress}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`진행률 ${progress}%`}
+        aria-label={`${l.progress} ${progress}%`}
       >
         <div
           className="h-full bg-primary rounded-full transition-all duration-300"
@@ -153,7 +161,7 @@ export default function Checklist({
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
-          <span className="font-bold">모든 항목을 완료했습니다!</span>
+          <span className="font-bold">{l.allDone}</span>
         </div>
       )}
     </div>

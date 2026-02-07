@@ -1,0 +1,250 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Hono - Lv.1 Beginner Backend"
+  description="Build a Node.js API server in 15 minutes"
+  currentPath="/map/backend/hono"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/backend" class="hover:text-white transition-colors">Backend Deployment</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Hono</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">Lv.1 Beginner</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Node.js</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">TypeScript</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Build an API in 15 Minutes with Hono
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Hono is the lightest Node.js web framework.
+        You can build a complete REST API with just a single file.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Why Hono?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Faster and more modern than Express</li>
+          <li>TypeScript support out of the box</li>
+          <li>Edge Runtime (Cloudflare Workers) compatible</li>
+          <li>Almost no boilerplate</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Project creation -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">1. Create Project</h2>
+
+        <CodeBlock
+          client:load
+          code={`mkdir my-api && cd my-api
+npm init -y
+npm install hono @hono/node-server
+npm install -D typescript @types/node tsx`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          <code class="bg-surface px-1 rounded">tsx</code> allows you to run TypeScript directly.
+        </p>
+      </section>
+
+      <!-- First API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">2. Write Your First API</h2>
+
+        <CodeBlock
+          client:load
+          code={`import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+
+const app = new Hono();
+
+// Health check
+app.get('/health', (c) => {
+  return c.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Hello API
+app.get('/api/hello', (c) => {
+  const name = c.req.query('name') || 'World';
+  return c.json({ message: \`Hello, \${name}!\` });
+});
+
+// Start server
+serve({ fetch: app.fetch, port: 8000 });
+console.log('🚀 Server running on http://localhost:8000');`}
+          filename="src/index.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Run</h3>
+
+        <CodeBlock
+          client:load
+          code={`npx tsx src/index.ts
+
+# Test
+curl http://localhost:8000/health
+curl http://localhost:8000/api/hello?name=Choorai`}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- CRUD API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">3. Add CRUD API</h2>
+
+        <CodeBlock
+          client:load
+          code={`import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+import { cors } from 'hono/cors';
+
+const app = new Hono();
+
+// CORS configuration
+app.use('*', cors({
+  origin: ['http://localhost:5173'],
+  credentials: true,
+}));
+
+// In-memory storage
+interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+}
+
+const projects = new Map<string, Project>();
+
+// List projects
+app.get('/api/v1/projects', (c) => {
+  const items = Array.from(projects.values());
+  return c.json({ items, total: items.length });
+});
+
+// Create project
+app.post('/api/v1/projects', async (c) => {
+  const body = await c.req.json();
+  const project: Project = {
+    id: crypto.randomUUID(),
+    name: body.name,
+    description: body.description || null,
+    created_at: new Date().toISOString(),
+  };
+  projects.set(project.id, project);
+  return c.json(project, 201);
+});
+
+// Get project
+app.get('/api/v1/projects/:id', (c) => {
+  const project = projects.get(c.req.param('id'));
+  if (!project) return c.json({ error: 'Not found' }, 404);
+  return c.json(project);
+});
+
+// Delete project
+app.delete('/api/v1/projects/:id', (c) => {
+  const deleted = projects.delete(c.req.param('id'));
+  if (!deleted) return c.json({ error: 'Not found' }, 404);
+  return c.body(null, 204);
+});
+
+serve({ fetch: app.fetch, port: 8000 });
+console.log('🚀 Server running on http://localhost:8000');`}
+          filename="src/index.ts"
+        />
+      </section>
+
+      <!-- Docker deployment -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">4. Deploy with Docker</h2>
+
+        <CodeBlock
+          client:load
+          code={`FROM node:20-slim
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 8000
+CMD ["node", "dist/index.js"]`}
+          filename="Dockerfile"
+        />
+
+        <CodeBlock
+          client:load
+          code={`# Local test
+docker build -t my-hono-api .
+docker run -p 8000:8000 my-hono-api
+
+# Cloud Run deployment
+gcloud builds submit --tag gcr.io/YOUR_PROJECT/my-hono-api
+gcloud run deploy my-hono-api --image gcr.io/YOUR_PROJECT/my-hono-api`}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- Comparison -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">FastAPI vs Hono</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Hono (this page)</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>✅ Unified JavaScript/TypeScript</li>
+              <li>✅ Same language as frontend</li>
+              <li>✅ Edge Runtime support</li>
+              <li>⚠️ Type validation needs manual implementation</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">FastAPI (Lv.2)</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>✅ Auto documentation (Swagger)</li>
+              <li>✅ Pydantic type validation</li>
+              <li>✅ Python ecosystem (ML/AI)</li>
+              <li>⚠️ Requires learning a separate language</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Example code -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Full Example Code">
+          <p class="text-sm mt-2">
+            Check out the Hono version of the B2B Admin API:
+            <a href="https://github.com/curogom/choorai/tree/main/examples/b2b-admin/api-hono" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">
+              examples/b2b-admin/api-hono
+            </a>
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/backend/hono" />
+  </div>
+</DocsLayout>

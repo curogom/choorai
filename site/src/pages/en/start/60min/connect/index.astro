@@ -1,0 +1,381 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../../components/Stepper';
+import ChallengeProgressBar from '../../../../../components/ChallengeProgressBar';
+import Checklist from '../../../../../components/Checklist';
+import CodeBlock from '../../../../../components/CodeBlock';
+import PromptBox from '../../../../../components/PromptBox';
+import Callout from '../../../../../components/Callout';
+import SectionHeader from '../../../../../components/SectionHeader';
+import MetaBadge from '../../../../../components/MetaBadge';
+import PageNavigation from '../../../../../components/PageNavigation.astro';
+
+const steps = [
+  { label: 'Preparation', status: 'completed' as const },
+  { label: 'Frontend', status: 'completed' as const },
+  { label: 'Backend', status: 'completed' as const },
+  { label: 'Connect', status: 'current' as const },
+  { label: 'Deploy', status: 'upcoming' as const },
+  { label: 'Complete', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'tanstack', label: 'Install TanStack Query', description: 'API state management' },
+  { id: 'client', label: 'Create API client', description: 'fetch wrapper' },
+  { id: 'hooks', label: 'Create React hooks', description: 'useProjects, etc.' },
+  { id: 'connect', label: 'Verify front-back connection', description: 'Display data' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="60-Minute Challenge - Frontend-Backend Connection"
+  description="Let's connect the frontend and backend"
+  currentPath="/start/60min/connect"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/start/60min" class="hover:text-white transition-colors">60-Min Challenge</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Connect</span>
+    </nav>
+
+    <!-- Progress -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ChallengeProgressBar client:load />
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} locale="en" />
+    </div>
+
+    <!-- Page Title -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <MetaBadge icon="clock" text="Estimated time: 10 min" />
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Frontend-Backend Connection
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Call the backend API from the frontend to display real data.
+        We'll use TanStack Query to easily manage API state.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (Summary)" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Install TanStack Query for API call management</li>
+          <li>Create API client + React hooks</li>
+          <li>Replace local state with API connection</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- Main Content -->
+    <article class="prose prose-invert max-w-none">
+      <!-- Pre-check -->
+      <section class="mb-10">
+        <Callout client:load variant="warning" title="Before You Start" locale="en">
+          <p class="text-sm mb-2">Both servers must be running:</p>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li>Frontend: <code>http://localhost:5173</code> (npm run dev)</li>
+            <li>Backend: <code>http://localhost:8000</code> (uvicorn main:app --reload)</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Section 1: Install TanStack Query -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Install TanStack Query" />
+
+        <p class="text-text-secondary mb-4">
+          Run this in the frontend folder (<code>my-admin</code>):
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Run in the my-admin folder
+npm install @tanstack/react-query`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          Add the QueryClientProvider to <code>src/main.tsx</code>:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import App from './App'
+import './index.css'
+
+const queryClient = new QueryClient()
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>,
+)`}
+          filename="src/main.tsx"
+        />
+      </section>
+
+      <!-- Section 2: API Client -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Create API Client" />
+
+        <p class="text-text-secondary mb-4">
+          Create the <code>src/api/client.ts</code> file:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  async get<T>(path: string): Promise<T> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`);
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+    return response.json() as Promise<T>;
+  }
+
+  async post<T, D>(path: string, data: D): Promise<T> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+    return response.json() as Promise<T>;
+  }
+
+  async delete(path: string): Promise<void> {
+    const response = await fetch(\`\${this.baseUrl}\${path}\`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error(\`API Error: \${response.status}\`);
+    }
+  }
+}
+
+export const apiClient = new ApiClient(API_URL);`}
+          filename="src/api/client.ts"
+        />
+      </section>
+
+      <!-- Section 3: React Hooks -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Create React Hooks" />
+
+        <p class="text-text-secondary mb-4">
+          Create the <code>src/hooks/useProjects.ts</code> file:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '../api/client';
+
+// Type definitions
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProjectCreate {
+  name: string;
+  description?: string;
+}
+
+interface ProjectListResponse {
+  items: Project[];
+  total: number;
+}
+
+// Hooks
+export function useProjects() {
+  return useQuery({
+    queryKey: ['projects'],
+    queryFn: () => apiClient.get<ProjectListResponse>('/api/v1/projects'),
+  });
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: ProjectCreate) =>
+      apiClient.post<Project, ProjectCreate>('/api/v1/projects', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => apiClient.delete(\`/api/v1/projects/\${id}\`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}`}
+          filename="src/hooks/useProjects.ts"
+        />
+      </section>
+
+      <!-- Section 4: Connect Components -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Use in Components" />
+
+        <p class="text-text-secondary mb-6">
+          Ask AI to update your existing components to use the API connection:
+        </p>
+
+        <PromptBox
+          client:load
+          locale="en"
+          prompt={`Update the existing App.tsx to connect with the API.
+
+Changes:
+1. Use useProjects, useCreateProject, useDeleteProject hooks instead of local state
+2. Show loading state (isLoading)
+3. Show error state (isError)
+4. Disable buttons during create/delete (isPending)
+
+Keep the existing UI, only change the data source to the API.
+
+Hooks to use:
+- useProjects() - { data, isLoading, isError }
+- useCreateProject() - { mutate, isPending }
+- useDeleteProject() - { mutate, isPending }`}
+          title="AI Prompt"
+          description="Show your existing code to the AI when requesting the update."
+        />
+      </section>
+
+      <!-- Section 5: Verify Connection -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Verify Connection" />
+
+        <p class="text-text-secondary mb-4">
+          When you create a project from the frontend, it will be saved via the backend API.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span class="text-sm font-medium text-gray-300">Frontend</span>
+              <span class="text-xs text-gray-500">:5173</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">1.</span>
+                <span class="text-white">Enter name in form</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">2.</span>
+                <span class="text-white">Click "Create" button</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">3.</span>
+                <span class="text-white">Verify it appears in the list</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span class="text-sm font-medium text-gray-300">Backend</span>
+              <span class="text-xs text-gray-500">:8000</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">1.</span>
+                <span class="text-white">Receives POST request</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">2.</span>
+                <span class="text-white">Saves to memory</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">3.</span>
+                <span class="text-white">Returns 201 response</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            Connection Successful!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            If the project you created from the frontend also appears in the backend's <code>/docs</code> GET API, you're all set!
+          </p>
+        </div>
+      </section>
+
+      <!-- CORS Error Resolution -->
+      <section class="mb-10">
+        <Callout client:load variant="error" title="Getting a CORS Error?" locale="en">
+          <p class="text-sm mb-2">
+            If you see a "CORS" error in the browser console, check the backend's CORS settings:
+          </p>
+          <ol class="list-decimal list-inside space-y-1 text-sm">
+            <li>Check <code>allow_origins</code> in the backend's <code>main.py</code></li>
+            <li><code>["http://localhost:5173"]</code> must be included</li>
+            <li>Restart the backend server</li>
+          </ol>
+          <p class="text-sm mt-2">
+            For detailed solutions, see the <a href="/fix/cors" class="text-primary hover:underline">CORS Troubleshooting</a> guide.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Checklist -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          locale="en"
+          storageKey="60min-connect"
+          title="Connection Completion Checklist"
+          items={checklist}
+        />
+      </section>
+
+      <!-- Navigation -->
+      <PageNavigation currentPath="/start/60min/connect" />
+    </article>
+  </div>
+</DocsLayout>

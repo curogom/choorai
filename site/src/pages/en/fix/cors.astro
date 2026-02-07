@@ -1,0 +1,155 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing CORS Errors"
+  description="How to fix Access to XMLHttpRequest blocked by CORS policy error"
+  currentPath="/fix/cors"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">CORS Error</span>
+    </nav>
+
+    <!-- Page title -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Common Error
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing CORS Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Getting "Access to XMLHttpRequest blocked by CORS policy"?
+        This is a common issue when your frontend and backend are on different domains.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          Set the <code class="bg-surface px-1 rounded">Access-Control-Allow-Origin</code> header on your backend server.
+          Use <code class="bg-surface px-1 rounded">*</code> during development and specify the actual domain in production.
+        </p>
+      </Callout>
+    </section>
+
+    <!-- Error card -->
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Access to XMLHttpRequest at 'http://api.example.com' from origin 'http://localhost:3000' has been blocked by CORS policy"
+        errorCode="403"
+        severity="critical"
+        cause="The frontend (localhost:3000) sent a request to a backend on a different domain (api.example.com), but the backend did not allow this request."
+        solutionCode="Access-Control-Allow-Origin: https://your-frontend.com"
+        aiPrompt="I'm getting a CORS error. My frontend is localhost:3000 and my backend is FastAPI. How do I fix it?"
+      />
+    </section>
+
+    <!-- Solutions -->
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Solution by Framework</h2>
+
+      <!-- FastAPI -->
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Python</span>
+          FastAPI
+        </h3>
+        <CodeBlock
+          client:load
+          filename="main.py"
+          code={`from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",      # Development
+        "https://your-domain.com",    # Production
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)`}
+        />
+      </section>
+
+      <!-- Express -->
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">Node.js</span>
+          Express
+        </h3>
+        <CodeBlock
+          client:load
+          filename="server.js"
+          code={`const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+// CORS configuration
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://your-domain.com'
+  ],
+  credentials: true
+}));`}
+        />
+      </section>
+
+      <!-- Warning -->
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Security Warning">
+          <p class="mt-2">
+            Do not use <code class="bg-surface px-1 rounded">allow_origins=["*"]</code> in production!
+            Only allow your actual frontend domain.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Verification -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-bold text-white mb-4">How to Verify the Fix</h2>
+        <ol class="list-decimal list-inside text-text-secondary space-y-2">
+          <li>Restart your backend server</li>
+          <li>Open browser DevTools (F12) → Network tab</li>
+          <li>Send the request again and check the Response Headers</li>
+          <li>If the <code class="bg-surface px-1 rounded">Access-Control-Allow-Origin</code> header is present, success!</li>
+        </ol>
+      </section>
+    </article>
+
+    <!-- Related docs -->
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Environment Variable Error</h4>
+          <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
+        </a>
+        <a href="/en/fix/auth-cookie" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Auth/Cookie Issue</h4>
+          <p class="text-text-secondary text-sm">Cookies not being sent</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

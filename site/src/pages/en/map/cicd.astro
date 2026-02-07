@@ -1,0 +1,649 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 8: CI/CD - Automated Deployment"
+  description="Implement automated build, test, and deployment with GitHub Actions on every code push"
+  currentPath="/map/cicd"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 8: CI/CD</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 8
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        CI/CD - Automated Deployment
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Push code and get automatic builds, tests, and deployments.
+        Free yourself from repetitive manual deployments and focus on development.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>CI/CD concepts and pipeline understanding</li>
+          <li>Writing GitHub Actions workflows</li>
+          <li>Building automated frontend/backend deployment</li>
+          <li>Environment-based deployment strategies</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- CI/CD concept -->
+      <section class="mb-10" id="concept">
+        <h2 class="text-2xl font-bold text-white mb-4">What is CI/CD?</h2>
+
+        <p class="text-text-secondary mb-4">
+          <strong class="text-white">CI/CD</strong> is a methodology for automating the process from code changes to deployment.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">CI (Continuous Integration)</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Frequently integrate code changes and automatically verify them
+            </p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">Code push</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">Automatic build</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span class="text-text-secondary">Automatic testing</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">CD (Continuous Deployment)</h3>
+            <p class="text-text-secondary text-sm mb-3">
+              Automatically deploy verified code to production
+            </p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">Build success</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">Automatic deployment</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-text-secondary">Release complete</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Pipeline Flow</h3>
+
+        <div class="p-4 bg-surface border border-border rounded-xl mb-6">
+          <div class="flex items-center justify-between overflow-x-auto gap-2 text-sm">
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500/30 text-blue-300 mb-1">📝</span>
+              <span class="text-text-secondary text-xs">Push</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500/30 text-yellow-300 mb-1">🔨</span>
+              <span class="text-text-secondary text-xs">Build</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-500/30 text-purple-300 mb-1">🧪</span>
+              <span class="text-text-secondary text-xs">Test</span>
+            </div>
+            <span class="text-text-secondary">→</span>
+            <div class="flex flex-col items-center min-w-[60px]">
+              <span class="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/30 text-green-300 mb-1">🚀</span>
+              <span class="text-text-secondary text-xs">Deploy</span>
+            </div>
+          </div>
+        </div>
+
+        <Callout client:load locale="en" variant="tip" title="Why is automation necessary?">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">Prevent human error</strong>: Eliminate mistakes from manual processes</li>
+            <li><strong class="text-white">Fast feedback</strong>: Catch problems immediately</li>
+            <li><strong class="text-white">Consistency</strong>: Deploy through the same process every time</li>
+            <li><strong class="text-white">Time savings</strong>: Free up time to focus on development</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- GitHub Actions basics -->
+      <section class="mb-10" id="github-actions">
+        <h2 class="text-2xl font-bold text-white mb-4">GitHub Actions Basics</h2>
+
+        <p class="text-text-secondary mb-4">
+          GitHub Actions is a <strong class="text-white">free CI/CD tool built into GitHub</strong>.
+          You can use it directly from your code repository without a separate server.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Workflow File Location</h3>
+
+        <CodeBlock
+          client:load
+          code={`my-project/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml          # CI workflow
+│       ├── deploy.yml      # Deployment workflow
+│       └── test.yml        # Test workflow
+├── src/
+└── ...`}
+          filename="Project structure"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">YAML Syntax Essentials</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Hello World CI  # Workflow name
+
+on:  # Trigger conditions
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:  # Jobs to run
+  build:
+    runs-on: ubuntu-latest  # Execution environment
+
+    steps:  # Steps to execute sequentially
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Print Hello World
+        run: echo "Hello, GitHub Actions!"`}
+          filename=".github/workflows/hello.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Trigger Types</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">Trigger</th>
+                <th class="text-left py-3 px-3 text-white">Description</th>
+                <th class="text-left py-3 px-3 text-white">Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">push</td>
+                <td class="py-3 px-3 text-text-secondary">On code push</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">branches: [main]</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">pull_request</td>
+                <td class="py-3 px-3 text-text-secondary">On PR creation/update</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">types: [opened, synchronize]</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-primary font-mono">schedule</td>
+                <td class="py-3 px-3 text-text-secondary">At scheduled times (cron)</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">cron: '0 0 * * *'</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-primary font-mono">workflow_dispatch</td>
+                <td class="py-3 px-3 text-text-secondary">Manual trigger</td>
+                <td class="py-3 px-3 text-text-secondary font-mono text-xs">Click button in GitHub UI</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Commonly Used Actions</h3>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/checkout@v4</h4>
+            <p class="text-text-secondary text-xs">Checkout repository code</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/setup-node@v4</h4>
+            <p class="text-text-secondary text-xs">Set up Node.js environment</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/setup-python@v5</h4>
+            <p class="text-text-secondary text-xs">Set up Python environment</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">actions/cache@v4</h4>
+            <p class="text-text-secondary text-xs">Dependency caching</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Frontend automated deployment -->
+      <section class="mb-10" id="frontend-deploy">
+        <h2 class="text-2xl font-bold text-white mb-4">Frontend Automated Deployment</h2>
+
+        <p class="text-text-secondary mb-4">
+          Automatically deploy React/Vue projects to <strong class="text-white">Cloudflare Pages</strong>.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Cloudflare Pages Deployment Workflow</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'  # Only run when frontend folder changes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: \${{ secrets.VITE_API_URL }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: my-frontend
+          directory: frontend/dist`}
+          filename=".github/workflows/deploy-frontend.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">How to Set Up Secrets</h3>
+
+        <div class="p-4 bg-surface border border-border rounded-xl mb-6">
+          <ol class="list-decimal list-inside text-text-secondary text-sm space-y-2">
+            <li>GitHub repository → <strong class="text-white">Settings</strong> → <strong class="text-white">Secrets and variables</strong> → <strong class="text-white">Actions</strong></li>
+            <li>Click <strong class="text-white">New repository secret</strong></li>
+            <li>Name: <code class="text-primary">CLOUDFLARE_API_TOKEN</code></li>
+            <li>Value: API token generated from Cloudflare dashboard</li>
+          </ol>
+        </div>
+
+        <Callout client:load locale="en" variant="tip" title="Creating a Cloudflare API Token">
+          <ol class="list-decimal list-inside mt-2 text-sm space-y-1">
+            <li>Cloudflare dashboard → My Profile → API Tokens</li>
+            <li>Create Token → Use the Edit Cloudflare Workers template</li>
+            <li>Account Resources: Select your account</li>
+            <li>Zone Resources: All zones (or a specific domain)</li>
+          </ol>
+        </Callout>
+      </section>
+
+      <!-- Backend automated deployment -->
+      <section class="mb-10" id="backend-deploy">
+        <h2 class="text-2xl font-bold text-white mb-4">Backend Automated Deployment</h2>
+
+        <p class="text-text-secondary mb-4">
+          Automatically deploy FastAPI/Node.js backends to <strong class="text-white">Cloud Run</strong>.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI → Cloud Run Deployment</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Backend (FastAPI)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+env:
+  PROJECT_ID: my-gcp-project
+  REGION: asia-northeast3
+  SERVICE_NAME: my-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: \${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker \${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        working-directory: backend
+        run: |
+          docker build -t \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} .
+          docker push \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy \${{ env.SERVICE_NAME }} \\
+            --image=\${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} \\
+            --region=\${{ env.REGION }} \\
+            --platform=managed \\
+            --allow-unauthenticated \\
+            --set-env-vars="DATABASE_URL=\${{ secrets.DATABASE_URL }}"`}
+          filename=".github/workflows/deploy-backend.yml (FastAPI)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Node.js (Hono) → Cloud Run Deployment</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy Backend (Hono)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+env:
+  PROJECT_ID: my-gcp-project
+  REGION: asia-northeast3
+  SERVICE_NAME: my-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: \${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker \${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        working-directory: backend
+        run: |
+          docker build -t \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} .
+          docker push \${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy \${{ env.SERVICE_NAME }} \\
+            --image=\${{ env.REGION }}-docker.pkg.dev/\${{ env.PROJECT_ID }}/my-repo/\${{ env.SERVICE_NAME }}:\${{ github.sha }} \\
+            --region=\${{ env.REGION }} \\
+            --platform=managed \\
+            --allow-unauthenticated`}
+          filename=".github/workflows/deploy-backend.yml (Hono)"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Creating GCP Service Account Key</h3>
+
+        <CodeBlock
+          client:load
+          code={`# 1. Create service account
+gcloud iam service-accounts create github-actions \\
+  --display-name="GitHub Actions"
+
+# 2. Grant required roles
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/run.admin"
+
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding PROJECT_ID \\
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \\
+  --role="roles/iam.serviceAccountUser"
+
+# 3. Generate key (JSON file)
+gcloud iam service-accounts keys create key.json \\
+  --iam-account=github-actions@PROJECT_ID.iam.gserviceaccount.com
+
+# 4. Register the contents of key.json as the GCP_SA_KEY secret`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Environment-based Deployment (dev/staging/prod)</h3>
+
+        <CodeBlock
+          client:load
+          code={`name: Deploy by Branch
+
+on:
+  push:
+    branches:
+      - main        # Production
+      - staging     # Staging
+      - develop     # Development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set environment
+        run: |
+          if [ "\${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api" >> $GITHUB_ENV
+          elif [ "\${{ github.ref }}" = "refs/heads/staging" ]; then
+            echo "ENV=staging" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api-staging" >> $GITHUB_ENV
+          else
+            echo "ENV=dev" >> $GITHUB_ENV
+            echo "SERVICE_NAME=my-api-dev" >> $GITHUB_ENV
+          fi
+
+      # ... Use \${{ env.SERVICE_NAME }} in subsequent deploy steps`}
+          filename="Environment-based deployment example"
+        />
+      </section>
+
+      <!-- Advanced patterns -->
+      <section class="mb-10" id="advanced">
+        <h2 class="text-2xl font-bold text-white mb-4">Advanced Patterns</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Matrix Build</h3>
+
+        <p class="text-text-secondary mb-4">
+          Test across multiple versions/environments simultaneously.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: \${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test`}
+          filename="Matrix Build"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Speed Up Builds with Caching</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Node.js dependency caching
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'  # Automatic caching!
+
+# Python dependency caching
+- uses: actions/setup-python@v5
+  with:
+    python-version: '3.11'
+    cache: 'pip'  # Automatic caching!
+
+# Docker layer caching
+- uses: docker/build-push-action@v5
+  with:
+    cache-from: type=gha
+    cache-to: type=gha,mode=max`}
+          filename="Caching examples"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Conditional Execution</h3>
+
+        <CodeBlock
+          client:load
+          code={`jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: npm run build
+
+  deploy:
+    needs: build  # Run after build completes
+    if: github.ref == 'refs/heads/main'  # Only on main branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo "Deploying..."`}
+          filename="Conditional execution"
+        />
+      </section>
+
+      <!-- Free tier & tips -->
+      <section class="mb-10" id="free-tier">
+        <h2 class="text-2xl font-bold text-white mb-4">Free Tier & Tips</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">GitHub Actions Free Limits</h3>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">Plan</th>
+                <th class="text-left py-3 px-3 text-white">Free Allowance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Public repositories</td>
+                <td class="py-3 px-3 text-green-400">Unlimited</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Private (Free plan)</td>
+                <td class="py-3 px-3 text-green-400">2,000 minutes/month</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-text-secondary">Private (Pro plan)</td>
+                <td class="py-3 px-3 text-green-400">3,000 minutes/month</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Callout client:load locale="en" variant="info" title="Cost Optimization Tips">
+          <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+            <li><strong class="text-white">Use caching</strong>: Reduce build time with dependency caching</li>
+            <li><strong class="text-white">Path filters</strong>: Only build changed folders (paths option)</li>
+            <li><strong class="text-white">Conditional execution</strong>: Skip unnecessary workflows</li>
+            <li><strong class="text-white">Self-hosted Runner</strong>: Use your own runner for heavy builds</li>
+          </ul>
+        </Callout>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Common Errors</h3>
+
+        <div class="space-y-3">
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Permission denied</h4>
+            <p class="text-text-secondary text-xs mb-2">Service account is missing required roles</p>
+            <p class="text-primary text-xs">→ Add roles like roles/run.admin in IAM</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Secret not found</h4>
+            <p class="text-text-secondary text-xs mb-2">Referencing a variable not registered in Secrets</p>
+            <p class="text-primary text-xs">→ Add the variable in Settings → Secrets</p>
+          </div>
+          <div class="p-3 bg-surface border border-border rounded-lg">
+            <h4 class="text-white font-bold text-sm mb-1">❌ Docker build failed</h4>
+            <p class="text-text-secondary text-xs mb-2">Works locally but fails in CI</p>
+            <p class="text-primary text-xs">→ Check .dockerignore, verify environment variables</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Wrap-up -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="🎉 Learning Cycles Complete!">
+          <p class="text-sm">
+            Congratulations! You've completed all learning cycles.
+            You can now build the entire web service deployment pipeline from domain setup to automated deployment.
+            Try starting a real project using
+            <a href="/en/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>!
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/cicd" />
+  </div>
+</DocsLayout>

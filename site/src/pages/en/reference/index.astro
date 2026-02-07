@@ -1,0 +1,197 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import testCounts from '../../../data/test-counts.json';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const projects = [
+  {
+    id: 'b2b-admin',
+    title: 'B2B Admin Console',
+    description: 'Project management dashboard',
+    icon: '🏢',
+    features: ['CRUD Features', 'API Integration', 'Routing', 'State Management'],
+    stacks: {
+      frontend: ['React', 'Vue'],
+      backend: ['FastAPI', 'Hono'],
+    },
+    testCount: testCounts.b2bAdmin,
+    github: 'https://github.com/curogom/choorai/tree/main/examples/b2b-admin',
+    demo: null,
+  },
+  {
+    id: 'b2c-todo',
+    title: 'B2C Todo App',
+    description: 'Personal task management app',
+    icon: '✅',
+    features: ['Filtering', 'Completion Toggle', 'State Management', 'Local Storage'],
+    stacks: {
+      frontend: ['React', 'Vue'],
+      backend: ['FastAPI', 'Hono'],
+    },
+    testCount: testCounts.b2cTodo,
+    github: 'https://github.com/curogom/choorai/tree/main/examples/b2c-todo',
+    demo: null,
+  },
+];
+---
+
+<DocsLayout
+  title="Reference - Example Projects"
+  description="Explore real working example projects"
+  currentPath="/reference"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">📦 Reference Projects</h1>
+      <p class="text-text-secondary">Explore real working example projects</p>
+    </div>
+
+    <!-- Project Cards -->
+    <div class="grid md:grid-cols-2 gap-6">
+      {projects.map(project => (
+        <div class="bg-surface border border-border rounded-xl p-6 hover:border-primary/50 transition-all">
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">{project.icon}</span>
+              <div>
+                <h2 class="text-lg font-bold text-white">{project.title}</h2>
+                <p class="text-sm text-text-secondary">{project.description}</p>
+              </div>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
+              {project.testCount} tests
+            </span>
+          </div>
+
+          <!-- Feature List -->
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {project.features.map(feature => (
+              <span class="px-2 py-0.5 text-xs bg-surface-elevated rounded text-text-secondary">
+                {feature}
+              </span>
+            ))}
+          </div>
+
+          <!-- Stack Selection -->
+          <div class="space-y-3 mb-4">
+            <div>
+              <span class="text-xs text-text-muted mb-1.5 block">Frontend</span>
+              <div class="flex gap-2">
+                {project.stacks.frontend.map(stack => (
+                  <button
+                    class="stack-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-surface hover:border-primary/50 hover:text-primary transition-all"
+                    data-project={project.id}
+                    data-type="frontend"
+                    data-stack={stack}
+                  >
+                    {stack}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-text-muted mb-1.5 block">Backend</span>
+              <div class="flex gap-2">
+                {project.stacks.backend.map(stack => (
+                  <button
+                    class="stack-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-surface hover:border-primary/50 hover:text-primary transition-all"
+                    data-project={project.id}
+                    data-type="backend"
+                    data-stack={stack}
+                  >
+                    {stack}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2 pt-4 border-t border-border">
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface border border-border rounded-lg text-sm font-medium text-white transition-colors"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              Source Code
+            </a>
+            {project.demo && (
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-background rounded-lg text-sm font-bold transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Live Demo
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Stack Selection Guide -->
+    <div class="mt-8 p-4 bg-surface/50 rounded-xl border border-border">
+      <div class="flex items-start gap-3">
+        <div class="p-2 rounded-lg bg-primary/10">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="text-sm">
+          <p class="text-text-secondary">
+            Each project lets you choose a <strong class="text-white">frontend</strong> and <strong class="text-white">backend</strong> stack.
+            Click your desired combination to view the code for that stack.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20 text-center">
+      <h2 class="text-lg font-bold text-white mb-2">Want to build one yourself?</h2>
+      <p class="text-sm text-text-secondary mb-4">Follow along from start to finish in the 60-minute completion course</p>
+      <a
+        href="/path/60min"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-lg transition-all hover:scale-[1.02]"
+      >
+        Start the 60-Minute Course
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+
+    <PageNavigation currentPath="/reference" />
+  </div>
+
+  <script>
+    // Toggle active state on stack button click
+    document.querySelectorAll('.stack-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const project = btn.getAttribute('data-project');
+        const type = btn.getAttribute('data-type');
+
+        // Deactivate other buttons of the same project and type
+        document.querySelectorAll(`.stack-btn[data-project="${project}"][data-type="${type}"]`).forEach(b => {
+          b.classList.remove('border-primary', 'text-primary', 'bg-primary/10');
+          b.classList.add('border-border', 'bg-surface');
+        });
+
+        // Activate the current button
+        btn.classList.remove('border-border', 'bg-surface');
+        btn.classList.add('border-primary', 'text-primary', 'bg-primary/10');
+      });
+    });
+  </script>
+</DocsLayout>

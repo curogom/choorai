@@ -1,0 +1,370 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+// Code blocks defined as variables to avoid esbuild parsing issues
+const terminalSetup = `# Check .NET SDK installation
+dotnet --version
+
+# Create project
+dotnet new webapi -n my-api --no-https
+cd my-api`;
+
+const programCode = `using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+var app = builder.Build();
+app.UseCors();
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
+app.MapGet("/api/hello", (string? name) =>
+    Results.Ok(new { message = \$"Hello, {name ?? "World"}!" }));
+
+app.Run();`;
+
+const crudCode = `using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+// Model definition
+record Project(Guid Id, string Name, string Description, DateTime CreatedAt);
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors();
+var app = builder.Build();
+app.UseCors();
+
+// In-memory storage
+var projects = new List<Project>();
+var lockObj = new object();
+
+var api = app.MapGroup("/api/v1/projects");
+
+// List all
+api.MapGet("/", () =>
+{
+    lock (lockObj)
+    {
+        return Results.Ok(new { items = projects, total = projects.Count });
+    }
+});
+
+// Get by ID
+api.MapGet("/{id:guid}", (Guid id) =>
+{
+    lock (lockObj)
+    {
+        var project = projects.FirstOrDefault(p => p.Id == id);
+        return project is not null
+            ? Results.Ok(project)
+            : Results.NotFound(new { error = "not found" });
+    }
+});
+
+// Create
+api.MapPost("/", (CreateProjectRequest req) =>
+{
+    var project = new Project(
+        Guid.NewGuid(),
+        req.Name,
+        req.Description,
+        DateTime.UtcNow
+    );
+
+    lock (lockObj)
+    {
+        projects.Add(project);
+    }
+
+    return Results.Created(\$"/api/v1/projects/{project.Id}", project);
+});
+
+// Update
+api.MapPut("/{id:guid}", (Guid id, UpdateProjectRequest req) =>
+{
+    lock (lockObj)
+    {
+        var index = projects.FindIndex(p => p.Id == id);
+        if (index == -1)
+            return Results.NotFound(new { error = "not found" });
+
+        projects[index] = projects[index] with
+        {
+            Name = req.Name,
+            Description = req.Description
+        };
+
+        return Results.Ok(projects[index]);
+    }
+});
+
+// Delete
+api.MapDelete("/{id:guid}", (Guid id) =>
+{
+    lock (lockObj)
+    {
+        var removed = projects.RemoveAll(p => p.Id == id);
+        return removed > 0
+            ? Results.NoContent()
+            : Results.NotFound(new { error = "not found" });
+    }
+});
+
+app.Run();
+
+// Request DTOs
+record CreateProjectRequest(string Name, string Description);
+record UpdateProjectRequest(string Name, string Description);`;
+
+const terminalRun = `dotnet run
+
+# Test (in a new terminal)
+curl http://localhost:5000/health
+curl "http://localhost:5000/api/hello?name=Choorai"`;
+
+const dockerfileCode = `# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY *.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+WORKDIR /app
+COPY --from=build /app .
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "my-api.dll"]`;
+
+const deployCode = `# Local test
+docker build -t my-dotnet-api .
+docker run -p 8080:8080 my-dotnet-api
+
+# Check image size (~100MB)
+docker images my-dotnet-api
+
+# Cloud Run deployment
+gcloud run deploy my-dotnet-api \\
+  --source . \\
+  --region asia-northeast3 \\
+  --allow-unauthenticated \\
+  --min-instances 0 \\
+  --max-instances 1`;
+---
+
+<DocsLayout
+  title=".NET (Minimal API) - Lv.3 Production"
+  description="Enterprise/finance/gaming industry standard, ASP.NET Core backend with a strong type system"
+  currentPath="/map/backend/dotnet"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/backend" class="hover:text-white transition-colors">Backend Deployment</a>
+      <span>/</span>
+      <span class="text-primary font-medium">.NET</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold">Lv.3 Production</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">C#</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">ASP.NET Core</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Build a Production Backend with ASP.NET Core
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        ASP.NET Core is Microsoft's cross-platform web framework,
+        widely used in enterprise, finance, and gaming sectors. With Minimal API style, it provides
+        a concise yet powerful type system and high performance (Kestrel).
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Why .NET?">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Industry standard for enterprise/finance/gaming</li>
+          <li>Strong static type system (C#)</li>
+          <li>High performance (Kestrel web server)</li>
+          <li>Cross-platform (Windows, Linux, macOS)</li>
+          <li>Rich real-world references and Microsoft support</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Project creation -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">1. Create Project</h2>
+
+        <CodeBlock
+          client:load
+          code={terminalSetup}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          <code class="bg-surface px-1 rounded">dotnet new webapi</code> creates an ASP.NET Core Web API project.
+          The <code class="bg-surface px-1 rounded">--no-https</code> option disables HTTPS for local development.
+        </p>
+      </section>
+
+      <!-- First API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">2. Write Your First API</h2>
+
+        <CodeBlock
+          client:load
+          code={programCode}
+          filename="Program.cs"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Run</h3>
+
+        <CodeBlock
+          client:load
+          code={terminalRun}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- CRUD API -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">3. Add CRUD API</h2>
+
+        <CodeBlock
+          client:load
+          code={crudCode}
+          filename="Program.cs"
+        />
+
+        <Callout client:load locale="en" variant="info" title="Minimal API and Record Types">
+          <p class="text-sm mt-1">
+            C#'s <code class="bg-surface px-1 rounded">record</code> type defines immutable data objects concisely.
+            The <code class="bg-surface px-1 rounded">with</code> expression creates a new instance with only specific fields changed.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Docker deployment -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">4. Deploy with Docker</h2>
+
+        <CodeBlock
+          client:load
+          code={dockerfileCode}
+          filename="Dockerfile"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          Multi-stage builds reduce from SDK (~700MB) to runtime (~100MB).
+          Alpine-based images are used to minimize size.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={deployCode}
+          filename="Terminal"
+        />
+      </section>
+
+      <!-- Comparison -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Framework Comparison</h2>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-2 text-white">Category</th>
+                <th class="text-left py-3 px-2 text-white">.NET (Minimal API)</th>
+                <th class="text-left py-3 px-2 text-white">Go (Chi)</th>
+                <th class="text-left py-3 px-2 text-white">FastAPI</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">Image Size</td>
+                <td class="py-3 px-2 text-yellow-400">~100MB</td>
+                <td class="py-3 px-2 text-green-400">~15MB</td>
+                <td class="py-3 px-2">~200MB</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">Cold Start</td>
+                <td class="py-3 px-2 text-yellow-400">~200ms</td>
+                <td class="py-3 px-2 text-green-400">~100ms</td>
+                <td class="py-3 px-2">~500ms</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">Memory Usage</td>
+                <td class="py-3 px-2 text-yellow-400">~40MB</td>
+                <td class="py-3 px-2 text-green-400">~20MB</td>
+                <td class="py-3 px-2">~80MB</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-2">Learning Curve</td>
+                <td class="py-3 px-2 text-yellow-400">Medium</td>
+                <td class="py-3 px-2 text-yellow-400">Medium</td>
+                <td class="py-3 px-2 text-green-400">Easy</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-2">Type System</td>
+                <td class="py-3 px-2 text-green-400">Static</td>
+                <td class="py-3 px-2 text-green-400">Static</td>
+                <td class="py-3 px-2">Dynamic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- When to use -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">When Should You Choose .NET?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl">
+            <h3 class="text-orange-400 font-bold mb-2">.NET Recommended</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>-- Enterprise/financial system development</li>
+              <li>-- Strong type safety is required</li>
+              <li>-- Windows server environments or Azure infrastructure</li>
+              <li>-- Game servers (Unity integration)</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Consider Other Options</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Minimal image size: <a href="/en/map/backend/go" class="text-primary">Go</a></li>
+              <li>Quick prototype: <a href="/en/map/backend/hono" class="text-primary">Hono</a></li>
+              <li>Enterprise structure: <a href="/en/map/backend/nest" class="text-primary">NestJS</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/backend/dotnet" />
+  </div>
+</DocsLayout>

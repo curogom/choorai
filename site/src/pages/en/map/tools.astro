@@ -1,0 +1,264 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import Checklist from '../../../components/Checklist';
+import EditorCard from '../../../components/EditorCard';
+import SectionHeader from '../../../components/SectionHeader';
+import MetaBadge from '../../../components/MetaBadge';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const toolsChecklist = [
+  { id: 'editor', label: 'Install a code editor', description: 'Antigravity, VS Code, or Cursor' },
+  { id: 'nodejs', label: 'Install Node.js', description: 'LTS version (v20+)' },
+  { id: 'git', label: 'Install Git', description: 'Version control tool' },
+  { id: 'terminal', label: 'Learn terminal basics', description: 'Running basic commands' },
+  { id: 'github', label: 'Create a GitHub account', description: 'Code repository' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 0: Tools - Development Environment Setup"
+  description="Install and configure the tools needed for development"
+  currentPath="/map/tools"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/cycle" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 0: Tools</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <MetaBadge icon="clock" text="Estimated time: 30 minutes" />
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Installing Development Tools
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Install the tools you need to write and run code.
+        They are all free and ready to use right after installation.
+      </p>
+    </header>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- 1. Code Editor -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Install a Code Editor" />
+
+        <p class="text-text-secondary mb-4">
+          A code editor is a program for writing code. While you could use Notepad,
+          a dedicated editor makes things much more convenient.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6 mt-4">
+          <EditorCard
+            title="Antigravity"
+            description="Google's free AI editor"
+            href="https://antigravity.google"
+            linkText="antigravity.google →"
+            isRecommended={true}
+          />
+          <EditorCard
+            title="VS Code"
+            description="The most widely used free editor"
+            href="https://code.visualstudio.com"
+            linkText="code.visualstudio.com →"
+          />
+          <EditorCard
+            title="Cursor"
+            description="AI-powered editor (paid)"
+            href="https://cursor.sh"
+            linkText="cursor.sh →"
+          />
+        </div>
+
+        <Callout client:load locale="en" variant="tip" title="Why we recommend Antigravity">
+          <p class="mt-2">
+            Antigravity is a VS Code-based editor made by Google with Gemini AI built in.
+            It is free for individual users and the AI features are excellent.
+          </p>
+          <p class="mt-2 text-sm">
+            <strong>Key shortcuts:</strong> <code>Cmd+L</code> Agent panel, <code>Cmd+I</code> Inline AI
+          </p>
+        </Callout>
+      </section>
+
+      <!-- 2. Node.js -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Install Node.js" />
+
+        <p class="text-text-secondary mb-4">
+          Node.js is a runtime environment for executing JavaScript.
+          It is practically essential for web development.
+        </p>
+
+        <a
+          href="https://nodejs.org"
+          target="_blank" rel="noopener noreferrer"
+          rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors no-underline mb-4"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M11.998 24c-.321 0-.641-.084-.922-.247L8.14 22.016c-.438-.245-.224-.332-.08-.383.657-.229.79-.281 1.49-.681.074-.041.17-.025.245.019l2.255 1.339c.082.045.198.045.275 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.19-.137-.242l-8.791-5.072c-.081-.047-.189-.047-.271 0L3.264 6.68c-.087.051-.139.146-.139.243v10.074c0 .095.052.19.134.236l2.409 1.392c1.307.653 2.108-.116 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.111.255.253v9.948c0 1.744-.95 2.745-2.604 2.745-.509 0-.909 0-2.026-.551l-2.306-1.327C1.571 18.027 1 17.13 1 16.163V6.089c0-.966.571-1.864 1.461-2.341l8.795-5.082c.868-.493 2.021-.493 2.886 0l8.795 5.082c.891.477 1.462 1.375 1.462 2.341v10.074c0 .966-.571 1.864-1.462 2.341l-8.795 5.082c-.281.163-.601.247-.922.247h-.002z"/>
+          </svg>
+          Download Node.js (LTS)
+        </a>
+
+        <p class="text-text-secondary text-sm mb-4">
+          Download the <strong class="text-white">LTS version</strong>. The Current version may be unstable.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Verify Installation</h3>
+        <CodeBlock
+          client:load
+          code={`node --version
+npm --version`}
+          filename="Terminal"
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          If version numbers are displayed, the installation was successful.
+        </p>
+      </section>
+
+      <!-- 3. Git -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Install Git" />
+
+        <p class="text-text-secondary mb-4">
+          Git is a tool for tracking changes in your code.
+          When used with GitHub, you can safely store and share your code.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <a
+            href="https://git-scm.com/download/mac"
+            target="_blank" rel="noopener noreferrer"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">🍎 macOS</h3>
+            <p class="text-text-secondary text-sm">Installed with Xcode Command Line Tools</p>
+          </a>
+
+          <a
+            href="https://git-scm.com/download/win"
+            target="_blank" rel="noopener noreferrer"
+            rel="noopener"
+            class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline"
+          >
+            <h3 class="text-white font-bold mb-2">🪟 Windows</h3>
+            <p class="text-text-secondary text-sm">Install Git for Windows</p>
+          </a>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Verify Installation</h3>
+        <CodeBlock
+          client:load
+          code="git --version"
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Initial Setup</h3>
+        <CodeBlock
+          client:load
+          code={`git config --global user.name "Your Name"
+git config --global user.email "my@email.com"`}
+          filename="Terminal"
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          Use the same email address you will use to sign up for GitHub.
+        </p>
+      </section>
+
+      <!-- 4. Terminal -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Using the Terminal" />
+
+        <p class="text-text-secondary mb-4">
+          The terminal (or command prompt) is a tool for giving text-based commands to your computer.
+          It may feel unfamiliar at first, but you will get used to it quickly.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Opening the Terminal</h3>
+        <ul class="list-disc list-inside text-text-secondary space-y-2 mb-4">
+          <li><strong class="text-white">macOS:</strong> Spotlight (⌘+Space) → Search "Terminal"</li>
+          <li><strong class="text-white">Windows:</strong> Start menu → Search "PowerShell"</li>
+          <li><strong class="text-white">Antigravity/VS Code:</strong> Menu → Terminal → New Terminal (or Ctrl+`)</li>
+        </ul>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Common Commands</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">Command</th>
+                <th class="text-left py-2 px-3 text-white">Description</th>
+                <th class="text-left py-2 px-3 text-white">Example</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">cd</td>
+                <td class="py-2 px-3">Change directory</td>
+                <td class="py-2 px-3 font-mono">cd Documents</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">ls</td>
+                <td class="py-2 px-3">List files</td>
+                <td class="py-2 px-3 font-mono">ls -la</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">mkdir</td>
+                <td class="py-2 px-3">Create a folder</td>
+                <td class="py-2 px-3 font-mono">mkdir my-project</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="py-2 px-3 font-mono text-primary">pwd</td>
+                <td class="py-2 px-3">Print current directory</td>
+                <td class="py-2 px-3 font-mono">pwd</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. GitHub -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Create a GitHub Account" />
+
+        <p class="text-text-secondary mb-4">
+          GitHub is a platform for storing and sharing code.
+          It is free to use and used by most developers.
+        </p>
+
+        <a
+          href="https://github.com/signup"
+          target="_blank" rel="noopener noreferrer"
+          rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-surface border border-border hover:border-primary/50 text-white rounded-lg font-medium transition-colors no-underline"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          Sign up for GitHub
+        </a>
+      </section>
+
+      <!-- Checklist -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          locale="en"
+          storageKey="cycle-0-tools"
+          title="Cycle 0 Completion Checklist"
+          items={toolsChecklist}
+        />
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/tools" />
+  </div>
+</DocsLayout>

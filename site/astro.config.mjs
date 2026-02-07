@@ -10,9 +10,21 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: false,
     }),
-    sitemap(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'ko',
+        locales: { ko: 'ko-KR', en: 'en-US' },
+      },
+    }),
   ],
   site: 'https://choorai.com',
+  i18n: {
+    locales: ['ko', 'en'],
+    defaultLocale: 'ko',
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   redirects: {
     '/docs': '/map',
     '/troubleshooting/cors': '/fix/cors',

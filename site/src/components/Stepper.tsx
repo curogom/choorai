@@ -6,9 +6,16 @@ interface Step {
 interface StepperProps {
   steps: Step[];
   currentStep?: number;
+  locale?: 'ko' | 'en';
 }
 
-export default function Stepper({ steps, currentStep }: StepperProps) {
+const labels = {
+  ko: { navLabel: '튜토리얼 진행 단계', completed: '완료', inProgress: '진행 중', completedPrefix: '완료: ', currentPrefix: '현재 단계: ', upcomingPrefix: '예정: ' },
+  en: { navLabel: 'Tutorial progress', completed: 'Done', inProgress: 'In progress', completedPrefix: 'Done: ', currentPrefix: 'Current: ', upcomingPrefix: 'Upcoming: ' },
+};
+
+export default function Stepper({ steps, currentStep, locale }: StepperProps) {
+  const l = labels[locale || 'ko'];
   // If currentStep is provided, override status based on it
   const processedSteps = currentStep !== undefined
     ? steps.map((step, i) => ({
@@ -22,14 +29,14 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
   const isAllCompleted = currentStepIndex === -1 && completedCount === steps.length;
 
   return (
-    <nav aria-label="튜토리얼 진행 단계">
+    <nav aria-label={l.navLabel}>
       {/* 모바일: 축약형 표시 */}
       <div className="flex md:hidden items-center justify-center gap-2 py-3">
         <span className="text-primary font-bold text-lg">
           {isAllCompleted ? completedCount : currentStepIndex + 1} / {steps.length}
         </span>
         <span className="text-text-secondary text-sm">
-          {isAllCompleted ? '완료' : processedSteps[currentStepIndex]?.label || '진행 중'}
+          {isAllCompleted ? l.completed : processedSteps[currentStepIndex]?.label || l.inProgress}
         </span>
       </div>
 
@@ -63,7 +70,7 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                   <span className="text-sm font-bold" aria-hidden="true">{index + 1}</span>
                 )}
                 <span className="sr-only">
-                  {step.status === 'completed' ? '완료: ' : step.status === 'current' ? '현재 단계: ' : '예정: '}
+                  {step.status === 'completed' ? l.completedPrefix : step.status === 'current' ? l.currentPrefix : l.upcomingPrefix}
                   {step.label}
                 </span>
               </div>

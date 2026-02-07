@@ -5,8 +5,14 @@ type CalloutVariant = 'info' | 'warning' | 'error' | 'success' | 'tip';
 interface CalloutProps {
   variant?: CalloutVariant;
   title?: string;
+  locale?: 'ko' | 'en';
   children: ReactNode;
 }
+
+const defaultTitles = {
+  ko: { info: '정보', warning: '주의', error: '오류', success: '완료', tip: '꿀팁' },
+  en: { info: 'Info', warning: 'Warning', error: 'Error', success: 'Done', tip: 'Tip' },
+};
 
 const variantConfig: Record<CalloutVariant, {
   bgClass: string;
@@ -81,10 +87,11 @@ const variantConfig: Record<CalloutVariant, {
 export default function Callout({
   variant = 'info',
   title,
+  locale,
   children,
 }: CalloutProps) {
   const config = variantConfig[variant];
-  const displayTitle = title ?? config.defaultTitle;
+  const displayTitle = title ?? defaultTitles[locale || 'ko'][variant];
 
   return (
     <div

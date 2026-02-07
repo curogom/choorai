@@ -1,0 +1,301 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Stepper from '../../../../../components/Stepper';
+import ChallengeProgressBar from '../../../../../components/ChallengeProgressBar';
+import Checklist from '../../../../../components/Checklist';
+import CodeBlock from '../../../../../components/CodeBlock';
+import PromptBox from '../../../../../components/PromptBox';
+import Callout from '../../../../../components/Callout';
+import SectionHeader from '../../../../../components/SectionHeader';
+import MetaBadge from '../../../../../components/MetaBadge';
+import PageNavigation from '../../../../../components/PageNavigation.astro';
+
+const steps = [
+  { label: 'Preparation', status: 'completed' as const },
+  { label: 'Frontend', status: 'current' as const },
+  { label: 'Backend', status: 'upcoming' as const },
+  { label: 'Connect', status: 'upcoming' as const },
+  { label: 'Deploy', status: 'upcoming' as const },
+  { label: 'Complete', status: 'upcoming' as const },
+];
+
+const checklist = [
+  { id: 'vite', label: 'Create Vite project', description: 'npm create vite' },
+  { id: 'tailwind', label: 'Install Tailwind CSS', description: 'Styling framework' },
+  { id: 'dev', label: 'Run dev server', description: 'Verify with npm run dev' },
+  { id: 'component', label: 'Create first component', description: 'Build UI with AI' },
+];
+---
+
+<DocsLayout
+  title="60-Minute Challenge - React Frontend"
+  description="Let's build a frontend with React + Vite"
+  currentPath="/start/60min/frontend/react"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/start/60min" class="hover:text-white transition-colors">60-Min Challenge</a>
+      <span>/</span>
+      <span class="text-text-secondary">Frontend</span>
+      <span>/</span>
+      <span class="text-primary font-medium">React</span>
+    </nav>
+
+    <!-- Progress -->
+    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
+      <ChallengeProgressBar client:load />
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="mb-12">
+      <Stepper client:load steps={steps} locale="en" />
+    </div>
+
+    <!-- Page Title -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 mb-4">
+        <MetaBadge icon="clock" text="Estimated time: 15 min" />
+        <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 text-xs font-bold">React</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Frontend: React + Vite
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        We'll build a frontend using React and Vite.
+        With AI assistance, even complex code can be generated easily.
+      </p>
+    </header>
+
+    <!-- TL;DR -->
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR (3-line summary)" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Create a project with <code>npm create vite@latest</code></li>
+          <li>Install Tailwind CSS for styling</li>
+          <li>Ask AI to "create a project list UI"</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- Main Content -->
+    <article class="prose prose-invert max-w-none">
+      <!-- Section 1: Create Project -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Create Project" />
+
+        <p class="text-text-secondary mb-4">
+          Open your terminal, navigate to the desired folder, and run the following commands.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Create project
+npm create vite@latest my-admin -- --template react-ts
+
+# Navigate to folder
+cd my-admin
+
+# Install dependencies
+npm install`}
+          filename="Terminal"
+        />
+
+        <Callout client:load variant="info" title="Options Explained" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>my-admin</strong>: Project name (you can change this to whatever you like)</li>
+            <li><strong>react-ts</strong>: React + TypeScript template</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Section 2: Tailwind CSS -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Install Tailwind CSS" />
+
+        <p class="text-text-secondary mb-4">
+          Installing Tailwind CSS lets you create beautiful UIs using just classes.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Install Tailwind
+npm install -D tailwindcss postcss autoprefixer
+
+# Generate config files
+npx tailwindcss init -p`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          Open the <code>tailwind.config.js</code> file and modify it as follows:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}`}
+          filename="tailwind.config.js"
+        />
+
+        <p class="text-text-secondary mt-4 mb-4">
+          Open <code>src/index.css</code> and add the following at the top:
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`@tailwind base;
+@tailwind components;
+@tailwind utilities;`}
+          filename="src/index.css"
+        />
+      </section>
+
+      <!-- Section 3: Dev Server -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Run Dev Server" />
+
+        <CodeBlock
+          client:load
+          code={`npm run dev`}
+          filename="Terminal"
+        />
+
+        <p class="text-text-secondary mt-4">
+          Open <code>http://localhost:5173</code> in your browser to see the default Vite page.
+        </p>
+
+        <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            Success!
+          </div>
+          <p class="text-green-300/80 text-sm">
+            If you see the Vite logo, the basic frontend setup is complete.
+          </p>
+        </div>
+      </section>
+
+      <!-- Section 4: Build UI with AI -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Build UI with AI" />
+
+        <p class="text-text-secondary mb-6">
+          Now let's ask AI to create a project management UI.
+          Copy the prompt below and paste it into Antigravity or ChatGPT.
+        </p>
+
+        <PromptBox
+          client:load
+          prompt={`Build a project management app with React + TypeScript + Tailwind.
+
+Requirements:
+1. Main layout in src/App.tsx (header + content)
+2. Card UI showing a list of projects
+3. New project creation form (name, description inputs)
+4. Project delete button
+5. Use local state for data management for now (we'll connect an API later)
+
+Styling:
+- Dark mode background (bg-gray-900)
+- Cards with bg-gray-800 and hover effects
+- Blue accent colors (blue-500)
+
+File structure:
+- src/App.tsx
+- src/components/ProjectCard.tsx
+- src/components/ProjectForm.tsx
+- src/types/index.ts`}
+          title="AI Prompt"
+          description="Send this prompt to your AI. If you're using Antigravity, press Cmd+L to open the agent panel."
+        />
+
+        <Callout client:load variant="warning" title="Tips for Using AI Responses" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li>Paste the AI-generated code directly into your files</li>
+            <li>If you get an error, show the error message to the AI</li>
+            <li>Ask "How do I fix this error?"</li>
+          </ul>
+        </Callout>
+      </section>
+
+      <!-- Section 5: Expected Result -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Expected Result" />
+
+        <p class="text-text-secondary mb-4">
+          After applying the AI-generated code, you should see a screen like this:
+        </p>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">Project Management</h3>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <!-- Form Preview -->
+            <div class="bg-gray-900 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-gray-400 mb-3">New Project</h4>
+              <div class="space-y-3">
+                <div class="bg-gray-800 rounded px-3 py-2 text-gray-500 text-sm">Project name</div>
+                <div class="bg-gray-800 rounded px-3 py-2 text-gray-500 text-sm h-16">Description</div>
+                <div class="bg-blue-600 text-white text-center py-2 rounded text-sm font-medium">Create</div>
+              </div>
+            </div>
+
+            <!-- Card Preview -->
+            <div class="space-y-3">
+              <div class="bg-gray-900 rounded-lg p-4 border-l-4 border-blue-500">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-medium text-white">My First Project</h4>
+                    <p class="text-sm text-gray-400 mt-1">Web service built with AI</p>
+                  </div>
+                  <button class="text-red-400 text-sm">Delete</button>
+                </div>
+              </div>
+              <div class="bg-gray-900 rounded-lg p-4 border-l-4 border-blue-500 opacity-50">
+                <h4 class="font-medium text-white">Second Project</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-text-secondary mt-4 text-sm">
+          The complete example code is available in the
+          <a href="https://github.com/choorai/examples/tree/main/b2b-admin/web" class="text-primary hover:underline">
+            GitHub repository
+          </a>.
+        </p>
+      </section>
+
+      <!-- Checklist -->
+      <section class="mb-10">
+        <Checklist
+          client:load
+          storageKey="60min-frontend-react"
+          title="React Frontend Completion Checklist"
+          items={checklist}
+        />
+      </section>
+
+      <!-- Navigation -->
+      <PageNavigation currentPath="/start/60min/frontend/react" />
+    </article>
+  </div>
+</DocsLayout>

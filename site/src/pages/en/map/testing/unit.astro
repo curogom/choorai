@@ -1,0 +1,498 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const pytestExample = `# tests/test_projects.py
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+def test_create_project():
+    """Test project creation"""
+    response = client.post(
+        "/api/v1/projects",
+        json={"name": "Test Project", "description": "A test"}
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Test Project"
+    assert "id" in data
+
+def test_create_project_validation():
+    """Test name field validation"""
+    response = client.post("/api/v1/projects", json={})
+    assert response.status_code == 422  # Validation error
+
+def test_get_projects_empty():
+    """Test empty list response"""
+    response = client.get("/api/v1/projects")
+    assert response.status_code == 200
+    assert response.json()["items"] == []`;
+
+const vitestExample = `// src/index.test.ts
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { app } from './index';
+
+describe('Todos API', () => {
+  // Initialize storage before each test
+  beforeEach(() => {
+    // Reset storage
+  });
+
+  describe('POST /api/v1/todos', () => {
+    it('should create a todo', async () => {
+      const res = await app.request('/api/v1/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Test Todo' }),
+      });
+
+      expect(res.status).toBe(201);
+      const data = await res.json();
+      expect(data.title).toBe('Test Todo');
+      expect(data.is_completed).toBe(false);
+    });
+
+    it('should return 422 for empty title', async () => {
+      const res = await app.request('/api/v1/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: '' }),
+      });
+
+      expect(res.status).toBe(422); // Validation error
+    });
+  });
+
+  describe('PATCH /api/v1/todos/:id', () => {
+    it('should toggle todo completion', async () => {
+      // Create a todo first
+      const createRes = await app.request('/api/v1/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Test' }),
+      });
+      const { id } = await createRes.json();
+
+      // Toggle completion
+      const res = await app.request(\`/api/v1/todos/\${id}\`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_completed: true }),
+      });
+
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.is_completed).toBe(true);
+    });
+  });
+});`;
+
+const vueTestExample = `// src/__tests__/useTodos.test.ts
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { flushPromises } from '@vue/test-utils';
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
+import { createApp, h, defineComponent } from 'vue';
+import { useTodos, useCreateTodo } from '../composables/useTodos';
+
+// Helper for testing Vue composables
+function withSetup<T>(composable: () => T) {
+  let result!: T;
+
+  const TestComponent = defineComponent({
+    setup() {
+      result = composable();
+      return () => h('div');
+    },
+  });
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
+  const app = createApp(TestComponent);
+  app.use(VueQueryPlugin, { queryClient });
+  app.mount(document.createElement('div'));
+
+  return { result, app };
+}
+
+describe('useTodos', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should fetch todos list', async () => {
+    const mockResponse = {
+      items: [{ id: '1', title: 'Todo 1', is_completed: false }],
+      total: 1,
+    };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const { result, app } = withSetup(() => useTodos());
+
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(result.data.value).toEqual(mockResponse);
+    app.unmount();
+  });
+});`;
+
+const reactTestExample = `// src/__tests__/useProjects.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useProjects, useCreateProject } from '../hooks/useProjects';
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  });
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+};
+
+describe('useProjects', () => {
+  it('should fetch projects', async () => {
+    const mockData = { items: [{ id: '1', name: 'Test' }], total: 1 };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockData),
+    });
+
+    const { result } = renderHook(() => useProjects(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(mockData);
+    });
+  });
+});`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Unit Test Guide"
+  description="Writing unit tests with pytest and Vitest"
+  currentPath="/map/testing/unit"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/testing" class="hover:text-white transition-colors">Testing</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Unit Tests</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">Unit</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">pytest</span>
+        <span class="px-3 py-1 rounded-full bg-surface text-text-secondary text-xs">Vitest</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Unit Test Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Test individual functions, API endpoints, and components in isolation.
+        The advantages are fast execution and easy debugging.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Principles of unit testing">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><strong class="text-white">Fast</strong>: Runs in milliseconds</li>
+          <li><strong class="text-white">Isolated</strong>: No impact on other tests</li>
+          <li><strong class="text-white">Repeatable</strong>: Same results every time</li>
+          <li><strong class="text-white">Self-validating</strong>: Clear pass/fail outcome</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Python pytest -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Python: pytest</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Installation & Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Install dependencies
+pip install pytest pytest-asyncio httpx
+
+# pytest.ini (configuration file)
+[pytest]
+testpaths = tests
+asyncio_mode = auto`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">API Test Example</h3>
+
+        <CodeBlock
+          client:load
+          code={pytestExample}
+          filename="tests/test_projects.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Running Tests</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Run all tests
+pytest
+
+# Verbose output
+pytest -v
+
+# Specific file only
+pytest tests/test_projects.py
+
+# Specific function only
+pytest tests/test_projects.py::test_create_project
+
+# Check coverage
+pip install pytest-cov
+pytest --cov=app --cov-report=html`}
+          filename="Terminal"
+        />
+
+        <Callout client:load locale="en" variant="info" title="FastAPI TestClient">
+          <p class="text-sm mt-1">
+            FastAPI's <code class="bg-surface px-1 rounded">TestClient</code> allows you to
+            test APIs without making actual HTTP requests.
+            Use <code class="bg-surface px-1 rounded">httpx.AsyncClient</code> if you need async testing.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Vitest -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Node.js: Vitest</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Installation & Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Install dependencies
+npm install -D vitest
+
+# package.json scripts
+{
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+}`}
+          filename="Terminal"
+        />
+
+        <CodeBlock
+          client:load
+          code={`// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: false,
+    environment: 'node', // or 'jsdom' (browser environment)
+  },
+});`}
+          filename="vitest.config.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono API Test Example</h3>
+
+        <CodeBlock
+          client:load
+          code={vitestExample}
+          filename="src/index.test.ts"
+        />
+
+        <Callout client:load locale="en" variant="tip" title="Hono's app.request()">
+          <p class="text-sm mt-1">
+            Hono's <code class="bg-surface px-1 rounded">app.request()</code> method allows you to
+            simulate HTTP requests without running an actual server.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Vue Tests -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Vue: Vitest + @vue/test-utils</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Install dependencies
+npm install -D vitest @vue/test-utils jsdom
+
+# vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+  plugins: [vue()],
+  test: {
+    environment: 'jsdom',  // Simulate browser environment
+    globals: false,
+  },
+});`}
+          filename="Setup"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Composable Test Example</h3>
+
+        <CodeBlock
+          client:load
+          code={vueTestExample}
+          filename="src/__tests__/useTodos.test.ts"
+        />
+
+        <Callout client:load locale="en" variant="warning" title="jsdom environment required">
+          <p class="text-sm mt-1">
+            Vue component and composable tests require <code class="bg-surface px-1 rounded">environment: 'jsdom'</code>.
+            Without it, you'll get a <code class="bg-surface px-1 rounded">document is not defined</code> error.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- React Tests -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">React: Vitest + @testing-library/react</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Install dependencies
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hook Test Example</h3>
+
+        <CodeBlock
+          client:load
+          code={reactTestExample}
+          filename="src/__tests__/useProjects.test.ts"
+        />
+      </section>
+
+      <!-- Mocking -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Mocking</h2>
+
+        <p class="text-text-secondary mb-4">
+          Mock external dependencies (APIs, databases) to write isolated tests.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Mocking fetch in Vitest</h3>
+
+        <CodeBlock
+          client:load
+          code={`import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+// Mock global fetch
+const originalFetch = global.fetch;
+
+beforeEach(() => {
+  global.fetch = vi.fn();
+});
+
+afterEach(() => {
+  global.fetch = originalFetch;
+});
+
+it('should handle API response', async () => {
+  // Mock success response
+  vi.mocked(global.fetch).mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({ data: 'test' }),
+  } as Response);
+
+  // Run test
+  const result = await fetchData();
+  expect(result.data).toBe('test');
+});
+
+it('should handle API error', async () => {
+  // Mock error response
+  vi.mocked(global.fetch).mockResolvedValue({
+    ok: false,
+    status: 500,
+  } as Response);
+
+  // Verify error handling
+  await expect(fetchData()).rejects.toThrow();
+});`}
+          filename="Mocking Example"
+        />
+      </section>
+
+      <!-- Best Practices -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Best Practices</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-green-400 font-bold mb-2">DO</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>✅ One assertion per test</li>
+              <li>✅ Make intent clear in test names</li>
+              <li>✅ Mock external dependencies</li>
+              <li>✅ Test edge cases</li>
+              <li>✅ Test error scenarios</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-red-400 font-bold mb-2">DON'T</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>❌ Share state between tests</li>
+              <li>❌ Call real APIs/DBs</li>
+              <li>❌ Depend on sleep/setTimeout</li>
+              <li>❌ Test implementation details</li>
+              <li>❌ Use magic numbers</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Next steps">
+          <p class="text-sm">
+            Once you've mastered unit tests,
+            learn how to test full user scenarios with Playwright in the
+            <a href="/en/map/testing/e2e" class="text-primary hover:underline">E2E Test Guide</a>.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/testing/unit" />
+  </div>
+</DocsLayout>

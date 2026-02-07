@@ -1,0 +1,235 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const fastapiCode = `# app/database.py
+import asyncpg
+from contextlib import asynccontextmanager
+
+DATABASE_URL = "postgresql://user:password@localhost:5432/mydb"
+
+pool = None
+
+async def init_db():
+    global pool
+    pool = await asyncpg.create_pool(DATABASE_URL)
+
+async def close_db():
+    await pool.close()
+
+async def get_connection():
+    async with pool.acquire() as conn:
+        yield conn`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI, Depends
+from app.database import init_db, close_db, get_connection
+
+app = FastAPI()
+
+@app.on_event("startup")
+async def startup():
+    await init_db()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_db()
+
+@app.get("/users")
+async def get_users():
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("SELECT id, name, email FROM users")
+        return [dict(r) for r in rows]
+
+@app.post("/users")
+async def create_user(name: str, email: str):
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+            name, email
+        )
+        return dict(row)`;
+
+const honoCode = `// src/db.ts
+import postgres from 'postgres';
+
+const sql = postgres('postgresql://user:password@localhost:5432/mydb');
+
+export default sql;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import sql from './db';
+
+const app = new Hono();
+
+app.get('/users', async (c) => {
+  const users = await sql\`SELECT id, name, email FROM users\`;
+  return c.json(users);
+});
+
+app.post('/users', async (c) => {
+  const { name, email } = await c.req.json();
+  const [user] = await sql\`
+    INSERT INTO users (name, email)
+    VALUES (\${name}, \${email})
+    RETURNING *
+  \`;
+  return c.json(user, 201);
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="Relational Database (RDB)"
+  description="Fundamentals of relational databases such as PostgreSQL and MySQL"
+  currentPath="/map/database/rdb"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <a href="/en/map/database" class="hover:text-white transition-colors">Database</a>
+      <span>/</span>
+      <span class="text-primary font-medium">RDB</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold">
+          Lv.2
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Relational Database (RDB)
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        The most widely used type of database.
+        Define relationships between tables and query data using SQL.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="What is this?" locale="en">
+        <p class="mt-1">
+          The most common type of DB that stores data in tables and rows. Queried using SQL.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- When do I need this? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="When do I need this?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">Structured data</strong> like users/orders/products</li>
+          <li><strong class="text-white">Relationships between data</strong> matter (users - orders - products)</li>
+          <li><strong class="text-white">Complex queries</strong> are needed (JOIN, GROUP BY, aggregation)</li>
+          <li><strong class="text-white">Transaction guarantees</strong> are required (payments, inventory management)</li>
+        </ul>
+      </section>
+
+      <!-- Key Services -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Key Services" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">PostgreSQL</h3>
+            <span class="text-xs text-primary font-medium">Free, most popular</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Open source. Rich in JSON, full-text search, and extension features.
+              Recommended for most new projects.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">MySQL</h3>
+            <span class="text-xs text-text-secondary font-medium">Free, many legacy systems</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Long history and massive ecosystem. Widely used in WordPress and existing systems.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Supabase</h3>
+            <span class="text-xs text-green-400 font-medium">Managed PostgreSQL</span>
+            <p class="text-text-secondary text-sm mt-2">
+              PostgreSQL-based BaaS. Provides authentication, storage, and real-time features together.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">PlanetScale</h3>
+            <span class="text-xs text-green-400 font-medium">Managed MySQL</span>
+            <p class="text-text-secondary text-sm mt-2">
+              MySQL compatible. Safely manage schema changes with branching.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Pricing" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">PostgreSQL / MySQL</strong> - Free when self-hosted (server costs separate)</li>
+            <li><strong class="text-white">Supabase</strong> - Free tier: 500MB storage, 50K API requests/month</li>
+            <li><strong class="text-white">PlanetScale</strong> - Free tier: 5GB storage, 1B row reads/month</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Connection Examples -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Connection Examples" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + asyncpg (Python)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/database.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + postgres.js (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/db.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="Using an ORM is more convenient" locale="en">
+          <p class="text-sm mt-1">
+            In real projects, it's more common to use
+            <strong class="text-white">SQLAlchemy</strong> (Python) or
+            <strong class="text-white">Drizzle ORM</strong> (TypeScript) rather than writing raw SQL.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database/rdb" />
+  </div>
+</DocsLayout>

@@ -5,14 +5,22 @@ interface PromptBoxProps {
   title?: string;
   description?: string;
   actionLabel?: string;
+  locale?: 'ko' | 'en';
 }
+
+const labels = {
+  ko: { title: 'AI 프롬프트', desc: '위 프롬프트를 복사하여 AI 채팅에 붙여넣으세요.', copy: '프롬프트 복사', subtitle: '복사해서 사용하세요', copied: '복사됨!' },
+  en: { title: 'AI Prompt', desc: 'Copy this prompt and paste it into your AI chat.', copy: 'Copy Prompt', subtitle: 'Copy and use', copied: 'Copied!' },
+};
 
 export default function PromptBox({
   prompt,
-  title = 'AI 프롬프트',
-  description = '위 프롬프트를 복사하여 AI 채팅에 붙여넣으세요.',
-  actionLabel = '프롬프트 복사',
+  title,
+  description,
+  actionLabel,
+  locale,
 }: PromptBoxProps) {
+  const l = labels[locale || 'ko'];
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -59,8 +67,8 @@ export default function PromptBox({
             </svg>
           </div>
           <div>
-            <h3 className="text-white text-xl font-bold">{title}</h3>
-            <p className="text-accent-purple font-medium text-sm">복사해서 사용하세요</p>
+            <h3 className="text-white text-xl font-bold">{title ?? l.title}</h3>
+            <p className="text-accent-purple font-medium text-sm">{l.subtitle}</p>
           </div>
         </div>
 
@@ -73,7 +81,7 @@ export default function PromptBox({
 
         {/* 액션 */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-text-secondary text-sm">{description}</p>
+          <p className="text-text-secondary text-sm">{description ?? l.desc}</p>
           <button
             onClick={handleCopy}
             className="
@@ -94,7 +102,7 @@ export default function PromptBox({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                복사됨!
+                {l.copied}
               </>
             ) : (
               <>
@@ -106,7 +114,7 @@ export default function PromptBox({
                     d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                   />
                 </svg>
-                {actionLabel}
+                {actionLabel ?? l.copy}
               </>
             )}
           </button>

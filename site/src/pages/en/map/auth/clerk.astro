@@ -1,0 +1,375 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const clerkProviderCode = `// main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ClerkProvider } from '@clerk/clerk-react';
+import App from './App';
+import './index.css';
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing Publishable Key');
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <App />
+    </ClerkProvider>
+  </React.StrictMode>
+);`;
+
+const envCode = `# .env.local
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxx...`;
+
+const authComponentsCode = `// components/AuthButtons.tsx
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from '@clerk/clerk-react';
+
+export function AuthButtons() {
+  return (
+    <div className="flex items-center gap-4">
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            Sign In
+          </button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button className="px-4 py-2 border border-gray-300 rounded-lg">
+            Sign Up
+          </button>
+        </SignUpButton>
+      </SignedOut>
+      <SignedIn>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
+    </div>
+  );
+}`;
+
+const protectedRouteCode = `// components/ProtectedRoute.tsx
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
+}`;
+
+const useAuthCode = `// hooks/useAuthenticatedFetch.ts
+import { useAuth } from '@clerk/clerk-react';
+
+export function useAuthenticatedFetch() {
+  const { getToken } = useAuth();
+
+  return async (url: string, options: RequestInit = {}) => {
+    const token = await getToken();
+
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: \`Bearer \${token}\`,
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+}
+
+// Usage example
+// const authFetch = useAuthenticatedFetch();
+// const data = await authFetch('/api/projects');`;
+
+const userHookCode = `// components/UserProfile.tsx
+import { useUser } from '@clerk/clerk-react';
+
+export function UserProfile() {
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    return <div>Sign in required</div>;
+  }
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow">
+      <img
+        src={user.imageUrl}
+        alt={user.fullName || 'Profile'}
+        className="w-16 h-16 rounded-full"
+      />
+      <h2 className="mt-2 text-lg font-bold">{user.fullName}</h2>
+      <p className="text-gray-600">{user.primaryEmailAddress?.emailAddress}</p>
+    </div>
+  );
+}`;
+
+const backendVerifyCode = `// Backend (Node.js/Express example)
+import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+
+// Verify token with middleware
+app.get('/api/protected',
+  ClerkExpressRequireAuth(),
+  (req, res) => {
+    // Access user ID via req.auth.userId
+    res.json({ userId: req.auth.userId });
+  }
+);`;
+
+const installCode = `npm install @clerk/clerk-react`;
+---
+
+<DocsLayout
+  title="Clerk Auth Guide (Lv.2)"
+  description="How to add authentication to a React app with Clerk"
+  currentPath="/map/auth/clerk"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <a href="/en/map/auth" class="hover:text-white transition-colors">Auth Guide</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Clerk</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold">
+          React
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Clerk Auth Guide
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Clerk is the easiest way to add authentication to a React app.
+        You can complete login/signup features <strong class="text-white">in just 10 minutes</strong>.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="Why Clerk?" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>React-optimized components and hooks</li>
+          <li>Social login (Google, GitHub, etc.) built-in</li>
+          <li>Free tier: 10,000 MAU per month</li>
+          <li>Customizable UI components</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Step 1: Clerk Project Setup -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="Clerk Project Setup" />
+
+        <ol class="list-decimal list-inside text-text-secondary space-y-3">
+          <li>
+            Create a free account at
+            <a href="https://clerk.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+              clerk.com
+            </a>
+          </li>
+          <li>Click <strong class="text-white">Create application</strong></li>
+          <li>Enter app name (e.g., My React App)</li>
+          <li>Select login methods (Email, Google, GitHub, etc.)</li>
+          <li>Copy <code class="bg-surface px-1 rounded">Publishable key</code> from <strong class="text-white">API Keys</strong></li>
+        </ol>
+      </section>
+
+      <!-- Step 2: React App Integration -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="React App Integration" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Install Package</h3>
+        <CodeBlock
+          client:load
+          code={installCode}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Environment Variables</h3>
+        <CodeBlock
+          client:load
+          code={envCode}
+          filename=".env.local"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">ClerkProvider Setup</h3>
+        <CodeBlock
+          client:load
+          code={clerkProviderCode}
+          filename="main.tsx"
+        />
+
+        <Callout client:load variant="warning" title="Environment Variable Note" locale="en">
+          <p class="text-sm">
+            When using Vite, environment variable names must start with <code class="bg-surface px-1 rounded">VITE_</code>.
+            Next.js uses <code class="bg-surface px-1 rounded">NEXT_PUBLIC_</code>.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Step 3: Auth UI Components -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Auth UI Components" />
+
+        <p class="text-text-secondary mb-4">
+          Clerk provides ready-to-use UI components.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={authComponentsCode}
+          filename="components/AuthButtons.tsx"
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h4 class="text-white font-bold mb-2">Key Components</h4>
+          <ul class="text-text-secondary text-sm space-y-1">
+            <li><code class="bg-background px-1 rounded">SignedIn</code> - Displayed only when signed in</li>
+            <li><code class="bg-background px-1 rounded">SignedOut</code> - Displayed only when signed out</li>
+            <li><code class="bg-background px-1 rounded">UserButton</code> - Profile dropdown menu</li>
+            <li><code class="bg-background px-1 rounded">SignInButton</code> - Sign in button/modal</li>
+            <li><code class="bg-background px-1 rounded">SignUpButton</code> - Sign up button/modal</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Step 4: Protected Routes -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Protected Route Implementation" />
+
+        <p class="text-text-secondary mb-4">
+          To protect pages that require login, create a <code class="bg-surface px-1 rounded">ProtectedRoute</code> component.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={protectedRouteCode}
+          filename="components/ProtectedRoute.tsx"
+        />
+      </section>
+
+      <!-- Step 5: Accessing User Info -->
+      <section class="mb-10">
+        <SectionHeader number={5} title="Accessing User Info" />
+
+        <p class="text-text-secondary mb-4">
+          Use the <code class="bg-surface px-1 rounded">useUser</code> hook to access the currently signed-in user's information.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={userHookCode}
+          filename="components/UserProfile.tsx"
+        />
+      </section>
+
+      <!-- Step 6: Backend Integration -->
+      <section class="mb-10">
+        <SectionHeader number={6} title="Backend API Integration (Optional)" />
+
+        <p class="text-text-secondary mb-4">
+          To include an auth token when calling backend APIs, use the <code class="bg-surface px-1 rounded">useAuth</code> hook.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={useAuthCode}
+          filename="hooks/useAuthenticatedFetch.ts"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Token Verification on Backend</h3>
+        <CodeBlock
+          client:load
+          code={backendVerifyCode}
+          filename="server.js"
+        />
+      </section>
+
+      <!-- When to Use -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">When Should You Choose Clerk?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Clerk Recommended</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>React/Next.js projects</li>
+              <li>Need quick auth implementation</li>
+              <li>Social login needed</li>
+              <li>UI customization is important</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Consider Alternatives</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Next.js only → <a href="/en/map/auth/nextauth" class="text-primary hover:underline">NextAuth</a></li>
+              <li>Using Supabase → Supabase Auth</li>
+              <li>Enterprise requirements → <a href="/en/map/auth/auth0" class="text-primary hover:underline">Auth0</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load variant="info" title="Next Steps" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2">
+            <li>
+              <a href="https://clerk.com/docs/components/customization" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                UI Customization
+              </a> - Customize styles to match your brand
+            </li>
+            <li>
+              <a href="https://clerk.com/docs/organizations/overview" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                Organizations
+              </a> - Add team/organization features
+            </li>
+            <li>
+              <a href="/en/map/database/supabase" class="text-primary hover:underline">
+                Supabase Integration
+              </a> - Use with a database
+            </li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/auth/clerk" />
+  </div>
+</DocsLayout>

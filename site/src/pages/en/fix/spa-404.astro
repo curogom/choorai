@@ -1,0 +1,162 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing SPA 404 Errors"
+  description="How to fix 404 Page Not Found error on page refresh"
+  currentPath="/fix/spa-404"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SPA 404</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Common After Deployment
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing SPA 404 Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Getting 404 when refreshing your React/Vue app after deployment?
+        This is a routing configuration issue with SPAs (Single Page Applications).
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          Configure all routes to redirect to <code class="bg-surface px-1 rounded">index.html</code>.
+          The setup method varies by hosting service.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="404 Page Not Found"
+        severity="critical"
+        cause="SPAs use client-side routing. The server doesn't know about paths like /about or /dashboard, so it returns a 404."
+        solution={[
+          "Configure all routes to redirect to index.html in your hosting settings",
+          "Cloudflare Pages: Create a _redirects file",
+          "Vercel: Set up rewrites in vercel.json",
+          "Nginx: Configure try_files"
+        ]}
+        aiPrompt="I deployed a React app to Cloudflare Pages but when I refresh on /about it shows 404. How do I fix it?"
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Solution by Hosting Provider</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-xs font-bold">Cloudflare</span>
+          Cloudflare Pages
+        </h3>
+        <p class="text-text-secondary mb-3">
+          Create a <code class="bg-surface px-1 rounded">_redirects</code> file in the project root or <code class="bg-surface px-1 rounded">public</code> folder.
+        </p>
+        <CodeBlock
+          client:load
+          filename="public/_redirects"
+          code={`/* /index.html 200`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-black text-white text-xs font-bold">Vercel</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="vercel.json"
+          code={`{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">Netlify</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="public/_redirects"
+          code={`/*    /index.html   200`}
+        />
+        <p class="text-text-secondary text-sm mt-2">
+          Or use a <code class="bg-surface px-1 rounded">netlify.toml</code> file:
+        </p>
+        <CodeBlock
+          client:load
+          filename="netlify.toml"
+          code={`[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">Nginx</span>
+        </h3>
+        <CodeBlock
+          client:load
+          filename="nginx.conf"
+          code={`server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="info" title="Why does this happen?">
+          <p class="mt-2">
+            SPAs handle URLs with JavaScript in the browser.
+            But when you refresh, the browser requests that path from the server,
+            and the server returns a 404 because there's no actual file at that path.
+            The solution is to route all requests to index.html so JS can handle the routing.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build Failure</h4>
+          <p class="text-text-secondary text-sm">npm run build error</p>
+        </a>
+        <a href="/en/fix/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Error</h4>
+          <p class="text-text-secondary text-sm">CORS issue when calling API</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

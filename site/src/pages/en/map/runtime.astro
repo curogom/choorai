@@ -1,0 +1,280 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 5: Runtime Environment"
+  description="Setting up development environments and creating a local dev environment with docker-compose"
+  currentPath="/map/runtime"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 5: Runtime</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 5
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Runtime Environment
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Set up a local development environment with docker-compose
+        and learn how to separate development, staging, and production environments.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>The importance of development environments</li>
+          <li>Using docker-compose</li>
+          <li>Separating configuration by environment</li>
+          <li>Cloud vs local: choosing criteria</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Importance of Development Environments -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">The Importance of Development Environments</h2>
+
+        <p class="text-text-secondary mb-4">
+          To eliminate the "it works on my machine..." problem,
+          <strong class="text-white">all developers need to work in the same environment</strong>.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">When environments differ</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Build failures due to Node.js version differences</li>
+              <li>Query errors due to DB version differences</li>
+              <li>Path issues due to OS differences</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">When environments match</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>New team members can start developing right away</li>
+              <li>Easy to reproduce bugs</li>
+              <li>Same environment as CI/CD</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Using docker-compose -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Using docker-compose</h2>
+
+        <p class="text-text-secondary mb-4">
+          docker-compose is a tool for managing multiple containers at once.
+          You can define frontend, backend, and database all in one place.
+        </p>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Basic Setup</h3>
+
+        <CodeBlock
+          client:load
+          code={`services:
+  # Frontend (React)
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+
+  # Backend (FastAPI)
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/myapp
+    depends_on:
+      - db
+
+  # Database (PostgreSQL)
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=myapp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:`}
+          filename="docker-compose.yml"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Common Commands</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Start all services
+docker-compose up
+
+# Start in background
+docker-compose up -d
+
+# Restart a specific service
+docker-compose restart backend
+
+# View logs
+docker-compose logs -f backend
+
+# Stop and remove all services
+docker-compose down
+
+# Remove volumes as well (caution!)
+docker-compose down -v`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hot Reload Setup</h3>
+
+        <p class="text-text-secondary mb-4">
+          Mount volumes so code changes are reflected immediately during development.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# FastAPI dev server (hot reload enabled)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]`}
+          filename="Dockerfile (Development)"
+        />
+      </section>
+
+      <!-- Environment-specific Configuration -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Environment-specific Configuration</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">.env File Management</h3>
+
+        <CodeBlock
+          client:load
+          code={`# .env.development (local development)
+DATABASE_URL=postgresql://user:pass@localhost:5432/myapp_dev
+DEBUG=true
+API_URL=http://localhost:8080
+
+# .env.staging (staging)
+DATABASE_URL=postgresql://user:pass@staging-db:5432/myapp_staging
+DEBUG=true
+API_URL=https://staging-api.myapp.com
+
+# .env.production (production)
+DATABASE_URL=postgresql://user:pass@prod-db:5432/myapp
+DEBUG=false
+API_URL=https://api.myapp.com`}
+          filename=".env Files"
+        />
+
+        <Callout client:load locale="en" variant="warning" title="Add to .gitignore">
+          <p class="mt-2 text-sm">
+            Never commit <code class="bg-surface px-1 rounded">.env</code> files to Git.
+            Instead, create an <code class="bg-surface px-1 rounded">.env.example</code> to share a template.
+          </p>
+        </Callout>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">.env.example Example</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Database
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# API Settings
+API_URL=https://api.example.com
+DEBUG=false
+
+# Authentication
+JWT_SECRET=your-secret-key-here`}
+          filename=".env.example"
+        />
+      </section>
+
+      <!-- Cloud vs Local -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cloud vs Local</h2>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-3 text-white">Scenario</th>
+                <th class="text-left py-3 px-3 text-white">Recommendation</th>
+                <th class="text-left py-3 px-3 text-white">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Solo development</td>
+                <td class="py-3 px-3"><span class="text-green-400">docker-compose</span></td>
+                <td class="py-3 px-3 text-text-secondary">Free, fast feedback</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Team development</td>
+                <td class="py-3 px-3"><span class="text-blue-400">Cloud DB + local app</span></td>
+                <td class="py-3 px-3 text-text-secondary">Need to share data</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-3 px-3 text-text-secondary">Staging</td>
+                <td class="py-3 px-3"><span class="text-purple-400">Cloud</span></td>
+                <td class="py-3 px-3 text-text-secondary">Similar to production</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 text-text-secondary">Production</td>
+                <td class="py-3 px-3"><span class="text-purple-400">Cloud</span></td>
+                <td class="py-3 px-3 text-text-secondary">Stability, scalability</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Cost Optimization Tips</h3>
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">Only during dev hours</strong> use cloud DB (usage-based billing)</li>
+          <li><strong class="text-white">Leverage free tiers</strong> (Supabase, Neon, PlanetScale)</li>
+          <li><strong class="text-white">Keep staging environments</strong> at minimum specs</li>
+          <li><strong class="text-white">Test locally</strong> thoroughly before deploying to the cloud</li>
+        </ul>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Next Steps">
+          <p class="text-sm">
+            If your development environment setup is complete, let's learn about operations next.
+            In <a href="/map/ops" class="text-primary hover:underline ml-1">Cycle 6: Ops</a>,
+            you will learn about deployment strategies, monitoring, and cost management.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/runtime" />
+  </div>
+</DocsLayout>

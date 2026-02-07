@@ -1,0 +1,268 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const fastapiCode = `# app/vector_db.py
+from pinecone import Pinecone
+
+pc = Pinecone(api_key="your-api-key")
+index = pc.Index("my-index")`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI
+from app.vector_db import index
+import openai
+
+app = FastAPI()
+openai_client = openai.OpenAI()
+
+def get_embedding(text: str) -> list[float]:
+    """Convert text to a vector"""
+    response = openai_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text
+    )
+    return response.data[0].embedding
+
+@app.post("/documents")
+async def upsert_document(doc_id: str, text: str):
+    vector = get_embedding(text)
+    index.upsert(vectors=[{
+        "id": doc_id,
+        "values": vector,
+        "metadata": {"text": text}
+    }])
+    return {"id": doc_id, "status": "indexed"}
+
+@app.get("/search")
+async def search(query: str, top_k: int = 5):
+    query_vector = get_embedding(query)
+    results = index.query(
+        vector=query_vector,
+        top_k=top_k,
+        include_metadata=True
+    )
+    return [
+        {"id": m.id, "score": m.score, "text": m.metadata["text"]}
+        for m in results.matches
+    ]`;
+
+const honoCode = `// src/vector.ts
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'your-api-key' });
+const index = pc.index('my-index');
+
+export default index;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import index from './vector';
+import OpenAI from 'openai';
+
+const app = new Hono();
+const openai = new OpenAI();
+
+async function getEmbedding(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  });
+  return response.data[0].embedding;
+}
+
+app.post('/documents', async (c) => {
+  const { id, text } = await c.req.json();
+  const vector = await getEmbedding(text);
+  await index.upsert([{
+    id,
+    values: vector,
+    metadata: { text },
+  }]);
+  return c.json({ id, status: 'indexed' }, 201);
+});
+
+app.get('/search', async (c) => {
+  const query = c.req.query('q') || '';
+  const vector = await getEmbedding(query);
+  const results = await index.query({
+    vector,
+    topK: 5,
+    includeMetadata: true,
+  });
+  return c.json(
+    results.matches?.map((m) => ({
+      id: m.id,
+      score: m.score,
+      text: m.metadata?.text,
+    })) || []
+  );
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="Vector Database"
+  description="Vector embedding stores for AI and search"
+  currentPath="/map/database/vector"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <a href="/en/map/database" class="hover:text-white transition-colors">Database</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Vector DB</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold">
+          Lv.4
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Vector Database
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        A special-purpose database that converts text, images, etc. into vectors (arrays of numbers),
+        stores them, and performs similarity-based semantic search.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="What is this?" locale="en">
+        <p class="mt-1">
+          Converts text/images into vectors (arrays of numbers) and stores them. Used for similarity search (semantic search).
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- When do I need this? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="When do I need this?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">Semantic search</strong> - Search documents by meaning, not keywords (searching "puppy" also returns "pet dog" documents)</li>
+          <li><strong class="text-white">RAG (Retrieval-Augmented Generation)</strong> - Provide relevant documents as context to LLMs</li>
+          <li><strong class="text-white">Recommendation systems</strong> - Recommend similar products/content</li>
+          <li><strong class="text-white">Image search</strong> - Reverse image search to find similar images</li>
+        </ul>
+      </section>
+
+      <!-- Key Services -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Key Services" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">Pinecone</h3>
+            <span class="text-xs text-primary font-medium">SaaS, easiest to use</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Fully managed vector DB. Simple setup with automatic scaling.
+              Serverless model with pay-as-you-go pricing.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">pgvector</h3>
+            <span class="text-xs text-green-400 font-medium">PostgreSQL extension</span>
+            <p class="text-text-secondary text-sm mt-2">
+              An extension that adds vector search capabilities to existing PostgreSQL.
+              Enables vector search using SQL without a separate service.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Qdrant</h3>
+            <span class="text-xs text-text-secondary font-medium">Open source</span>
+            <p class="text-text-secondary text-sm mt-2">
+              High-performance vector DB written in Rust. Can be self-hosted or
+              used as a cloud service. Powerful filtering capabilities.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">ChromaDB</h3>
+            <span class="text-xs text-text-secondary font-medium">For local development</span>
+            <p class="text-text-secondary text-sm mt-2">
+              Python-native vector DB. Runs locally out of the box,
+              making it ideal for prototyping and development.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Pricing" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">Pinecone</strong> - Free tier: 100K vectors (serverless), 1 index</li>
+            <li><strong class="text-white">pgvector</strong> - Included with PostgreSQL (free, no additional cost)</li>
+            <li><strong class="text-white">Qdrant Cloud</strong> - Free tier: 1GB storage</li>
+            <li><strong class="text-white">ChromaDB</strong> - Open source, free (runs locally)</li>
+          </ul>
+        </div>
+
+        <Callout client:load variant="warning" title="Watch out for embedding API costs" locale="en">
+          <p class="text-sm mt-1">
+            While the vector DB itself is free or inexpensive, the embedding API
+            (e.g., OpenAI) for converting text to vectors incurs separate costs.
+            OpenAI text-embedding-3-small costs approximately $0.02/1M tokens.
+          </p>
+        </Callout>
+      </section>
+
+      <!-- Connection Examples -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Connection Examples" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + pinecone-client (Python)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/vector_db.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + @pinecone-database/pinecone (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/vector.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="Choosing an embedding model" locale="en">
+          <p class="text-sm mt-1">
+            OpenAI <code class="bg-surface px-1 rounded">text-embedding-3-small</code> offers the best value.
+            If you prefer open-source models, you can generate embeddings locally with
+            <code class="bg-surface px-1 rounded">sentence-transformers</code> (Python).
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database/vector" />
+  </div>
+</DocsLayout>

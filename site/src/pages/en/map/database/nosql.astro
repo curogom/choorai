@@ -1,0 +1,215 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import SectionHeader from '../../../../components/SectionHeader';
+import MetaBadge from '../../../../components/MetaBadge';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const fastapiCode = `# app/database.py
+from motor.motor_asyncio import AsyncIOMotorClient
+
+MONGO_URL = "mongodb+srv://user:password@cluster.mongodb.net/mydb"
+
+client = AsyncIOMotorClient(MONGO_URL)
+db = client.mydb`;
+
+const fastapiQueryCode = `# app/main.py
+from fastapi import FastAPI
+from app.database import db
+from bson import ObjectId
+
+app = FastAPI()
+
+@app.get("/posts")
+async def get_posts():
+    posts = []
+    async for post in db.posts.find().limit(20):
+        post["_id"] = str(post["_id"])
+        posts.append(post)
+    return posts
+
+@app.post("/posts")
+async def create_post(title: str, content: str, tags: list[str] = []):
+    doc = {"title": title, "content": content, "tags": tags}
+    result = await db.posts.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return doc`;
+
+const honoCode = `// src/db.ts
+import { MongoClient } from 'mongodb';
+
+const MONGO_URL = 'mongodb+srv://user:password@cluster.mongodb.net/mydb';
+const client = new MongoClient(MONGO_URL);
+const db = client.db('mydb');
+
+export default db;`;
+
+const honoQueryCode = `// src/index.ts
+import { Hono } from 'hono';
+import db from './db';
+
+const app = new Hono();
+
+app.get('/posts', async (c) => {
+  const posts = await db.collection('posts').find().limit(20).toArray();
+  return c.json(posts);
+});
+
+app.post('/posts', async (c) => {
+  const { title, content, tags } = await c.req.json();
+  const result = await db.collection('posts').insertOne({
+    title,
+    content,
+    tags: tags || [],
+    createdAt: new Date(),
+  });
+  return c.json({ _id: result.insertedId, title, content, tags }, 201);
+});
+
+export default app;`;
+---
+
+<DocsLayout
+  title="NoSQL Database"
+  description="Non-relational databases such as MongoDB and Firestore"
+  currentPath="/map/database/nosql"
+  lang="en"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycle</a>
+      <span>/</span>
+      <a href="/en/map/database" class="hover:text-white transition-colors">Database</a>
+      <span>/</span>
+      <span class="text-primary font-medium">NoSQL</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
+          Lv.2
+        </span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        NoSQL Database
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Store data flexibly without pre-defining a schema.
+        The most common form is the document format, similar to JSON.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="What is this?" locale="en">
+        <p class="mt-1">
+          Store data in JSON-like format without a schema. Flexible structure.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- When do I need this? -->
+      <section class="mb-10">
+        <SectionHeader number={1} title="When do I need this?" />
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">Data structure changes frequently</strong> (prototyping, MVP)</li>
+          <li><strong class="text-white">Nested data</strong> needs to be stored as a whole (blog posts + comments)</li>
+          <li><strong class="text-white">Horizontal scaling</strong> is needed (handling massive traffic)</li>
+          <li><strong class="text-white">Real-time synchronization</strong> is required (Firestore + mobile apps)</li>
+        </ul>
+      </section>
+
+      <!-- Key Services -->
+      <section class="mb-10">
+        <SectionHeader number={2} title="Key Services" />
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">MongoDB Atlas</h3>
+            <span class="text-xs text-primary font-medium">Most popular</span>
+            <p class="text-text-secondary text-sm mt-2">
+              The leading document-based NoSQL. Easy to get started with the cloud-managed Atlas service.
+              Provides powerful queries and aggregation pipelines.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Firestore</h3>
+            <span class="text-xs text-text-secondary font-medium">Built into Firebase</span>
+            <p class="text-text-secondary text-sm mt-2">
+              NoSQL DB included in Google Firebase. With real-time listeners,
+              data changes are automatically reflected on the client.
+            </p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">DynamoDB</h3>
+            <span class="text-xs text-text-secondary font-medium">AWS</span>
+            <p class="text-text-secondary text-sm mt-2">
+              AWS fully managed NoSQL. Supports key-value and document models.
+              Guarantees consistent performance at massive scale.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="mb-10">
+        <SectionHeader number={3} title="Pricing" />
+
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <ul class="text-text-secondary space-y-2">
+            <li><strong class="text-white">MongoDB Atlas</strong> - Free tier: 512MB storage, shared cluster</li>
+            <li><strong class="text-white">Firestore</strong> - 50K reads / 20K writes / 20K deletes per day free</li>
+            <li><strong class="text-white">DynamoDB</strong> - 25GB storage, 25 read/write units per month free</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Connection Examples -->
+      <section class="mb-10">
+        <SectionHeader number={4} title="Connection Examples" />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">FastAPI + motor (Python, MongoDB)</h3>
+
+        <CodeBlock
+          client:load
+          code={fastapiCode}
+          filename="app/database.py"
+        />
+
+        <CodeBlock
+          client:load
+          code={fastapiQueryCode}
+          filename="app/main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Hono + mongodb (TypeScript)</h3>
+
+        <CodeBlock
+          client:load
+          code={honoCode}
+          filename="src/db.ts"
+        />
+
+        <CodeBlock
+          client:load
+          code={honoQueryCode}
+          filename="src/index.ts"
+        />
+
+        <Callout client:load variant="info" title="Choosing between RDB and NoSQL" locale="en">
+          <p class="text-sm mt-1">
+            If relationships between data are complex, <a href="/en/map/database/rdb" class="text-primary hover:underline">RDB</a> is the better choice.
+            If the data structure changes frequently or rapid development is a priority, NoSQL is more suitable.
+            Using both together is also a common pattern.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database/nosql" />
+  </div>
+</DocsLayout>

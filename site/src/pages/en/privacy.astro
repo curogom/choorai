@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy Policy" lang="en">
+  <div class="min-h-screen bg-background">
+    <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center h-16">
+          <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <img src="/favicon.png" alt="" class="w-8 h-8" aria-hidden="true" />
+            <span class="text-xl font-bold tracking-tight">Choorai</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
+
+      <div class="prose prose-invert max-w-none space-y-8">
+        <p class="text-text-secondary">Last updated: January 31, 2025</p>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 1 (Collection of Personal Information)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            Choorai (hereinafter "the Service") collects minimal personal information from users. Currently, the Service does not have a sign-up feature, and only the following anonymous information may be automatically collected:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>Pages visited and time spent (for web analytics)</li>
+            <li>Browser type and operating system</li>
+            <li>Country/region of access (based on IP address, anonymized)</li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 2 (Purpose of Collection)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            The collected anonymous information is used only for the following purposes:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>Service usage statistics analysis</li>
+            <li>Content improvement and user experience enhancement</li>
+            <li>Technical issue resolution</li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 3 (Retention and Disposal of Personal Information)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            The collected anonymous analytics data is retained for service improvement purposes. No personally identifiable information is collected. If a membership feature is added in the future, this policy will be updated accordingly.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 4 (Sharing Personal Information with Third Parties)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            The Service does not share users' personal information with third parties. However, exceptions are made in the following cases:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>When required by law</li>
+            <li>When requested for investigation purposes through legally prescribed procedures</li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 5 (Use of Cookies)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            The Service may use cookies to enhance the user experience. Cookies are used for the following purposes:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>Saving learning progress (local storage)</li>
+            <li>Maintaining user preferences</li>
+            <li>Web analytics (anonymized visit statistics)</li>
+          </ul>
+          <p class="text-text-secondary leading-relaxed">
+            You can refuse the use of cookies through your browser settings, but some features may be limited.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 6 (User Rights)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            Users may exercise the following rights:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>Delete browser local storage and cookies</li>
+            <li>Opt out of web analytics tracking (Do Not Track setting)</li>
+            <li>Inquire about or raise objections to the processing of personal information</li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 7 (Security Measures for Personal Information)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            The Service maintains information security through the following measures:
+          </p>
+          <ul class="list-disc list-inside text-text-secondary space-y-2 ml-4">
+            <li>Encrypted communication via HTTPS</li>
+            <li>Collection of only minimal data</li>
+            <li>Regular security reviews</li>
+          </ul>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 8 (Changes to This Policy)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            If this Privacy Policy is changed, the changes will be announced on the website. Significant changes will be announced at least 7 days in advance.
+          </p>
+        </section>
+
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white">Article 9 (Contact)</h2>
+          <p class="text-text-secondary leading-relaxed">
+            For inquiries about personal information processing, please submit them through <a href="https://github.com/curogom/choorai/issues" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">GitHub Issues</a>.
+          </p>
+        </section>
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-border">
+        <a href="/" class="text-primary hover:underline flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </a>
+      </div>
+    </main>
+  </div>
+</BaseLayout>

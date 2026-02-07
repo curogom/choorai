@@ -1,162 +1,25 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import NavGroup from '../components/NavGroup.tsx';
+import LanguagePicker from '../components/LanguagePicker.astro';
+import type { Lang } from '../i18n/ui';
+import { useTranslations, getLocalePath } from '../i18n/utils';
+import { getNavigation } from '../i18n/navigation';
 
 interface Props {
   title: string;
   description?: string;
   currentPath?: string;
+  lang?: Lang;
 }
 
-interface NavItem {
-  label: string;
-  href?: string;
-  badge?: string;
-  tags?: string[];
-  indent?: number;
-}
-
-interface NavGroupType {
-  title: string;
-  storageKey: string;
-  items: NavItem[];
-}
-
-interface NavSection {
-  title: string;
-  href?: string;
-  groups?: NavGroupType[];
-  items?: NavItem[];
-}
-
-const { title, description, currentPath } = Astro.props;
-
-// 새로운 IA: Path / Map / Fix / Recipes / Reference
-const navigation: NavSection[] = [
-  {
-    title: '🎯 Path',
-    href: '/path',
-    groups: [
-      {
-        title: '코스 목록',
-        storageKey: 'path-courses',
-        items: [
-          { label: '60분 완주', href: '/path/60min', tags: ['🌱'], indent: 1 },
-          { label: 'React', href: '/start/60min/frontend/react', indent: 2 },
-          { label: 'Vue', href: '/start/60min/frontend/vue', indent: 2 },
-          { label: 'FastAPI', href: '/start/60min/backend/fastapi', indent: 2 },
-          { label: 'Hono', href: '/start/60min/backend/hono', indent: 2 },
-          { label: '연결하기', href: '/start/60min/connect', indent: 2 },
-          { label: '배포하기', href: '/start/60min/deploy', indent: 2 },
-          { label: '완료!', href: '/start/60min/complete', indent: 2 },
-          { label: '미니 SaaS', badge: '준비중', indent: 1 },
-          { label: 'B2B Admin', badge: '준비중', indent: 1 },
-        ],
-      },
-    ],
-    items: [
-      { label: '도구 준비', href: '/map/tools' },
-    ],
-  },
-  {
-    title: '🗺️ Map',
-    href: '/map',
-    groups: [
-      {
-        title: '기본 사이클',
-        storageKey: 'map-basic',
-        items: [
-          { label: '전체 로드맵', href: '/map' },
-          { label: '도메인 & DNS', href: '/map/dns' },
-          { label: '프론트엔드', href: '/map/frontend', indent: 1 },
-          { label: 'Vue', href: '/map/frontend/vue', badge: 'Lv.2', indent: 2 },
-          { label: '백엔드', href: '/map/backend', indent: 1 },
-          { label: 'Hono', href: '/map/backend/hono', badge: 'Lv.1', tags: ['🌱'], indent: 2 },
-          { label: 'Go', href: '/map/backend/go', badge: 'Lv.3', indent: 2 },
-          { label: '.NET', href: '/map/backend/dotnet', badge: 'Lv.3', indent: 2 },
-          { label: 'NestJS', href: '/map/backend/nest', badge: 'Lv.4', indent: 2 },
-          { label: '데이터베이스', href: '/map/database', indent: 1 },
-          { label: 'RDB', href: '/map/database/rdb', badge: 'Lv.2', indent: 2 },
-          { label: 'NoSQL', href: '/map/database/nosql', badge: 'Lv.2', indent: 2 },
-          { label: 'Cache', href: '/map/database/cache', badge: 'Lv.3', indent: 2 },
-          { label: 'Vector DB', href: '/map/database/vector', badge: 'Lv.4', indent: 2 },
-          { label: '환경변수', href: '/map/runtime', indent: 1 },
-          { label: '모니터링', href: '/map/ops', indent: 1 },
-        ],
-      },
-      {
-        title: '심화',
-        storageKey: 'map-advanced',
-        items: [
-          { label: 'Docker', href: '/map/docker', indent: 1 },
-          { label: 'CI/CD', href: '/map/cicd', indent: 1 },
-        ],
-      },
-    ],
-  },
-  {
-    title: '☁️ BaaS',
-    items: [
-      { label: 'Supabase', href: '/baas/supabase', badge: 'Lv.3', tags: ['👍'] },
-      { label: 'Firebase', href: '/baas/firebase', badge: 'Lv.2' },
-    ],
-  },
-  {
-    title: '🔐 인증',
-    items: [
-      { label: '개요', href: '/map/auth' },
-      { label: 'Clerk', href: '/map/auth/clerk', badge: 'Lv.2', tags: ['👍'], indent: 1 },
-      { label: 'NextAuth', href: '/map/auth/nextauth', badge: 'Lv.3', indent: 1 },
-      { label: 'Auth0', href: '/map/auth/auth0', badge: 'Lv.3', indent: 1 },
-      { label: 'Firebase', href: '/map/auth/firebase', badge: 'Lv.2', indent: 1 },
-    ],
-  },
-  {
-    title: '🧪 테스팅',
-    items: [
-      { label: '개요', href: '/map/testing' },
-      { label: '단위 테스트', href: '/map/testing/unit', indent: 1 },
-      { label: 'E2E 테스트', href: '/map/testing/e2e', indent: 1 },
-    ],
-  },
-  {
-    title: '🛠️ Fix',
-    href: '/fix',
-    items: [
-      { label: '트러블슈팅', href: '/fix' },
-      { label: 'CORS 에러', href: '/fix/cors', indent: 1 },
-      { label: '환경 변수', href: '/fix/env', indent: 1 },
-      { label: 'SPA 404', href: '/fix/spa-404', indent: 1 },
-      { label: '빌드 실패', href: '/fix/build-fail', indent: 1 },
-      { label: '인증/쿠키', href: '/fix/auth-cookie', indent: 1 },
-    ],
-  },
-  {
-    title: '🤖 Recipes',
-    href: '/recipes',
-    items: [
-      { label: 'Agent Recipes', href: '/recipes' },
-    ],
-  },
-  {
-    title: '📦 Reference',
-    href: '/reference',
-    items: [
-      { label: '예제 프로젝트', href: '/reference' },
-    ],
-  },
-  {
-    title: '🚀 배포 플랫폼',
-    items: [
-      { label: 'Cloudflare Pages', href: '/deploy/cloudflare-pages' },
-      { label: 'Vercel', href: '/deploy/vercel' },
-      { label: 'Cloud Run', href: '/deploy/cloud-run' },
-    ],
-  },
-];
+const { title, description, currentPath, lang = 'ko' } = Astro.props;
+const t = useTranslations(lang);
+const navigation = getNavigation(lang);
+const lp = (path: string) => getLocalePath(lang, path);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} lang={lang}>
   <div class="min-h-screen flex flex-col">
     <!-- 헤더 -->
     <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -167,18 +30,18 @@ const navigation: NavSection[] = [
             <button
               id="mobile-menu-trigger"
               class="lg:hidden p-2 -ml-2 text-text-secondary hover:text-white transition-colors"
-              aria-label="메뉴 열기"
+              aria-label={t('layout.menuOpen')}
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <a href="/" class="flex items-center gap-2" aria-label="Choorai 홈">
+            <a href={lp('/')} class="flex items-center gap-2" aria-label="Choorai">
               <img src="/favicon.png" alt="" class="w-7 h-7" aria-hidden="true" />
               <span class="text-lg font-bold">Choorai</span>
             </a>
             <span class="text-border hidden sm:inline">|</span>
-            <span class="text-sm text-text-secondary hidden sm:inline">문서</span>
+            <span class="text-sm text-text-secondary hidden sm:inline">{t('layout.docs')}</span>
           </div>
 
           <div class="flex items-center gap-4">
@@ -186,16 +49,18 @@ const navigation: NavSection[] = [
             <button
               id="search-trigger"
               class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3 hover:border-primary/50 transition-colors cursor-pointer"
-              aria-label="문서 검색 열기"
+              aria-label={t('layout.searchOpen')}
             >
               <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span class="flex-1 text-left text-sm text-text-secondary px-2">문서 검색...</span>
+              <span class="flex-1 text-left text-sm text-text-secondary px-2">{t('layout.search')}</span>
               <kbd class="text-[10px] text-text-secondary bg-background px-1.5 py-0.5 rounded border border-border" aria-hidden="true">⌘K</kbd>
             </button>
 
-            <a href="https://github.com/curogom/choorai" class="text-text-secondary hover:text-white transition-colors" aria-label="GitHub 저장소">
+            <LanguagePicker lang={lang} />
+
+            <a href="https://github.com/curogom/choorai" class="text-text-secondary hover:text-white transition-colors" aria-label="GitHub">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
@@ -208,7 +73,7 @@ const navigation: NavSection[] = [
     <div class="flex-1 flex">
       <!-- 사이드바 -->
       <aside id="sidebar" class="hidden lg:block w-64 border-r border-border bg-background sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
-        <nav class="p-4 space-y-4" aria-label="문서 네비게이션">
+        <nav class="p-4 space-y-4" aria-label={t('layout.docNav')}>
           {navigation.map((section, index) => (
             <div class={index > 0 ? 'pt-4 border-t border-border/50' : ''}>
               <h3 class="text-base font-bold text-white mb-3 px-3 flex items-center gap-2">
@@ -272,17 +137,17 @@ const navigation: NavSection[] = [
               <div class="flex items-center gap-2">
                 <img src="/favicon.png" alt="" class="w-5 h-5" aria-hidden="true" />
                 <span class="text-white font-medium">Choorai</span>
-                <span class="text-text-secondary text-sm">· 문서</span>
+                <span class="text-text-secondary text-sm">· {t('layout.docs')}</span>
               </div>
               <div class="flex items-center gap-4 text-sm">
-                <a href="/" class="text-text-secondary hover:text-white transition-colors">홈</a>
+                <a href={lp('/')} class="text-text-secondary hover:text-white transition-colors">{t('layout.home')}</a>
                 <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors flex items-center gap-1">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                   </svg>
                   GitHub
                 </a>
-                <a href="/terms" class="text-text-secondary hover:text-white transition-colors">이용약관</a>
+                <a href={lp('/terms')} class="text-text-secondary hover:text-white transition-colors">{t('layout.terms')}</a>
               </div>
             </div>
             <p class="text-xs text-text-secondary text-center mt-4">
@@ -295,18 +160,18 @@ const navigation: NavSection[] = [
   </div>
 
   <!-- 모바일 사이드바 -->
-  <div id="mobile-sidebar" class="fixed inset-0 z-[90] lg:hidden hidden" role="dialog" aria-modal="true" aria-label="네비게이션 메뉴">
+  <div id="mobile-sidebar" class="fixed inset-0 z-[90] lg:hidden hidden" role="dialog" aria-modal="true" aria-label={t('layout.navMenu')}>
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="mobile-overlay" aria-hidden="true"></div>
     <div class="absolute top-0 left-0 w-72 h-full bg-background border-r border-border shadow-2xl transform transition-transform duration-300" id="mobile-drawer">
       <div class="flex items-center justify-between h-14 px-4 border-b border-border">
-        <span class="text-lg font-bold">메뉴</span>
-        <button id="mobile-menu-close" class="p-2 text-text-secondary hover:text-white transition-colors" aria-label="메뉴 닫기">
+        <span class="text-lg font-bold">{t('layout.menu')}</span>
+        <button id="mobile-menu-close" class="p-2 text-text-secondary hover:text-white transition-colors" aria-label={t('layout.menuClose')}>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      <nav class="p-4 space-y-4 overflow-y-auto h-[calc(100%-3.5rem)]" aria-label="문서 네비게이션">
+      <nav class="p-4 space-y-4 overflow-y-auto h-[calc(100%-3.5rem)]" aria-label={t('layout.docNav')}>
         {navigation.map((section) => (
           <div>
             <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-3">
@@ -343,7 +208,7 @@ const navigation: NavSection[] = [
   </div>
 
   <!-- 검색 모달 -->
-  <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label="문서 검색">
+  <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label={t('layout.search')}>
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="search-overlay" aria-hidden="true"></div>
     <div class="relative max-w-2xl mx-auto mt-20 bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
       <div class="p-4">
@@ -352,8 +217,8 @@ const navigation: NavSection[] = [
     </div>
   </div>
 
-  <script>
-    // Pagefind 초기화 (lazy loading - 검색 모달 열 때만 로드)
+  <script define:vars={{ searchPlaceholder: t('layout.searchPlaceholder'), searchNoResults: t('layout.searchNoResults'), searchResults: t('layout.searchResults'), searchOneResult: t('layout.searchOneResult') }}>
+    // Pagefind 초기화 (lazy loading)
     let pagefindLoaded = false;
 
     async function initSearch() {
@@ -380,7 +245,7 @@ const navigation: NavSection[] = [
         script.onerror = () => {
           const container = document.getElementById('pagefind-container');
           if (container) {
-            container.innerHTML = '<p class="text-text-secondary text-sm">검색 기능은 빌드 후 사용 가능합니다.</p>';
+            container.innerHTML = '<p class="text-text-secondary text-sm">Search is available after build.</p>';
           }
         };
         script.onload = () => {
@@ -389,7 +254,7 @@ const navigation: NavSection[] = [
             element: '#pagefind-container',
             showSubResults: true,
             showImages: false,
-            translations: { placeholder: '검색어를 입력하세요...', zero_results: '결과 없음', many_results: '[COUNT]개 결과', one_result: '1개 결과' }
+            translations: { placeholder: searchPlaceholder, zero_results: searchNoResults, many_results: searchResults, one_result: searchOneResult }
           });
         };
         document.head.appendChild(script);
@@ -405,8 +270,8 @@ const navigation: NavSection[] = [
 
     function openSearch() {
       modal?.classList.remove('hidden');
-      initSearch(); // 모달 열 때 pagefind 로드
-      setTimeout(() => (document.querySelector('.pagefind-ui__search-input') as HTMLElement)?.focus(), 100);
+      initSearch();
+      setTimeout(() => (document.querySelector('.pagefind-ui__search-input'))?.focus(), 100);
     }
     function closeSearch() { modal?.classList.add('hidden'); }
 
@@ -438,7 +303,7 @@ const navigation: NavSection[] = [
 
     // 사이드바에서 현재 활성 항목으로 스크롤
     const sidebar = document.getElementById('sidebar');
-    const activeItem = sidebar?.querySelector('.border-primary') as HTMLElement | null;
+    const activeItem = sidebar?.querySelector('.border-primary');
     if (sidebar && activeItem) {
       const sidebarRect = sidebar.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();

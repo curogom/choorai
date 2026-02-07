@@ -1,0 +1,27 @@
+---
+import { languages, type Lang } from '../i18n/ui';
+import { getPathWithoutLocale, getLocalePath } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const currentPath = getPathWithoutLocale(Astro.url.pathname);
+---
+
+<div class="flex items-center gap-1 text-sm">
+  {Object.entries(languages).map(([code, label]) => (
+    <a
+      href={getLocalePath(code as Lang, currentPath)}
+      class={`px-1.5 py-0.5 rounded text-xs font-medium transition-colors ${
+        lang === code
+          ? 'bg-primary/20 text-primary'
+          : 'text-text-secondary hover:text-white'
+      }`}
+      aria-current={lang === code ? 'true' : undefined}
+    >
+      {code.toUpperCase()}
+    </a>
+  ))}
+</div>

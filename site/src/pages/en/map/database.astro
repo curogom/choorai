@@ -1,0 +1,163 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 4: Database Connection"
+  description="How to persist data with PostgreSQL"
+  currentPath="/map/database"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 4: Database</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        🎯 Cycle 4
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Database Connection
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Until now, data has been stored in memory.
+        When the server restarts, the data disappears.
+        Now let's connect PostgreSQL to persist data permanently.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>PostgreSQL installation and setup</li>
+          <li>Using SQLAlchemy ORM</li>
+          <li>Database migrations (Alembic)</li>
+          <li>Separating configuration by environment</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Why do you need a database? -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Why Do You Need a Database?</h2>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">❌ In-Memory Storage</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Data deleted on server restart</li>
+              <li>Data inconsistency across multiple servers</li>
+              <li>Risk of running out of memory</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">✅ Using a Database</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Permanent data storage</li>
+              <li>Same data across multiple servers</li>
+              <li>Efficient searching and sorting</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why PostgreSQL? -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Why PostgreSQL?</h2>
+
+        <p class="text-text-secondary mb-4">
+          Here is why we recommend PostgreSQL among the many databases available:
+        </p>
+
+        <ul class="list-disc list-inside text-text-secondary space-y-2 mb-4">
+          <li><strong class="text-white">Free & Open Source</strong> - No licensing costs</li>
+          <li><strong class="text-white">Proven Stability</strong> - Over 30 years of history</li>
+          <li><strong class="text-white">Cloud Support</strong> - Managed services available on all clouds</li>
+          <li><strong class="text-white">JSON Support</strong> - Flexible data storage like NoSQL</li>
+        </ul>
+      </section>
+
+      <!-- Quick Start -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Quick Start</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">1. Install Dependencies</h3>
+
+        <CodeBlock
+          client:load
+          code={`pip install sqlalchemy psycopg2-binary alembic`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">2. Define Database Models</h3>
+
+        <CodeBlock
+          client:load
+          code={`from sqlalchemy import Column, String, DateTime, Boolean
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declarative_base
+import uuid
+from datetime import datetime
+
+Base = declarative_base()
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(200), nullable=False)
+    description = Column(String(1000))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)`}
+          filename="app/models/project.py"
+        />
+      </section>
+
+      <!-- Cloud Database Options -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cloud Database Options</h2>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <a href="/map/database/supabase" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
+            <h3 class="text-white font-bold mb-2">Supabase</h3>
+            <p class="text-text-secondary text-sm">Free tier available, PostgreSQL-based</p>
+            <span class="text-primary text-xs mt-2 inline-block">View guide →</span>
+          </a>
+          <a href="https://neon.tech" target="_blank" rel="noopener noreferrer" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <h3 class="text-white font-bold mb-2">Neon</h3>
+            <p class="text-text-secondary text-sm">Serverless PostgreSQL</p>
+            <span class="text-text-secondary text-xs mt-2 inline-block">Learn more →</span>
+          </a>
+          <a href="https://planetscale.com" target="_blank" rel="noopener noreferrer" class="p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <h3 class="text-white font-bold mb-2">PlanetScale</h3>
+            <p class="text-text-secondary text-sm">MySQL-based, branching support</p>
+            <span class="text-text-secondary text-xs mt-2 inline-block">Learn more →</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Get started quickly with BaaS">
+          <p class="text-sm">
+            If you want to use a database and authentication directly without a backend,
+            check out the <a href="/map/database/supabase" class="text-primary hover:underline">Supabase guide</a>.
+            You can access the database directly from the frontend without writing SQL.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database" />
+  </div>
+</DocsLayout>
