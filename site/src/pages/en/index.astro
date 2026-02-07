@@ -4,6 +4,7 @@ import Button from '../../components/Button';
 import NextActionCard from '../../components/NextActionCard';
 import MiniMap from '../../components/MiniMap';
 import ModeToggle from '../../components/ModeToggle';
+import LanguagePicker from '../../components/LanguagePicker.astro';
 import testCounts from '../../data/test-counts.json';
 
 const currentYear = new Date().getFullYear();
@@ -24,13 +25,14 @@ const currentYear = new Date().getFullYear();
           </div>
           <!-- Navigation -->
           <nav class="hidden md:flex items-center gap-6">
-            <a href="/map" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Map</a>
-            <a href="/path/60min" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Path</a>
-            <a href="/fix" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Fix</a>
-            <a href="/recipes" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Recipes</a>
-            <a href="/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
+            <a href="/en/map" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/en/path/60min" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/en/fix" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/en/recipes" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="/en/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
           </nav>
           <div class="flex items-center gap-4">
+            <LanguagePicker lang="en" />
             <a
               href="https://github.com/curogom/choorai"
               target="_blank"
@@ -134,7 +136,7 @@ const currentYear = new Date().getFullYear();
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Map -->
-            <a href="/map" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
+            <a href="/en/map" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
               <div class="flex flex-col items-center text-center gap-3">
                 <div class="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +151,7 @@ const currentYear = new Date().getFullYear();
             </a>
 
             <!-- Fix -->
-            <a href="/fix" class="group p-4 bg-surface border border-border rounded-xl hover:border-green-500/50 transition-all hover:-translate-y-1">
+            <a href="/en/fix" class="group p-4 bg-surface border border-border rounded-xl hover:border-green-500/50 transition-all hover:-translate-y-1">
               <div class="flex flex-col items-center text-center gap-3">
                 <div class="p-3 rounded-lg bg-green-500/10 text-green-400 group-hover:bg-green-500/20 transition-colors">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +167,7 @@ const currentYear = new Date().getFullYear();
             </a>
 
             <!-- Recipes -->
-            <a href="/recipes" class="group p-4 bg-surface border border-border rounded-xl hover:border-purple-500/50 transition-all hover:-translate-y-1">
+            <a href="/en/recipes" class="group p-4 bg-surface border border-border rounded-xl hover:border-purple-500/50 transition-all hover:-translate-y-1">
               <div class="flex flex-col items-center text-center gap-3">
                 <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +182,7 @@ const currentYear = new Date().getFullYear();
             </a>
 
             <!-- Reference -->
-            <a href="/reference" class="group p-4 bg-surface border border-border rounded-xl hover:border-yellow-500/50 transition-all hover:-translate-y-1">
+            <a href="/en/reference" class="group p-4 bg-surface border border-border rounded-xl hover:border-yellow-500/50 transition-all hover:-translate-y-1">
               <div class="flex flex-col items-center text-center gap-3">
                 <div class="p-3 rounded-lg bg-yellow-500/10 text-yellow-400 group-hover:bg-yellow-500/20 transition-colors">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +242,7 @@ const currentYear = new Date().getFullYear();
           </div>
 
           <div class="text-center mt-6">
-            <a href="/map" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
+            <a href="/en/map" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
               View Full Roadmap
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -260,7 +262,7 @@ const currentYear = new Date().getFullYear();
 
           <div class="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             <!-- B2B Admin -->
-            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+            <a href="/en/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
               <div class="flex items-start justify-between mb-3">
                 <div>
                   <h3 class="font-bold text-white">B2B Admin Console</h3>
@@ -278,7 +280,7 @@ const currentYear = new Date().getFullYear();
             </a>
 
             <!-- B2C Todo -->
-            <a href="/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
+            <a href="/en/reference" class="group bg-surface border border-border rounded-xl p-5 hover:border-primary/50 transition-all">
               <div class="flex items-start justify-between mb-3">
                 <div>
                   <h3 class="font-bold text-white">B2C Todo App</h3>
@@ -351,10 +353,10 @@ const currentYear = new Date().getFullYear();
             <span class="text-white font-bold">Choorai</span>
           </div>
           <div class="flex items-center gap-4 sm:gap-6 text-sm">
-            <a href="/map" class="text-text-secondary hover:text-white transition-colors">Map</a>
-            <a href="/path/60min" class="text-text-secondary hover:text-white transition-colors">Path</a>
-            <a href="/fix" class="text-text-secondary hover:text-white transition-colors">Fix</a>
-            <a href="/recipes" class="text-text-secondary hover:text-white transition-colors">Recipes</a>
+            <a href="/en/map" class="text-text-secondary hover:text-white transition-colors">Map</a>
+            <a href="/en/path/60min" class="text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/en/fix" class="text-text-secondary hover:text-white transition-colors">Fix</a>
+            <a href="/en/recipes" class="text-text-secondary hover:text-white transition-colors">Recipes</a>
             <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors">GitHub</a>
           </div>
         </div>

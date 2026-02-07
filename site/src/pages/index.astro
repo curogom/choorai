@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import NextActionCard from '../components/NextActionCard';
 import MiniMap from '../components/MiniMap';
 import ModeToggle from '../components/ModeToggle';
+import LanguagePicker from '../components/LanguagePicker.astro';
 import testCounts from '../data/test-counts.json';
 
 const currentYear = new Date().getFullYear();
@@ -31,6 +32,7 @@ const currentYear = new Date().getFullYear();
             <a href="/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
           </nav>
           <div class="flex items-center gap-4">
+            <LanguagePicker lang="ko" />
             <a
               href="https://github.com/curogom/choorai"
               target="_blank"
