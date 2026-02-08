@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface NavItem {
   label: string;
@@ -50,7 +50,7 @@ export default function NavGroup({
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isOpen && contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
     }
@@ -85,7 +85,7 @@ export default function NavGroup({
         ref={contentRef}
         className="overflow-hidden transition-all duration-200 ease-in-out"
         style={{
-          maxHeight: isOpen ? `${contentHeight}px` : '0px',
+          maxHeight: isOpen ? (contentHeight ? `${contentHeight}px` : 'none') : '0px',
           opacity: isOpen ? 1 : 0,
         }}
       >
