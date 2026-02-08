@@ -1,0 +1,51 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="패키지/의존성 기초"
+  description="npm, pip, requirements, lockfile 등 의존성 관리 기본"
+  currentPath="/map/package-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">패키지/의존성 기초</h1>
+    <p class="text-text-secondary mb-6">프로젝트가 외부 라이브러리를 어떻게 설치하고 고정하는지 정리합니다.</p>
+
+    <Callout client:load variant="tip" title="핵심 용어">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Dependency</strong>: 프로젝트 실행에 필요한 외부 패키지</li>
+        <li><strong>devDependency</strong>: 개발/빌드 시에만 필요한 패키지</li>
+        <li><strong>Lockfile</strong>: 설치 버전을 고정한 파일</li>
+        <li><strong>requirements.txt</strong>: Python 의존성 목록 파일</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Node 생태계</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>package.json</code>: 의존성/스크립트 정의</li>
+        <li><code>package-lock.json</code>: 설치 버전 고정</li>
+        <li><code>npm install</code>: 의존성 설치</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Python 생태계</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>pip install fastapi</code>: 패키지 설치</li>
+        <li><code>requirements.txt</code>: 버전 포함 목록</li>
+        <li>가상환경으로 프로젝트별 의존성 격리</li>
+      </ul>
+
+      <Callout client:load variant="info" title="다음 학습 추천">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/tools" class="text-primary hover:underline">도구 설치/터미널</a></li>
+          <li><a href="/start/60min/frontend/react" class="text-primary hover:underline">React 단계</a></li>
+          <li><a href="/start/60min/backend/fastapi" class="text-primary hover:underline">FastAPI 단계</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/package-basics" />
+  </div>
+</DocsLayout>

@@ -1,0 +1,53 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Deploy Basics"
+  description="Core deployment concepts: build, artifact, hosting, runtime"
+  currentPath="/map/deploy-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Deploy Basics</h1>
+    <p class="text-text-secondary mb-6">Understand key concepts required to publish your code as an internet-facing service.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Commonly confused terms">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Build</strong>: Transform source code into runnable/deployable output</li>
+        <li><strong>Artifact</strong>: Build output (e.g., <code>dist</code>)</li>
+        <li><strong>Hosting</strong>: Infrastructure that serves the output</li>
+        <li><strong>Runtime</strong>: Environment where code actually runs</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Frontend deploy flow</h2>
+      <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
+        <li>Push code</li>
+        <li>Run <code>npm run build</code> in CI</li>
+        <li>Upload <code>dist</code> to hosting</li>
+        <li>Connect domain and DNS</li>
+      </ol>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Backend deploy flow</h2>
+      <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
+        <li>Build container image</li>
+        <li>Set runtime environment variables</li>
+        <li>Start service and check health endpoint</li>
+      </ol>
+
+      <Callout client:load locale="en" variant="info" title="Recommended next">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/dns" class="text-primary hover:underline">DNS Basics</a></li>
+          <li><a href="/en/map/runtime" class="text-primary hover:underline">Environment and Runtime</a></li>
+          <li><a href="/en/map/docker" class="text-primary hover:underline">Docker</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/deploy-basics" />
+  </div>
+</DocsLayout>

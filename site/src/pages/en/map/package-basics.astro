@@ -1,0 +1,52 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Package & Dependency Basics"
+  description="Learn npm, pip, lockfiles, and dependency management fundamentals"
+  currentPath="/map/package-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Package & Dependency Basics</h1>
+    <p class="text-text-secondary mb-6">Understand how projects install, pin, and manage external libraries.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core terms">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Dependency</strong>: External package needed at runtime</li>
+        <li><strong>devDependency</strong>: Package needed only for development/build</li>
+        <li><strong>Lockfile</strong>: File that pins exact install versions</li>
+        <li><strong>requirements.txt</strong>: Python package list file</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Node ecosystem</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>package.json</code>: Dependencies and scripts definition</li>
+        <li><code>package-lock.json</code>: Exact resolved versions</li>
+        <li><code>npm install</code>: Install dependencies</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Python ecosystem</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>pip install fastapi</code>: Install package</li>
+        <li><code>requirements.txt</code>: Versioned dependency list</li>
+        <li>Use virtual environments to isolate per-project dependencies</li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Recommended next">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/tools" class="text-primary hover:underline">Tools and Terminal</a></li>
+          <li><a href="/en/start/60min/frontend/react" class="text-primary hover:underline">React step</a></li>
+          <li><a href="/en/start/60min/backend/fastapi" class="text-primary hover:underline">FastAPI step</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/package-basics" />
+  </div>
+</DocsLayout>
