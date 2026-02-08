@@ -12,18 +12,18 @@
 ## 공통 기술 스택
 
 ### 백엔드
-- **Python 3.9+**
-- **FastAPI** - 웹 프레임워크
-- **Pydantic** - 데이터 검증
-- **pytest** - 테스트
+- **FastAPI (Python)** - Primary 튜토리얼 스택
+- **Hono (TypeScript)** - 경량 API 스택
+- **NestJS (TypeScript)** - 구조화 API 스택
+- **Go (chi)** - 저비용 API 스택 예시
 
 ### 프론트엔드
-- **React 18** - UI 라이브러리
-- **TypeScript 5** - 타입 안전성
-- **Vite 5** - 빌드 도구
-- **TanStack Query** - 서버 상태 관리
-- **Tailwind CSS** - 스타일링
-- **Vitest** - 테스트
+- **React 18 + Vite**
+- **Vue 3 + Vite**
+- **TypeScript 5**
+- **TanStack Query**
+- **Tailwind CSS**
+- **Vitest**
 
 ## 빠른 시작
 
@@ -33,7 +33,7 @@
 cd examples/b2b-admin  # 또는 b2c-todo
 ```
 
-### 2. API 실행
+### 2. API 실행 (FastAPI 기준)
 
 ```bash
 cd api
@@ -43,7 +43,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-### 3. Web 실행 (새 터미널)
+### 3. Web 실행 (React 기준, 새 터미널)
 
 ```bash
 cd web
@@ -59,12 +59,18 @@ npm run dev
 ## 테스트 실행
 
 ```bash
-# API 테스트
+# FastAPI 테스트
 cd api && pytest -v
 
-# Web 테스트
+# React Web 테스트
 cd web && npm test
 ```
+
+각 스택별 테스트:
+
+- `api-hono`: `npm run test:run`
+- `api-nest`: `npm run test:e2e`
+- `web-vue`: `npm run test:run`
 
 ## 학습 경로
 

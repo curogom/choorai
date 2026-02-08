@@ -48,7 +48,8 @@ function countJsTests(dir) {
 
   for (const file of files) {
     const content = readFileSync(file, 'utf-8');
-    const matches = content.match(/(?:it|test)\s*\(/g);
+    // Count top-level test cases only, avoid matching words like "init("
+    const matches = content.match(/\b(?:it|test)\s*\(/g);
     count += matches ? matches.length : 0;
   }
 

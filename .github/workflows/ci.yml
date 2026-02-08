@@ -38,6 +38,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
       # B2B Admin 테스트
       - name: Install B2B Admin API dependencies
         run: |
@@ -47,6 +52,10 @@ jobs:
 
       - name: Run B2B Admin API tests
         run: cd examples/b2b-admin/api && pytest -v
+
+      # B2B Admin API (Go) 빌드 검증
+      - name: Build B2B Admin API (Go)
+        run: cd examples/b2b-admin/api-go && go build ./...
 
       # B2B Admin API (Hono) 테스트
       - name: Install B2B Admin API (Hono) dependencies
@@ -83,6 +92,10 @@ jobs:
 
       - name: Run B2C Todo API tests
         run: cd examples/b2c-todo/api && pytest -v
+
+      # B2C Todo API (Go) 빌드 검증
+      - name: Build B2C Todo API (Go)
+        run: cd examples/b2c-todo/api-go && go build ./...
 
       - name: Install B2C Todo Web dependencies
         run: cd examples/b2c-todo/web && npm ci

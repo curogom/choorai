@@ -30,28 +30,38 @@
 ### choorai.com (문서 사이트)
 | 구분 | 기술 |
 |------|------|
-| 프레임워크 | VitePress / Astro |
+| 프레임워크 | Astro |
 | 배포 | Cloudflare Pages |
 
 ### 예시 프로젝트 (문서에서 가르치는 샘플)
-| 구분 | Primary (MVP) | Secondary (추후) |
-|------|---------------|------------------|
-| Frontend | React (Vite) | - |
-| Backend | Python (FastAPI) | Go |
-| 배포 | Cloudflare Pages + Cloud Run | 동일 |
-| Contract | OpenAPI | 동일 |
+| 구분 | 지원 스택 |
+|------|-----------|
+| Frontend | React (Vite), Vue (Vite) |
+| Backend | FastAPI, Hono, NestJS, Go |
+| 배포 | Cloudflare Pages + Cloud Run |
+| Contract | OpenAPI |
 
 ## 프로젝트 구조
 
 ```
 choorai/
 ├── site/                    # choorai.com 문서 사이트
-│   └── (VitePress/Astro)
+│   └── (Astro)
 ├── examples/                # 예시 프로젝트
-│   └── b2b-admin/
+│   ├── b2b-admin/
+│   │   ├── api/             # FastAPI
+│   │   ├── api-hono/        # Hono
+│   │   ├── api-nest/        # NestJS
+│   │   ├── api-go/          # Go
+│   │   ├── web/             # React + Vite
+│   │   └── web-vue/         # Vue + Vite
+│   └── b2c-todo/
+│       ├── api/             # FastAPI
+│       ├── api-hono/        # Hono
+│       ├── api-nest/        # NestJS
+│       ├── api-go/          # Go
 │       ├── web/             # React + Vite
-│       ├── api/             # Python + FastAPI
-│       └── api-go/          # Go (추후 추가)
+│       └── web-vue/         # Vue + Vite
 ├── contracts/
 │   └── openapi.yaml         # API 스펙
 ├── docs/
@@ -69,11 +79,11 @@ choorai/
 git clone https://github.com/your-org/choorai.git
 cd choorai
 
-# 의존성 설치 (추후 추가)
-# pnpm install
+# 문서 사이트
+cd site && npm install && npm run dev
 
-# 로컬 실행 (추후 추가)
-# make dev
+# 예시 프로젝트는 각 디렉토리 README 참고
+# examples/README.md
 ```
 
 ## 문서

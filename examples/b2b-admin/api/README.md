@@ -2,14 +2,13 @@
 
 > Python + FastAPI 기반 백엔드
 
-## 설정 예정
+## 구현 범위
 
-- [ ] FastAPI 프로젝트 초기화
-- [ ] Health Check 엔드포인트
-- [ ] Projects CRUD
-- [ ] 구조화 로깅
-- [ ] CORS 설정
-- [ ] Dockerfile
+- Health Check (`GET /health`)
+- Projects CRUD (`/api/v1/projects`)
+- 페이지네이션 (`page`, `page_size`)
+- CORS 설정
+- Dockerfile 포함
 
 ## 개발
 
@@ -22,7 +21,10 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
 # 개발 서버
-uvicorn main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000
+
+# 테스트
+pytest -v
 ```
 
 ## 배포

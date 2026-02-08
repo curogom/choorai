@@ -4,6 +4,7 @@ import { getCompletedMapNodes, getMapNodeStatus, type MapNodeStatus } from '../l
 import { useLearningMode } from './ModeToggle';
 
 interface MiniMapProps {
+  locale?: string;
   currentNodeId?: string;
   showModeToggle?: boolean;
   size?: 'sm' | 'md';
@@ -11,11 +12,13 @@ interface MiniMapProps {
 }
 
 export default function MiniMap({
+  locale = 'ko',
   currentNodeId,
   showModeToggle = false,
   size = 'md',
   onNodeClick,
 }: MiniMapProps) {
+  const isEn = locale === 'en';
   const { mode } = useLearningMode();
   const [completedNodes, setCompletedNodes] = useState<string[]>([]);
 
@@ -67,6 +70,7 @@ export default function MiniMap({
                 node={node}
                 status={status}
                 size={size}
+                locale={locale}
                 onClick={() => handleNodeClick(node.id, node.href, status)}
               />
               {idx < row0Nodes.length - 1 && (
@@ -95,6 +99,7 @@ export default function MiniMap({
                 node={node}
                 status={status}
                 size={size}
+                locale={locale}
                 onClick={() => handleNodeClick(node.id, node.href, status)}
               />
               {idx < row1Nodes.length - 1 && (
@@ -109,7 +114,7 @@ export default function MiniMap({
       {showModeToggle && (
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
           <span className="text-xs text-text-secondary">
-            {completedNodes.length}/{MAP_NODES.length} 완료
+            {completedNodes.length}/{MAP_NODES.length} {isEn ? 'done' : '완료'}
           </span>
           <div className="flex items-center gap-1 text-xs">
             <button
@@ -146,28 +151,24 @@ interface MapNodeButtonProps {
   node: (typeof MAP_NODES)[0];
   status: MapNodeStatus;
   size: 'sm' | 'md';
+  locale?: string;
   onClick: () => void;
 }
 
-function MapNodeButton({ node, status, size, onClick }: MapNodeButtonProps) {
+function MapNodeButton({ node, status, size, locale = 'ko', onClick }: MapNodeButtonProps) {
   const isSmall = size === 'sm';
   const isLocked = status === 'locked';
   const isCurrent = status === 'current';
   const isCompleted = status === 'completed';
+  const isEn = locale === 'en';
 
-  // 노드 ID에 따른 짧은 라벨
   const getShortLabel = (id: string, title: string): string => {
-    const labelMap: Record<string, string> = {
-      dns: '도메인',
-      database: 'DB',
-      frontend: 'Front',
-      backend: 'Back',
-      runtime: 'Env',
-      ops: '모니터링',
-      docker: 'Docker',
-      cicd: 'CI/CD',
+    const labelMap: Record<string, Record<string, string>> = {
+      ko: { dns: '도메인', database: 'DB', frontend: 'Front', backend: 'Back', runtime: 'Env', ops: '모니터링', docker: 'Docker', cicd: 'CI/CD' },
+      en: { dns: 'Domain', database: 'DB', frontend: 'Front', backend: 'Back', runtime: 'Env', ops: 'Monitor', docker: 'Docker', cicd: 'CI/CD' },
     };
-    return labelMap[id] || title.split(' ')[0];
+    const map = labelMap[isEn ? 'en' : 'ko'];
+    return map[id] || title.split(' ')[0];
   };
 
   return (
@@ -189,7 +190,7 @@ function MapNodeButton({ node, status, size, onClick }: MapNodeButtonProps) {
         width: isSmall ? '44px' : '52px',
         height: isSmall ? '44px' : '52px',
       }}
-      title={`Step ${node.order}: ${node.title}${isLocked ? ' (잠김)' : ''}`}
+      title={`Step ${node.order}: ${isEn ? (node.titleEn || node.title) : node.title}${isLocked ? (isEn ? ' (Locked)' : ' (잠김)') : ''}`}
     >
       {/* 아이콘 또는 체크/잠금 */}
       <span className={isSmall ? 'text-sm' : 'text-base'}>
