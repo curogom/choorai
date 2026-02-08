@@ -19,20 +19,20 @@ interface PathStep {
 
 const PATH_STEPS_KO: PathStep[] = [
   { id: 'tools', step: 1, title: '도구 준비하기', description: 'VS Code, Git, Node.js 설치', estimatedTime: '10분', href: '/path/60min' },
-  { id: 'frontend', step: 2, title: 'React로 UI 만들기', description: 'Vite + React로 프론트엔드 구축', estimatedTime: '15분', href: '/path/60min/frontend/react' },
-  { id: 'backend', step: 3, title: 'API 서버 만들기', description: 'Hono로 백엔드 API 구축', estimatedTime: '20분', href: '/path/60min/backend/hono' },
-  { id: 'connect', step: 4, title: '프론트-백엔드 연결', description: 'API 연동 및 CORS 설정', estimatedTime: '10분', href: '/path/60min/connect' },
-  { id: 'deploy', step: 5, title: '배포하기', description: 'Cloudflare Pages + Cloud Run 배포', estimatedTime: '15분', href: '/path/60min/deploy' },
-  { id: 'complete', step: 6, title: '완료!', description: '축하합니다! 첫 서비스를 배포했습니다', estimatedTime: '', href: '/path/60min/complete' },
+  { id: 'frontend', step: 2, title: 'React로 UI 만들기', description: 'Vite + React로 프론트엔드 구축', estimatedTime: '15분', href: '/start/60min/frontend/react' },
+  { id: 'backend', step: 3, title: 'API 서버 만들기', description: 'Hono로 백엔드 API 구축', estimatedTime: '20분', href: '/start/60min/backend/hono' },
+  { id: 'connect', step: 4, title: '프론트-백엔드 연결', description: 'API 연동 및 CORS 설정', estimatedTime: '10분', href: '/start/60min/connect' },
+  { id: 'deploy', step: 5, title: '배포하기', description: 'Cloudflare Pages + Cloud Run 배포', estimatedTime: '15분', href: '/start/60min/deploy' },
+  { id: 'complete', step: 6, title: '완료!', description: '축하합니다! 첫 서비스를 배포했습니다', estimatedTime: '', href: '/start/60min/complete' },
 ];
 
 const PATH_STEPS_EN: PathStep[] = [
   { id: 'tools', step: 1, title: 'Set Up Tools', description: 'Install VS Code, Git, Node.js', estimatedTime: '10 min', href: '/en/path/60min' },
-  { id: 'frontend', step: 2, title: 'Build UI with React', description: 'Build frontend with Vite + React', estimatedTime: '15 min', href: '/en/path/60min/frontend/react' },
-  { id: 'backend', step: 3, title: 'Build API Server', description: 'Build backend API with Hono', estimatedTime: '20 min', href: '/en/path/60min/backend/hono' },
-  { id: 'connect', step: 4, title: 'Connect Front & Back', description: 'API integration & CORS setup', estimatedTime: '10 min', href: '/en/path/60min/connect' },
-  { id: 'deploy', step: 5, title: 'Deploy', description: 'Deploy to Cloudflare Pages + Cloud Run', estimatedTime: '15 min', href: '/en/path/60min/deploy' },
-  { id: 'complete', step: 6, title: 'Done!', description: 'Congratulations! You deployed your first service', estimatedTime: '', href: '/en/path/60min/complete' },
+  { id: 'frontend', step: 2, title: 'Build UI with React', description: 'Build frontend with Vite + React', estimatedTime: '15 min', href: '/en/start/60min/frontend/react' },
+  { id: 'backend', step: 3, title: 'Build API Server', description: 'Build backend API with Hono', estimatedTime: '20 min', href: '/en/start/60min/backend/hono' },
+  { id: 'connect', step: 4, title: 'Connect Front & Back', description: 'API integration & CORS setup', estimatedTime: '10 min', href: '/en/start/60min/connect' },
+  { id: 'deploy', step: 5, title: 'Deploy', description: 'Deploy to Cloudflare Pages + Cloud Run', estimatedTime: '15 min', href: '/en/start/60min/deploy' },
+  { id: 'complete', step: 6, title: 'Done!', description: 'Congratulations! You deployed your first service', estimatedTime: '', href: '/en/start/60min/complete' },
 ];
 
 const i18n = {

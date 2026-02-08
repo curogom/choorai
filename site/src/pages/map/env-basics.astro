@@ -1,0 +1,97 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PlatformTabs from '../../components/PlatformTabs';
+import PageNavigation from '../../components/PageNavigation.astro';
+
+const envTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: '터미널 세션에서 임시 설정 후, zsh 설정 파일에 영구 등록합니다.',
+    commands: `# 임시\nexport VITE_API_URL="https://api.example.com"\n\n# 영구 (zsh)\necho 'export VITE_API_URL="https://api.example.com"' >> ~/.zshrc\nsource ~/.zshrc`,
+    notes: ['Vite는 VITE_ 접두사 변수만 클라이언트에서 읽습니다.'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'PowerShell 세션 설정과 사용자 환경변수(setx)를 구분합니다.',
+    commands: `# PowerShell 현재 세션\n$env:VITE_API_URL="https://api.example.com"\n\n# 사용자 환경변수로 저장\nsetx VITE_API_URL "https://api.example.com"`,
+    notes: ['setx 후에는 새 터미널을 열어야 반영됩니다.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: '현재 셸 export와 쉘 rc 파일 등록을 함께 사용합니다.',
+    commands: `# 임시\nexport VITE_API_URL="https://api.example.com"\n\n# 영구 (bash)\necho 'export VITE_API_URL="https://api.example.com"' >> ~/.bashrc\nsource ~/.bashrc`,
+    notes: ['배포 환경에서는 플랫폼별 대시보드 변수 설정을 우선 사용합니다.'],
+  },
+];
+---
+
+<DocsLayout title="환경변수 기초" description="빌드타임/런타임 변수 차이와 OS별 환경변수 설정" currentPath="/map/env-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">환경변수 기초</h1>
+    <p class="text-text-secondary mb-6">환경별 값을 코드 밖에서 관리하는 방법을 익히면 배포/보안 실수를 크게 줄일 수 있습니다.</p>
+
+    <Callout client:load variant="tip" title="핵심 구분">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Build-time</strong>: 빌드 시점에 값이 코드에 주입</li>
+        <li><strong>Runtime</strong>: 실행 중 서버 환경에서 값 조회</li>
+        <li><strong>Secret</strong>: 키/토큰 같은 민감 정보 (절대 Git 커밋 금지)</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="OS별 환경변수 설정" tabs={envTabs} />
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">프로젝트 파일 구성 예시</h2>
+      <CodeBlock
+        client:load
+        filename=".env 파일"
+        code={`# frontend (.env)
+VITE_API_URL=https://api.example.com
+
+# backend (.env)
+DATABASE_URL=postgres://...
+JWT_SECRET=change-me`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">Git에 올리면 안 되는 이유</h2>
+      <CodeBlock
+        client:load
+        filename=".gitignore"
+        code={`# secrets
+.env
+.env.*
+!.env.example`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/start/60min/connect" class="text-primary hover:underline">연결 단계</a>: API URL 설정</li>
+        <li><a href="/start/60min/deploy" class="text-primary hover:underline">배포 단계</a>: 플랫폼 대시보드 변수 설정</li>
+        <li><a href="/map/runtime" class="text-primary hover:underline">Runtime 문서</a>: 런타임 변수 심화</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>.env</code>를 Git에 커밋</li>
+        <li>클라이언트 변수 접두사 규칙(<code>VITE_</code>) 누락</li>
+        <li>로컬 변수와 배포 변수 값을 서로 다르게 유지</li>
+      </ul>
+
+      <Callout client:load variant="info" title="검증 체크리스트">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li>변수 변경 후 개발 서버 재시작</li>
+          <li>배포 환경 대시보드의 변수명 오타 확인</li>
+          <li>민감 값은 로그/에러메시지에 출력되지 않게 점검</li>
+          <li>에러 발생 시 <a href="/fix/env" class="text-primary hover:underline">환경변수 트러블슈팅</a> 확인</li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/env-basics" />
+  </div>
+</DocsLayout>

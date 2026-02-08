@@ -80,6 +80,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- 용어 정리 -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="2단계 시작 전에 알아둘 용어">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>컴포넌트(Component)</strong>: 화면을 구성하는 재사용 가능한 단위입니다.</li>
+          <li><strong>반응형 데이터(Reactive Data)</strong>: 값이 바뀌면 UI가 자동으로 갱신되는 데이터입니다.</li>
+          <li><strong>개발 서버(Dev Server)</strong>: 로컬에서 즉시 결과를 확인하는 실행 환경입니다.</li>
+          <li><strong>빌드(Build)</strong>: 배포 가능한 결과물로 변환하는 과정입니다.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- 메인 콘텐츠 -->
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 프로젝트 생성 -->
@@ -112,6 +124,15 @@ npm install`}
               <li>Single File Component (.vue)로 HTML/CSS/JS 통합</li>
             </ul>
           </div>
+        </Callout>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: CLI / 의존성">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>CLI</strong>: 터미널에서 명령어로 프로젝트를 생성/실행하는 방식입니다.</li>
+            <li><strong>npm</strong>: 패키지 설치/업데이트를 담당하는 도구입니다.</li>
+            <li><strong>의존성(Dependency)</strong>: Vue, Tailwind처럼 프로젝트가 사용하는 외부 라이브러리입니다.</li>
+            <li>심화 학습: <a href="/map/tools" class="text-primary hover:underline">도구 설치/터미널 기초</a></li>
+          </ul>
         </Callout>
       </section>
 

@@ -1,0 +1,80 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="배포 기초"
+  description="Build, Artifact, Hosting, Runtime 등 배포 핵심 개념"
+  currentPath="/map/deploy-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">배포 기초</h1>
+    <p class="text-text-secondary mb-6">코드를 인터넷에서 접근 가능한 서비스로 만드는 과정에서 필요한 개념과 점검 항목을 정리합니다.</p>
+
+    <Callout client:load variant="tip" title="자주 헷갈리는 구분">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Build</strong>: 소스 코드를 실행 가능한 산출물로 변환</li>
+        <li><strong>Artifact</strong>: 빌드 결과물(예: <code>dist</code>)</li>
+        <li><strong>Hosting</strong>: 결과물을 서비스하는 인프라</li>
+        <li><strong>Runtime</strong>: 코드가 실제 실행되는 환경</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">프론트엔드 배포 흐름</h2>
+      <CodeBlock
+        client:load
+        filename="CI 예시"
+        code={`npm ci
+npm run build
+# dist/ 생성
+# 정적 호스팅(Cloudflare Pages/Vercel)에 업로드`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">백엔드 배포 흐름</h2>
+      <CodeBlock
+        client:load
+        filename="Container 예시"
+        code={`docker build -t my-api:latest .
+# 이미지 푸시
+# Cloud Run 등 런타임에 배포
+# 환경변수 주입 후 헬스체크`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">배포 전 체크리스트</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>빌드가 로컬/CI 모두 통과하는가</li>
+        <li>환경변수가 배포 환경에 정확히 설정됐는가</li>
+        <li>헬스체크 URL이 200을 반환하는가</li>
+        <li>도메인/DNS 연결이 의도대로 동작하는가</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/start/60min/deploy" class="text-primary hover:underline">배포 단계</a>: 실제 배포 실행</li>
+        <li><a href="/map/dns" class="text-primary hover:underline">DNS 기초</a>: 도메인 연결 이해</li>
+        <li><a href="/map/cicd" class="text-primary hover:underline">CI/CD</a>: 자동 배포 심화</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>로컬에서만 있던 환경변수에 의존</li>
+        <li>빌드 산출물 경로를 잘못 설정</li>
+        <li>배포 후 로그/헬스체크 확인 없이 완료 처리</li>
+      </ul>
+
+      <Callout client:load variant="info" title="다음 학습 추천">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/runtime" class="text-primary hover:underline">환경변수/런타임</a></li>
+          <li><a href="/map/docker" class="text-primary hover:underline">Docker</a></li>
+          <li><a href="/fix/build-fail" class="text-primary hover:underline">빌드 실패 트러블슈팅</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/deploy-basics" />
+  </div>
+</DocsLayout>

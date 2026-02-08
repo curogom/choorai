@@ -1,0 +1,77 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout title="인증/인가 입문" description="AuthN vs AuthZ, Session/JWT, OAuth 기본 개념" currentPath="/map/auth-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">인증/인가 입문</h1>
+    <p class="text-text-secondary mb-6">로그인 기능을 붙이기 전에 알아야 할 최소 개념과 보안 기본 습관을 정리합니다.</p>
+
+    <Callout client:load variant="tip" title="핵심 4개">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>인증(Authentication)</strong>: 누구인지 확인</li>
+        <li><strong>인가(Authorization)</strong>: 무엇을 할 수 있는지 확인</li>
+        <li><strong>Session/JWT</strong>: 로그인 상태를 유지하는 방법</li>
+        <li><strong>OAuth</strong>: 외부 계정(Google/GitHub) 로그인 프로토콜</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 권장 전략</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>빠른 시작: Clerk/Firebase Auth 같은 관리형 인증</li>
+        <li>직접 구현: Session/JWT + 토큰 저장 정책 + CSRF/XSS 대응까지 필요</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">토큰 전달 예시</h2>
+      <CodeBlock
+        client:load
+        filename="frontend/api.ts"
+        code={`const token = localStorage.getItem('accessToken');
+
+await fetch('/api/v1/me', {
+  headers: {
+    Authorization: ` + '"Bearer ${token}"' + `,
+  },
+});`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">권한 체크 예시</h2>
+      <CodeBlock
+        client:load
+        filename="backend/auth-check.ts"
+        code={`if (!user) return res.status(401).json({ message: 'Unauthenticated' });
+if (user.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+
+// authorized
+next();`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>401</code>과 <code>403</code> 의미를 혼동</li>
+        <li>액세스 토큰 만료 처리(재로그인/갱신) 누락</li>
+        <li>클라이언트에서만 권한 체크하고 서버 검증 생략</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/start/60min/complete" class="text-primary hover:underline">완주 후 확장 단계</a>: 로그인 기능 추가</li>
+        <li><a href="/map/auth" class="text-primary hover:underline">인증 로드맵</a>: 공급자/전략 선택</li>
+      </ul>
+
+      <Callout client:load variant="info" title="심화 학습 추천">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/auth/clerk" class="text-primary hover:underline">Clerk</a></li>
+          <li><a href="/map/auth/firebase" class="text-primary hover:underline">Firebase Auth</a></li>
+          <li><a href="/fix/auth-cookie" class="text-primary hover:underline">Auth Cookie 트러블슈팅</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/auth-basics" />
+  </div>
+</DocsLayout>

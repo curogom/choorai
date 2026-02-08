@@ -1,0 +1,79 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PlatformTabs from '../../../components/PlatformTabs';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const envTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: 'Set temporary variables in terminal session, then persist in zsh config.',
+    commands: `# temporary
+export VITE_API_URL="https://api.example.com"
+
+# persistent (zsh)
+echo 'export VITE_API_URL="https://api.example.com"' >> ~/.zshrc
+source ~/.zshrc`,
+    notes: ['Vite exposes only variables prefixed with VITE_ to client code.'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'Use PowerShell session variable and user-level setx separately.',
+    commands: `# current PowerShell session
+$env:VITE_API_URL="https://api.example.com"
+
+# persist for user
+setx VITE_API_URL "https://api.example.com"`,
+    notes: ['After setx, open a new terminal to reload environment.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: 'Use export for session and shell rc file for persistence.',
+    commands: `# temporary
+export VITE_API_URL="https://api.example.com"
+
+# persistent (bash)
+echo 'export VITE_API_URL="https://api.example.com"' >> ~/.bashrc
+source ~/.bashrc`,
+    notes: ['On cloud deploy, prefer dashboard-level env settings.'],
+  },
+];
+---
+
+<DocsLayout lang="en" title="Environment Variable Basics" description="Build-time vs runtime variables and OS-specific setup" currentPath="/map/env-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Environment Variable Basics</h1>
+    <p class="text-text-secondary mb-6">Managing config values outside code prevents common deployment mistakes.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core distinctions">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Build-time</strong>: Value injected during build</li>
+        <li><strong>Runtime</strong>: Value read from running server environment</li>
+        <li><strong>Secret</strong>: Sensitive key/token (never commit)</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="Set env vars by OS" tabs={envTabs} />
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-3">Top beginner mistakes</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>Committing <code>.env</code> to Git</li>
+        <li>Missing required client env prefix</li>
+        <li>Mixing local env and deploy dashboard env</li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Related docs">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/runtime" class="text-primary hover:underline">Environment & Runtime</a></li>
+          <li><a href="/en/fix/env" class="text-primary hover:underline">Env troubleshooting</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation lang="en" currentPath="/map/env-basics" />
+  </div>
+</DocsLayout>

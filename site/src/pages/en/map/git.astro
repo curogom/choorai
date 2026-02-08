@@ -1,0 +1,128 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 0: Git - Version Control Basics"
+  description="A beginner-friendly guide to Git terms: repository, branch, commit, and pull request"
+  currentPath="/map/git"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 0: Git</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 0
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Git Basics for Beginners
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        This page explains Git terms that appear in the 60-minute challenge.
+        You will quickly understand why <code class="bg-surface px-1 rounded">git add</code>,
+        <code class="bg-surface px-1 rounded">commit</code>, and
+        <code class="bg-surface px-1 rounded">push</code> matter.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Core concepts first">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><strong>Git</strong>: A tool that tracks file change history</li>
+          <li><strong>GitHub</strong>: A cloud service that hosts Git repositories</li>
+          <li><strong>Repository (Repo)</strong>: A project folder with history</li>
+          <li><strong>Commit</strong>: A saved snapshot of your changes</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Terms at a glance</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">Term</th>
+                <th class="text-left py-2 px-3 text-white">One-line definition</th>
+                <th class="text-left py-2 px-3 text-white">In the 60-min challenge</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Repository</td>
+                <td class="py-2 px-3">A remote backup/collaboration space for your project</td>
+                <td class="py-2 px-3">Create one on GitHub in Deploy step</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Branch</td>
+                <td class="py-2 px-3">A separate line of development</td>
+                <td class="py-2 px-3">Deploy flow usually targets <code>main</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Commit</td>
+                <td class="py-2 px-3">A saved unit of changes in history</td>
+                <td class="py-2 px-3"><code>git commit -m "... "</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Push</td>
+                <td class="py-2 px-3">Upload local history to GitHub</td>
+                <td class="py-2 px-3"><code>git push -u origin main</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Pull Request</td>
+                <td class="py-2 px-3">A request to merge branch changes</td>
+                <td class="py-2 px-3">Used for team code review workflow</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Most-used commands</h2>
+        <CodeBlock
+          client:load
+          code={`# 1) Start Git in current folder
+git init
+
+# 2) Stage changed files
+git add .
+
+# 3) Save snapshot
+git commit -m "Initial commit"
+
+# 4) Link remote repository
+git remote add origin https://github.com/USERNAME/my-admin.git
+
+# 5) Upload to GitHub
+git branch -M main
+git push -u origin main`}
+          filename="Terminal"
+        />
+      </section>
+
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="What to read next">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><a href="/en/map/tools" class="text-primary hover:underline">Tools Setup</a> for Git installation and initial config.</li>
+            <li><a href="/en/map/dns" class="text-primary hover:underline">DNS Basics</a> for Cloudflare/domain concepts.</li>
+            <li><a href="/en/map/cicd" class="text-primary hover:underline">CI/CD</a> for automated GitHub Actions workflows.</li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation lang="en" currentPath="/map/git" />
+  </div>
+</DocsLayout>

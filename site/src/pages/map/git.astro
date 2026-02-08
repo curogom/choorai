@@ -1,0 +1,126 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Cycle 0: Git - 버전 관리 기초"
+  description="초심자를 위한 Git 핵심 용어(Repository, Branch, Commit, PR) 빠른 정리"
+  currentPath="/map/git"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 0: Git</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 0
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Git 기초 용어 정리
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        60분 챌린지에서 자주 나오는 Git 용어를 먼저 정리합니다.
+        <code class="bg-surface px-1 rounded">git add</code>, <code class="bg-surface px-1 rounded">commit</code>,
+        <code class="bg-surface px-1 rounded">push</code>가 왜 필요한지 빠르게 이해할 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="핵심만 먼저">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li><strong>Git</strong>: 파일 변경 이력을 기록하는 도구</li>
+          <li><strong>GitHub</strong>: Git 저장소를 올려두는 온라인 서비스</li>
+          <li><strong>Repository(Repo)</strong>: 프로젝트 파일 + 변경 이력 저장소</li>
+          <li><strong>Commit</strong>: 특정 시점의 변경사항 스냅샷</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">용어 한 번에 보기</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-2 px-3 text-white">용어</th>
+                <th class="text-left py-2 px-3 text-white">한 줄 설명</th>
+                <th class="text-left py-2 px-3 text-white">60분 챌린지에서</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-secondary">
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Repository</td>
+                <td class="py-2 px-3">프로젝트 폴더의 원격 백업/협업 공간</td>
+                <td class="py-2 px-3">배포 단계에서 GitHub 저장소 생성</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Branch</td>
+                <td class="py-2 px-3">메인 코드와 분리된 작업 라인</td>
+                <td class="py-2 px-3">일반적으로 <code>main</code>에 배포</td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Commit</td>
+                <td class="py-2 px-3">파일 변경 내용을 저장한 이력 단위</td>
+                <td class="py-2 px-3"><code>git commit -m "... "</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Push</td>
+                <td class="py-2 px-3">내 컴퓨터 이력을 GitHub로 업로드</td>
+                <td class="py-2 px-3"><code>git push -u origin main</code></td>
+              </tr>
+              <tr class="border-b border-border/50">
+                <td class="py-2 px-3 text-white font-medium">Pull Request</td>
+                <td class="py-2 px-3">브랜치 변경을 병합 요청하는 절차</td>
+                <td class="py-2 px-3">팀 협업 시 코드 리뷰에 사용</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">가장 많이 쓰는 명령어</h2>
+        <CodeBlock
+          client:load
+          code={`# 1) 현재 폴더를 Git 저장소로 시작
+git init
+
+# 2) 변경 파일 스테이징
+git add .
+
+# 3) 변경사항 저장
+git commit -m "Initial commit"
+
+# 4) 원격 저장소 연결
+git remote add origin https://github.com/USERNAME/my-admin.git
+
+# 5) GitHub에 업로드
+git branch -M main
+git push -u origin main`}
+          filename="터미널"
+        />
+      </section>
+
+      <section class="mb-10">
+        <Callout client:load variant="info" title="다음으로 보면 좋은 문서">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><a href="/map/tools" class="text-primary hover:underline">도구 설치</a>에서 Git 설치/초기 설정을 먼저 확인하세요.</li>
+            <li><a href="/map/dns" class="text-primary hover:underline">DNS 기초</a>를 보면 Cloudflare 연결 개념이 더 쉬워집니다.</li>
+            <li><a href="/map/cicd" class="text-primary hover:underline">CI/CD</a>에서 GitHub Actions 자동화 흐름을 이어서 볼 수 있습니다.</li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/git" />
+  </div>
+</DocsLayout>

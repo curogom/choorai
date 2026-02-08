@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface NavItem {
   label: string;
@@ -22,6 +22,8 @@ export default function NavGroup({
   storageKey,
 }: NavGroupProps) {
   const [isOpen, setIsOpen] = useState(true);
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // 현재 경로가 이 그룹에 있는지 확인
   const hasActiveItem = currentPath && items.some(item =>
@@ -47,6 +49,26 @@ export default function NavGroup({
       localStorage.setItem(`nav-group-${storageKey}`, String(newState));
     }
   };
+
+  useEffect(() => {
+    if (!isOpen || !contentRef.current) return;
+
+    const element = contentRef.current;
+    const updateHeight = () => {
+      setContentHeight(element.scrollHeight);
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      observer.disconnect();
+    };
+  }, [isOpen, items]);
 
   return (
     <div className="pt-4 first:pt-0">
@@ -74,10 +96,12 @@ export default function NavGroup({
       </button>
 
       <div
-        className={`
-          overflow-hidden transition-all duration-200 ease-in-out
-          ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
-        `}
+        ref={contentRef}
+        className="overflow-hidden transition-all duration-200 ease-in-out"
+        style={{
+          maxHeight: isOpen ? (contentHeight ? `${contentHeight}px` : 'none') : '0px',
+          opacity: isOpen ? 1 : 0,
+        }}
       >
         <ul className="mt-1 space-y-0.5">
           {items.map((item, idx) => (

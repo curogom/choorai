@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PlatformTabs from '../../components/PlatformTabs';
+import PageNavigation from '../../components/PageNavigation.astro';
+
+const cliTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: 'zsh 기준으로 자주 쓰는 파일/폴더 이동 명령을 정리했습니다.',
+    commands: `pwd\nls -la\ncd my-project\nmkdir src\ncp .env.example .env\nrm -rf dist`,
+    notes: ['터미널 기본 셸은 zsh입니다.', '경로 구분자는 / 를 사용합니다.'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'PowerShell 기준 기본 명령을 정리했습니다.',
+    commands: `Get-Location\nGet-ChildItem -Force\nSet-Location .\\my-project\nNew-Item -ItemType Directory src\nCopy-Item .env.example .env\nRemove-Item dist -Recurse -Force`,
+    notes: ['경로 구분자는 \\ 를 자주 사용합니다.', 'PowerShell과 CMD 명령은 일부 다릅니다.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: 'bash 기준으로 기본 명령과 주의점을 정리했습니다.',
+    commands: `pwd\nls -la\ncd my-project\nmkdir src\ncp .env.example .env\nrm -rf dist`,
+    notes: ['권한 문제 시 chmod/chown 확인이 필요할 수 있습니다.'],
+  },
+];
+---
+
+<DocsLayout title="CLI/터미널 기초" description="OS별 터미널 기본 명령과 경로 차이" currentPath="/map/cli-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">CLI/터미널 기초</h1>
+    <p class="text-text-secondary mb-6">초심자가 가장 많이 막히는 경로 이동, 파일 확인, 실행 명령을 OS별로 정리합니다.</p>
+
+    <Callout client:load variant="tip" title="먼저 이해할 것">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>현재 경로</strong>를 항상 먼저 확인합니다.</li>
+        <li>삭제 명령은 되돌리기 어려우니 경로 재확인이 필수입니다.</li>
+        <li>프로젝트 루트에서 명령을 실행하는 습관이 중요합니다.</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="OS별 CLI 기본 명령" tabs={cliTabs} />
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">프로젝트 시작 루틴</h2>
+      <CodeBlock
+        client:load
+        filename="터미널"
+        code={`# 1) 위치 확인
+pwd
+
+# 2) 파일 확인
+ls -la
+
+# 3) 프로젝트 폴더로 이동
+cd choorai
+
+# 4) 의존성 설치
+npm install
+
+# 5) 개발 서버 실행
+npm run dev`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">경로 실수 줄이는 팁</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>명령어 자동완성(Tab)을 사용해 오타를 줄입니다.</li>
+        <li><code>cd ..</code>와 <code>cd -</code>를 구분해 사용합니다.</li>
+        <li>프로젝트마다 터미널 창/탭을 분리합니다.</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/path/60min" class="text-primary hover:underline">도구 준비</a>: 설치/실행 커맨드</li>
+        <li><a href="/start/60min/frontend/react" class="text-primary hover:underline">프론트 단계</a>: 개발 서버 실행</li>
+        <li><a href="/start/60min/backend/hono" class="text-primary hover:underline">백엔드 단계</a>: API 서버 실행</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>잘못된 디렉터리에서 <code>npm run dev</code> 실행</li>
+        <li>복붙한 명령의 옵션 의미를 모르고 실행</li>
+        <li>PowerShell/CMD/bash 명령 차이를 혼동</li>
+      </ul>
+
+      <Callout client:load variant="info" title="연계 문서">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/tools" class="text-primary hover:underline">도구 준비</a></li>
+          <li><a href="/map/git" class="text-primary hover:underline">Git 기초</a></li>
+          <li><a href="/fix/build-fail" class="text-primary hover:underline">빌드 실패 트러블슈팅</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/cli-basics" />
+  </div>
+</DocsLayout>

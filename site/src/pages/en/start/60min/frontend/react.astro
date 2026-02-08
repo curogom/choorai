@@ -81,6 +81,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- Terms -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Terms Before Step 2" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>Component</strong>: A reusable UI building block.</li>
+          <li><strong>State</strong>: Data that changes on the screen (inputs, lists, etc.).</li>
+          <li><strong>Dev Server</strong>: Local runtime to preview changes instantly.</li>
+          <li><strong>Build</strong>: Converting source code into deployable static assets.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- Main Content -->
     <article class="prose prose-invert max-w-none">
       <!-- Section 1: Create Project -->
@@ -108,6 +120,15 @@ npm install`}
           <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
             <li><strong>my-admin</strong>: Project name (you can change this to whatever you like)</li>
             <li><strong>react-ts</strong>: React + TypeScript template</li>
+          </ul>
+        </Callout>
+
+        <Callout client:load variant="tip" title="Term Tip: CLI / Dependencies" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>CLI</strong>: Running tools with commands in a terminal.</li>
+            <li><strong>npm</strong>: A package manager for installing and managing JavaScript libraries.</li>
+            <li><strong>Dependency</strong>: An external package your project needs to run.</li>
+            <li>Deep dive: <a href="/en/map/tools" class="text-primary hover:underline">Tools and terminal basics</a></li>
           </ul>
         </Callout>
       </section>

@@ -1,0 +1,37 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout lang="en" title="Frontend Data Flow Basics" description="state, fetch, query/mutation, and cache invalidation" currentPath="/map/frontend-data-flow">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Frontend Data Flow Basics</h1>
+    <p class="text-text-secondary mb-6">Understand the transition from local state to API-driven state.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core distinctions">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>State</strong>: In-memory UI state</li>
+        <li><strong>Query</strong>: Read request</li>
+        <li><strong>Mutation</strong>: Create/update/delete request</li>
+        <li><strong>Invalidation</strong>: Refresh related cached query</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Default flow</h2>
+      <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
+        <li>Run query on page load</li>
+        <li>Run mutation on create/update/delete</li>
+        <li>Invalidate related query on success</li>
+        <li>Re-fetch and render latest data</li>
+      </ol>
+
+      <Callout client:load locale="en" variant="info" title="See it in challenge">
+        <a href="/en/start/60min/connect" class="text-primary hover:underline">60-min challenge connect step</a>
+      </Callout>
+    </article>
+
+    <PageNavigation lang="en" currentPath="/map/frontend-data-flow" />
+  </div>
+</DocsLayout>

@@ -1,12 +1,16 @@
 ---
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import ModeToggle from '../../../components/ModeToggle';
-import { MAP_NODES, EXTRA_NODES } from '../../../data/mapNodes';
+import { MAP_NODES, EXTRA_NODES, getLocalizedNode } from '../../../data/mapNodes';
+import { getLocalePath } from '../../../i18n/utils';
 
 // Row 0 (top): Step 1-4
-const row0Nodes = MAP_NODES.filter((n) => n.row === 0).sort((a, b) => a.order - b.order);
+const localizedNodes = MAP_NODES.map((node) => getLocalizedNode(node, 'en'));
+const localizedExtraNodes = EXTRA_NODES.map((node) => getLocalizedNode(node, 'en'));
+const lp = (path: string) => getLocalePath('en', path);
+const row0Nodes = localizedNodes.filter((n) => n.row === 0).sort((a, b) => a.order - b.order);
 // Row 1 (bottom): Step 8-5 (reverse order, snake layout)
-const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - a.order);
+const row1Nodes = localizedNodes.filter((n) => n.row === 1).sort((a, b) => b.order - a.order);
 ---
 
 <DocsLayout
@@ -46,7 +50,7 @@ const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - 
         {row0Nodes.map((node, idx) => (
           <div class="roadmap-step">
             <a
-              href={node.href}
+              href={lp(node.href)}
               class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
               data-node-id={node.id}
               data-node-order={node.order}
@@ -84,7 +88,7 @@ const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - 
         {row1Nodes.map((node, idx) => (
           <div class="roadmap-step">
             <a
-              href={node.href}
+              href={lp(node.href)}
               class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
               data-node-id={node.id}
               data-node-order={node.order}
@@ -118,9 +122,9 @@ const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - 
       <p class="text-sm text-text-secondary mb-6">Challenge yourself after completing the 8 core steps</p>
 
       <div class="grid sm:grid-cols-3 gap-4">
-        {EXTRA_NODES.map(node => (
+        {localizedExtraNodes.map(node => (
           <a
-            href={node.href}
+            href={lp(node.href)}
             class="extra-node block p-4 bg-surface/50 border border-border rounded-xl hover:border-primary/30 transition-all group"
             data-node-id={node.id}
           >

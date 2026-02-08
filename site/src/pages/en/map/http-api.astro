@@ -1,0 +1,55 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="HTTP/API Basics"
+  description="Beginner guide to endpoint, method, status code, and JSON"
+  currentPath="/map/http-api"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">HTTP/API Basics</h1>
+    <p class="text-text-secondary mb-6">Learn how frontend and backend communicate, with practical terms used in real projects.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core five terms">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Endpoint</strong>: URL path where an API receives requests</li>
+        <li><strong>Method</strong>: Request action like GET/POST/PUT/DELETE</li>
+        <li><strong>Request/Response</strong>: Input payload and server output</li>
+        <li><strong>Status Code</strong>: Numeric result like 200, 400, 500</li>
+        <li><strong>JSON</strong>: Common data exchange format</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">One request flow</h2>
+      <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
+        <li>Browser calls <code>/api/v1/projects</code></li>
+        <li>Server handles the request</li>
+        <li>Server returns JSON with status code</li>
+        <li>Frontend renders the response</li>
+      </ol>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Quick status code reading</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>200</code>: OK</li>
+        <li><code>201</code>: Created</li>
+        <li><code>400</code>: Bad request</li>
+        <li><code>401/403</code>: Auth/permission issue</li>
+        <li><code>500</code>: Server error</li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Recommended next">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/cors-basics" class="text-primary hover:underline">CORS Basics</a></li>
+          <li><a href="/en/start/60min/connect" class="text-primary hover:underline">60-min challenge connect step</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation lang="en" currentPath="/map/http-api" />
+  </div>
+</DocsLayout>
