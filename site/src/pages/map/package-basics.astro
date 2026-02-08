@@ -1,6 +1,7 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
 import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
@@ -11,37 +12,69 @@ import PageNavigation from '../../components/PageNavigation.astro';
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-black text-white mb-4">패키지/의존성 기초</h1>
-    <p class="text-text-secondary mb-6">프로젝트가 외부 라이브러리를 어떻게 설치하고 고정하는지 정리합니다.</p>
+    <p class="text-text-secondary mb-6">프로젝트가 외부 라이브러리를 어떻게 설치하고, 버전을 어떻게 고정하는지 실전 기준으로 정리합니다.</p>
 
     <Callout client:load variant="tip" title="핵심 용어">
       <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-        <li><strong>Dependency</strong>: 프로젝트 실행에 필요한 외부 패키지</li>
-        <li><strong>devDependency</strong>: 개발/빌드 시에만 필요한 패키지</li>
-        <li><strong>Lockfile</strong>: 설치 버전을 고정한 파일</li>
-        <li><strong>requirements.txt</strong>: Python 의존성 목록 파일</li>
+        <li><strong>Dependency</strong>: 실행에 필요한 패키지</li>
+        <li><strong>devDependency</strong>: 개발/빌드에만 필요한 패키지</li>
+        <li><strong>Lockfile</strong>: 설치 버전을 고정하는 파일</li>
+        <li><strong>SemVer</strong>: 메이저/마이너/패치 버전 체계</li>
       </ul>
     </Callout>
 
     <article class="prose prose-invert max-w-none mt-8">
-      <h2 class="text-2xl font-bold text-white mb-3">Node 생태계</h2>
+      <h2 class="text-2xl font-bold text-white mb-3">Node 생태계 기본 흐름</h2>
+      <CodeBlock
+        client:load
+        filename="터미널"
+        code={`# 의존성 설치
+npm install
+
+# 런타임 의존성 추가
+npm install axios
+
+# 개발 의존성 추가
+npm install -D vitest
+
+# 락파일 기준 재설치
+npm ci`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">Python 생태계 기본 흐름</h2>
+      <CodeBlock
+        client:load
+        filename="터미널"
+        code={`# 가상환경 생성/활성화
+python -m venv .venv
+source .venv/bin/activate
+
+# 패키지 설치
+pip install fastapi uvicorn
+
+# 버전 고정 파일 생성
+pip freeze > requirements.txt`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
       <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
-        <li><code>package.json</code>: 의존성/스크립트 정의</li>
-        <li><code>package-lock.json</code>: 설치 버전 고정</li>
-        <li><code>npm install</code>: 의존성 설치</li>
+        <li><a href="/path/60min" class="text-primary hover:underline">도구 준비 단계</a>: 런타임/패키지 매니저 설치</li>
+        <li><a href="/start/60min/frontend/react" class="text-primary hover:underline">프론트 단계</a>: npm 스크립트 실행</li>
+        <li><a href="/start/60min/backend/fastapi" class="text-primary hover:underline">백엔드 단계</a>: Python 의존성 설치</li>
       </ul>
 
-      <h2 class="text-2xl font-bold text-white mb-3">Python 생태계</h2>
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
       <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
-        <li><code>pip install fastapi</code>: 패키지 설치</li>
-        <li><code>requirements.txt</code>: 버전 포함 목록</li>
-        <li>가상환경으로 프로젝트별 의존성 격리</li>
+        <li><code>node_modules</code>를 Git에 커밋</li>
+        <li>락파일 없이 설치해 팀원마다 버전이 달라짐</li>
+        <li>전역 설치와 프로젝트 설치를 혼동</li>
       </ul>
 
-      <Callout client:load variant="info" title="다음 학습 추천">
+      <Callout client:load variant="info" title="검증 체크리스트">
         <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-          <li><a href="/map/tools" class="text-primary hover:underline">도구 설치/터미널</a></li>
-          <li><a href="/start/60min/frontend/react" class="text-primary hover:underline">React 단계</a></li>
-          <li><a href="/start/60min/backend/fastapi" class="text-primary hover:underline">FastAPI 단계</a></li>
+          <li><code>package-lock.json</code> 또는 <code>requirements.txt</code> 커밋 여부 확인</li>
+          <li>CI에서는 <code>npm ci</code> 같은 재현 가능한 설치 방식 사용</li>
+          <li>버전 충돌 발생 시 캐시 삭제 후 재설치</li>
         </ul>
       </Callout>
     </article>

@@ -1,34 +1,85 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
 import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
 <DocsLayout title="프론트엔드 데이터 흐름 기초" description="state, fetch, query/mutation, 캐시 무효화 개념" currentPath="/map/frontend-data-flow">
   <div class="max-w-4xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-black text-white mb-4">프론트엔드 데이터 흐름 기초</h1>
-    <p class="text-text-secondary mb-6">로컬 상태에서 API 연결 상태로 전환할 때 필요한 개념을 정리합니다.</p>
+    <p class="text-text-secondary mb-6">로컬 상태에서 API 중심 상태로 전환할 때 필요한 최소 개념과 구현 패턴을 정리합니다.</p>
 
     <Callout client:load variant="tip" title="핵심 구분">
       <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-        <li><strong>State</strong>: 화면 상태를 메모리에 보관</li>
+        <li><strong>Local State</strong>: UI 내부 상태 (모달 열림, 입력값 등)</li>
+        <li><strong>Server State</strong>: API에서 받아오는 데이터</li>
         <li><strong>Query</strong>: 읽기 요청</li>
         <li><strong>Mutation</strong>: 생성/수정/삭제 요청</li>
-        <li><strong>Invalidation</strong>: 변경 후 다시 조회하도록 캐시 갱신</li>
+        <li><strong>Invalidation</strong>: 변경 후 캐시를 무효화하고 재조회</li>
       </ul>
     </Callout>
 
     <article class="prose prose-invert max-w-none mt-8">
       <h2 class="text-2xl font-bold text-white mb-3">기본 흐름</h2>
       <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
-        <li>페이지 진입 시 Query 실행</li>
-        <li>사용자가 생성/수정 시 Mutation 실행</li>
-        <li>성공 시 관련 Query invalidate</li>
-        <li>최신 데이터 재조회 후 UI 반영</li>
+        <li>페이지 진입 시 Query로 목록 로드</li>
+        <li>사용자 액션으로 Mutation 실행</li>
+        <li>성공 시 관련 Query 무효화</li>
+        <li>재조회된 데이터로 화면 동기화</li>
       </ol>
 
-      <Callout client:load variant="info" title="연결 단계에서 보기">
-        <a href="/start/60min/connect" class="text-primary hover:underline">60분 챌린지 연결 단계</a>
+      <h2 class="text-2xl font-bold text-white mb-3">실전 예시 (React Query)</h2>
+      <CodeBlock
+        client:load
+        filename="todos.tsx"
+        code={`const listQuery = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+});
+
+const createMutation = useMutation({
+  mutationFn: createTodo,
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
+});`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">로딩/에러 상태 처리</h2>
+      <CodeBlock
+        client:load
+        filename="TodosList.tsx"
+        code={`if (listQuery.isLoading) return <p>불러오는 중...</p>;
+if (listQuery.isError) return <p>오류: {String(listQuery.error)}</p>;
+
+return (
+  <ul>
+    {listQuery.data.items.map((todo) => (
+      <li key={todo.id}>{todo.title}</li>
+    ))}
+  </ul>
+);`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/start/60min/frontend/react" class="text-primary hover:underline">프론트엔드 단계</a>: 화면 구성</li>
+        <li><a href="/start/60min/connect" class="text-primary hover:underline">연결 단계</a>: API 응답 반영</li>
+        <li><a href="/map/http-api" class="text-primary hover:underline">HTTP/API 기초</a>: 요청/응답 개념 보완</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>Query 결과를 로컬 상태로 또 복사해서 동기화 꼬임</li>
+        <li>Mutation 성공 후 목록 재조회(invalidate) 누락</li>
+        <li>로딩/에러 상태 처리를 생략해 빈 화면만 보임</li>
+      </ul>
+
+      <Callout client:load variant="info" title="검증 체크리스트">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li>네트워크 탭에서 요청이 실제로 나가는지 확인</li>
+          <li>성공 후 목록 요청이 다시 나가는지 확인</li>
+          <li>실패 시 사용자에게 에러 메시지가 보이는지 확인</li>
+        </ul>
       </Callout>
     </article>
 

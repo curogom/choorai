@@ -1,21 +1,22 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
 import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
 <DocsLayout title="테스트 용어 기초" description="Unit, Integration, E2E, Mock, Assertion 기초 용어" currentPath="/map/testing-basics">
   <div class="max-w-4xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-black text-white mb-4">테스트 용어 기초</h1>
-    <p class="text-text-secondary mb-6">테스트 코드를 읽고 작성할 때 가장 자주 마주치는 용어를 먼저 정리합니다.</p>
+    <p class="text-text-secondary mb-6">테스트 코드를 읽고 작성할 때 가장 자주 만나는 용어와 시작 순서를 정리합니다.</p>
 
     <Callout client:load variant="tip" title="핵심 용어">
       <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-        <li><strong>Unit Test</strong>: 작은 함수/모듈 단위 테스트</li>
-        <li><strong>Integration Test</strong>: 여러 구성요소 조합 테스트</li>
-        <li><strong>E2E Test</strong>: 실제 사용자 흐름 전체 테스트</li>
-        <li><strong>Mock</strong>: 외부 의존을 가짜 객체로 대체</li>
-        <li><strong>Assertion</strong>: 기대 결과를 검증하는 문장</li>
+        <li><strong>Unit Test</strong>: 작은 함수/모듈 단위 검증</li>
+        <li><strong>Integration Test</strong>: 구성요소 조합 검증</li>
+        <li><strong>E2E Test</strong>: 사용자 흐름 전체 검증</li>
+        <li><strong>Mock</strong>: 외부 의존을 가짜로 대체</li>
+        <li><strong>Assertion</strong>: 기대 결과를 검증하는 구문</li>
       </ul>
     </Callout>
 
@@ -27,11 +28,52 @@ import PageNavigation from '../../components/PageNavigation.astro';
         <li>핵심 사용자 시나리오 E2E Test</li>
       </ol>
 
+      <h2 class="text-2xl font-bold text-white mb-3">Unit 테스트 예시</h2>
+      <CodeBlock
+        client:load
+        filename="sum.test.ts"
+        code={`import { describe, it, expect } from 'vitest';
+import { sum } from './sum';
+
+describe('sum', () => {
+  it('adds two numbers', () => {
+    expect(sum(2, 3)).toBe(5);
+  });
+});`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">API 통합 테스트 예시</h2>
+      <CodeBlock
+        client:load
+        filename="todos.e2e-spec.ts"
+        code={`it('POST /todos creates item', async () => {
+  const res = await request(app)
+    .post('/api/v1/todos')
+    .send({ title: '테스트' });
+
+  expect(res.status).toBe(201);
+  expect(res.body.title).toBe('테스트');
+});`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>너무 큰 범위를 한 번에 테스트하려다 유지보수 실패</li>
+        <li>Mock 남용으로 실제 동작과 괴리 발생</li>
+        <li>성공 케이스만 테스트하고 실패 케이스 누락</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>완주 후 서비스 안정화 단계에서 테스트 도입</li>
+        <li><a href="/map/testing" class="text-primary hover:underline">테스팅 로드맵</a>으로 확장</li>
+      </ul>
+
       <Callout client:load variant="info" title="심화 학습">
         <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-          <li><a href="/map/testing" class="text-primary hover:underline">테스팅 로드맵</a></li>
           <li><a href="/map/testing/unit" class="text-primary hover:underline">단위 테스트</a></li>
           <li><a href="/map/testing/e2e" class="text-primary hover:underline">E2E 테스트</a></li>
+          <li><a href="/map/cicd" class="text-primary hover:underline">CI/CD</a>에서 자동 실행 연결</li>
         </ul>
       </Callout>
     </article>

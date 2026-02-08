@@ -1,35 +1,72 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
 import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
 <DocsLayout title="CORS 기초" description="브라우저 Same-Origin 정책과 CORS 동작 원리" currentPath="/map/cors-basics">
   <div class="max-w-4xl mx-auto px-6 py-8">
     <h1 class="text-3xl font-black text-white mb-4">CORS 기초</h1>
-    <p class="text-text-secondary mb-6">프론트와 백엔드 주소가 다를 때 왜 막히는지, 어떤 헤더를 열어야 하는지 이해합니다.</p>
+    <p class="text-text-secondary mb-6">프론트와 백엔드 주소가 다를 때 왜 막히는지, 어떤 설정이 필요한지 빠르게 정리합니다.</p>
 
     <Callout client:load variant="tip" title="핵심 개념">
       <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
         <li><strong>Same-Origin</strong>: 프로토콜/도메인/포트가 같아야 같은 출처</li>
         <li><strong>CORS</strong>: 교차 출처 요청 허용 규칙</li>
-        <li><strong>Preflight</strong>: 본 요청 전에 브라우저가 보내는 OPTIONS 확인 요청</li>
+        <li><strong>Preflight</strong>: 본 요청 전 브라우저가 보내는 OPTIONS 확인 요청</li>
+        <li><strong>Credentials</strong>: 쿠키/인증 정보 포함 요청</li>
       </ul>
     </Callout>
 
     <article class="prose prose-invert max-w-none mt-8">
       <h2 class="text-2xl font-bold text-white mb-3">왜 에러가 나는가?</h2>
-      <p class="text-text-secondary mb-6">브라우저는 보안을 위해 다른 출처 API 호출을 기본 차단합니다. 서버가 허용 헤더를 주면 통과합니다.</p>
+      <p class="text-text-secondary mb-6">브라우저는 다른 출처 API 호출을 기본 차단합니다. 서버 응답 헤더에 허용 정보가 없으면 CORS 에러가 발생합니다.</p>
 
-      <h2 class="text-2xl font-bold text-white mb-3">실무 체크리스트</h2>
+      <h2 class="text-2xl font-bold text-white mb-3">FastAPI 설정 예시</h2>
+      <CodeBlock
+        client:load
+        filename="app/main.py"
+        code={`from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["http://localhost:5173"],
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">Express/Nest 설정 예시</h2>
+      <CodeBlock
+        client:load
+        filename="main.ts"
+        code={`app.enableCors({
+  origin: ['http://localhost:5173'],
+  credentials: true,
+});`}
+      />
+
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
       <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
-        <li>프론트 URL(예: <code>http://localhost:5173</code>) 허용</li>
-        <li><code>allow_methods</code>, <code>allow_headers</code> 설정</li>
-        <li>쿠키 사용 시 <code>allow_credentials</code> 확인</li>
+        <li><code>allow_origins: ['*']</code>와 <code>credentials: true</code>를 동시에 사용</li>
+        <li>개발/배포 URL을 헷갈려 잘못된 origin만 허용</li>
+        <li>프리플라이트 OPTIONS 응답을 서버가 막아버림</li>
       </ul>
 
-      <Callout client:load variant="info" title="문제 해결 문서">
-        <a href="/fix/cors" class="text-primary hover:underline">CORS 트러블슈팅 바로가기</a>
+      <h2 class="text-2xl font-bold text-white mb-3">60분 챌린지 연결 지점</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><a href="/start/60min/connect" class="text-primary hover:underline">연결 단계</a>: 프론트-백엔드 연동 시 첫 이슈</li>
+        <li><a href="/fix/cors" class="text-primary hover:underline">CORS 트러블슈팅</a>: 에러 유형별 대응</li>
+      </ul>
+
+      <Callout client:load variant="info" title="디버깅 체크리스트">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li>브라우저 콘솔이 아니라 Network의 Response Headers 확인</li>
+          <li>요청 Origin과 서버 허용 Origin이 정확히 같은지 확인</li>
+          <li>쿠키 인증이면 <code>credentials</code> 양쪽 설정 동시 확인</li>
+        </ul>
       </Callout>
     </article>
 
