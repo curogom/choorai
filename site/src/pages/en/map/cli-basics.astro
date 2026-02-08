@@ -1,0 +1,73 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PlatformTabs from '../../../components/PlatformTabs';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const cliTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: 'Common file/navigation commands for zsh shell.',
+    commands: `pwd
+ls -la
+cd my-project
+mkdir src
+cp .env.example .env
+rm -rf dist`,
+    notes: ['Default shell is usually zsh.', 'Path separator is /'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'Common PowerShell commands for file operations.',
+    commands: `Get-Location
+Get-ChildItem -Force
+Set-Location .\\my-project
+New-Item -ItemType Directory src
+Copy-Item .env.example .env
+Remove-Item dist -Recurse -Force`,
+    notes: ['Path separator often appears as \\.', 'PowerShell and CMD syntax can differ.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: 'Common bash commands and permission note.',
+    commands: `pwd
+ls -la
+cd my-project
+mkdir src
+cp .env.example .env
+rm -rf dist`,
+    notes: ['For permission issues, check chmod/chown.'],
+  },
+];
+---
+
+<DocsLayout lang="en" title="CLI / Terminal Basics" description="OS-specific terminal commands and path differences" currentPath="/map/cli-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">CLI / Terminal Basics</h1>
+    <p class="text-text-secondary mb-6">OS-specific essentials for navigation and command execution.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Understand these first">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li>Always check current path first (<code>pwd</code> or <code>Get-Location</code>).</li>
+        <li>Double-check paths before delete commands.</li>
+        <li>Run commands from project root consistently.</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="CLI commands by OS" tabs={cliTabs} />
+
+    <article class="prose prose-invert max-w-none">
+      <Callout client:load locale="en" variant="info" title="Related docs">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/tools" class="text-primary hover:underline">Tools Setup</a></li>
+          <li><a href="/en/map/git" class="text-primary hover:underline">Git Basics</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/cli-basics" />
+  </div>
+</DocsLayout>

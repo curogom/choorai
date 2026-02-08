@@ -1,0 +1,79 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import PlatformTabs from '../../components/PlatformTabs';
+import PageNavigation from '../../components/PageNavigation.astro';
+
+const envTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: '터미널 세션에서 임시 설정 후, zsh 설정 파일에 영구 등록합니다.',
+    commands: `# 임시
+export VITE_API_URL="https://api.example.com"
+
+# 영구 (zsh)
+echo 'export VITE_API_URL="https://api.example.com"' >> ~/.zshrc
+source ~/.zshrc`,
+    notes: ['Vite는 VITE_ 접두사 변수만 클라이언트에서 읽습니다.'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'PowerShell 세션 설정과 사용자 환경변수(setx)를 구분합니다.',
+    commands: `# PowerShell 현재 세션
+$env:VITE_API_URL="https://api.example.com"
+
+# 사용자 환경변수로 저장
+setx VITE_API_URL "https://api.example.com"`,
+    notes: ['setx 후에는 새 터미널을 열어야 반영됩니다.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: '현재 셸 export와 쉘 rc 파일 등록을 함께 사용합니다.',
+    commands: `# 임시
+export VITE_API_URL="https://api.example.com"
+
+# 영구 (bash)
+echo 'export VITE_API_URL="https://api.example.com"' >> ~/.bashrc
+source ~/.bashrc`,
+    notes: ['배포 환경에서는 플랫폼별 대시보드 변수 설정을 우선 사용합니다.'],
+  },
+];
+---
+
+<DocsLayout title="환경변수 기초" description="빌드타임/런타임 변수 차이와 OS별 환경변수 설정" currentPath="/map/env-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">환경변수 기초</h1>
+    <p class="text-text-secondary mb-6">환경별 값을 코드 밖에서 관리하는 방법을 이해하면 배포 실수가 크게 줄어듭니다.</p>
+
+    <Callout client:load variant="tip" title="핵심 구분">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Build-time</strong>: 빌드 시점에 값이 주입됨</li>
+        <li><strong>Runtime</strong>: 실행 중인 서버 환경에서 값이 읽힘</li>
+        <li><strong>Secret</strong>: 키/토큰 같은 민감 정보 (Git 커밋 금지)</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="OS별 환경변수 설정" tabs={envTabs} />
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-3">초심자 실수 TOP 3</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li><code>.env</code>를 Git에 커밋하는 실수</li>
+        <li>클라이언트에서 읽을 변수 접두사 규칙 누락</li>
+        <li>배포 대시보드 변수와 로컬 변수를 혼동</li>
+      </ul>
+
+      <Callout client:load variant="info" title="연계 문서">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/runtime" class="text-primary hover:underline">환경변수 & Runtime</a></li>
+          <li><a href="/fix/env" class="text-primary hover:underline">환경변수 트러블슈팅</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/env-basics" />
+  </div>
+</DocsLayout>

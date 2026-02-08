@@ -1,0 +1,73 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import PlatformTabs from '../../components/PlatformTabs';
+import PageNavigation from '../../components/PageNavigation.astro';
+
+const cliTabs = [
+  {
+    id: 'mac',
+    label: 'macOS',
+    summary: 'zsh 기준으로 자주 쓰는 파일/폴더 이동 명령을 정리했습니다.',
+    commands: `pwd
+ls -la
+cd my-project
+mkdir src
+cp .env.example .env
+rm -rf dist`,
+    notes: ['터미널 기본 셸은 zsh입니다.', '경로 구분자는 / 를 사용합니다.'],
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    summary: 'PowerShell 기준 기본 명령을 정리했습니다.',
+    commands: `Get-Location
+Get-ChildItem -Force
+Set-Location .\\my-project
+New-Item -ItemType Directory src
+Copy-Item .env.example .env
+Remove-Item dist -Recurse -Force`,
+    notes: ['경로 구분자는 \\ 를 자주 사용합니다.', 'PowerShell과 CMD 명령은 일부 다릅니다.'],
+  },
+  {
+    id: 'linux',
+    label: 'Linux',
+    summary: 'bash 기준으로 기본 명령과 주의점을 정리했습니다.',
+    commands: `pwd
+ls -la
+cd my-project
+mkdir src
+cp .env.example .env
+rm -rf dist`,
+    notes: ['권한 문제 시 chmod/chown 확인이 필요할 수 있습니다.'],
+  },
+];
+---
+
+<DocsLayout title="CLI/터미널 기초" description="OS별 터미널 기본 명령과 경로 차이" currentPath="/map/cli-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">CLI/터미널 기초</h1>
+    <p class="text-text-secondary mb-6">초심자가 가장 자주 막히는 파일 이동/실행 명령을 OS별로 정리했습니다.</p>
+
+    <Callout client:load variant="tip" title="먼저 이해할 것">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>현재 경로</strong>를 항상 먼저 확인합니다 (<code>pwd</code> 또는 <code>Get-Location</code>).</li>
+        <li>삭제 명령은 되돌리기 어려우니 경로를 재확인합니다.</li>
+        <li>프로젝트 루트에서 명령을 실행하는 습관이 중요합니다.</li>
+      </ul>
+    </Callout>
+
+    <PlatformTabs client:load title="OS별 CLI 기본 명령" tabs={cliTabs} />
+
+    <article class="prose prose-invert max-w-none">
+      <Callout client:load variant="info" title="연계 문서">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/map/tools" class="text-primary hover:underline">도구 준비</a></li>
+          <li><a href="/map/git" class="text-primary hover:underline">Git 기초</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/cli-basics" />
+  </div>
+</DocsLayout>
