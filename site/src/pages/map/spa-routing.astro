@@ -1,0 +1,37 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout title="SPA 라우팅 기초" description="클라이언트 라우팅과 새로고침 404 문제의 원리" currentPath="/map/spa-routing">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">SPA 라우팅 기초</h1>
+    <p class="text-text-secondary mb-6">React Router/Vue Router 사용 시 자주 만나는 새로고침 404 문제를 개념부터 이해합니다.</p>
+
+    <Callout client:load variant="tip" title="핵심 개념">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>SPA</strong>: 브라우저에서 라우팅을 처리하는 단일 페이지 앱</li>
+        <li><strong>클라이언트 라우팅</strong>: 서버가 아닌 JS 라우터가 경로 전환</li>
+        <li><strong>Fallback</strong>: 서버가 모든 경로를 index.html로 되돌리는 설정</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">왜 새로고침에서 404가 날까?</h2>
+      <p class="text-text-secondary mb-6">브라우저 새로고침은 서버에 현재 경로를 직접 요청합니다. 서버가 해당 파일을 모르면 404가 발생합니다.</p>
+
+      <h2 class="text-2xl font-bold text-white mb-3">해결 방향</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>호스팅에 SPA fallback 규칙 추가</li>
+        <li>정적 경로와 앱 경로를 분리해 처리</li>
+      </ul>
+
+      <Callout client:load variant="info" title="실전 트러블슈팅">
+        <a href="/fix/spa-404" class="text-primary hover:underline">SPA 404 해결 가이드</a>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/spa-routing" />
+  </div>
+</DocsLayout>

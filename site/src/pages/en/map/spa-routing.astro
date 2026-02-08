@@ -1,0 +1,37 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout lang="en" title="SPA Routing Basics" description="Understand client-side routing and refresh 404 behavior" currentPath="/map/spa-routing">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">SPA Routing Basics</h1>
+    <p class="text-text-secondary mb-6">Understand why refresh can return 404 in React/Vue SPA and how fallback routing fixes it.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core concepts">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>SPA</strong>: Single-page app where routing is handled in browser</li>
+        <li><strong>Client-side routing</strong>: Router library controls path changes</li>
+        <li><strong>Fallback</strong>: Server returns index.html for app routes</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Why refresh gives 404</h2>
+      <p class="text-text-secondary mb-6">On refresh, browser requests current path from server directly. If server has no matching file, you get 404.</p>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Fix direction</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>Add SPA fallback rule in hosting config</li>
+        <li>Separate static assets and app routes correctly</li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Practical troubleshooting">
+        <a href="/en/fix/spa-404" class="text-primary hover:underline">SPA 404 troubleshooting guide</a>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/spa-routing" />
+  </div>
+</DocsLayout>

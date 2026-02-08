@@ -1,0 +1,41 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout lang="en" title="Testing Terms Basics" description="Unit, integration, E2E, mock, and assertion for beginners" currentPath="/map/testing-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Testing Terms Basics</h1>
+    <p class="text-text-secondary mb-6">Learn core testing terms before writing or reviewing test code.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core terms">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Unit Test</strong>: Test a small function/module</li>
+        <li><strong>Integration Test</strong>: Test interactions across components</li>
+        <li><strong>E2E Test</strong>: Test full user journey</li>
+        <li><strong>Mock</strong>: Replace external dependency with fake</li>
+        <li><strong>Assertion</strong>: Statement that verifies expected output</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Where to start</h2>
+      <ol class="list-decimal list-inside text-text-secondary space-y-1 mb-6">
+        <li>Unit test core business logic</li>
+        <li>Integration test critical API flows</li>
+        <li>E2E test core user scenarios</li>
+      </ol>
+
+      <Callout client:load locale="en" variant="info" title="Further learning">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><a href="/en/map/testing" class="text-primary hover:underline">Testing roadmap</a></li>
+          <li><a href="/en/map/testing/unit" class="text-primary hover:underline">Unit testing</a></li>
+          <li><a href="/en/map/testing/e2e" class="text-primary hover:underline">E2E testing</a></li>
+        </ul>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/testing-basics" />
+  </div>
+</DocsLayout>
