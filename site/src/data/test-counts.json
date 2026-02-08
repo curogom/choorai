@@ -1,22 +1,22 @@
 {
-  "b2bAdmin": 70,
-  "b2cTodo": 73,
-  "total": 143,
+  "b2bAdmin": 69,
+  "b2cTodo": 72,
+  "total": 141,
   "breakdown": {
     "b2bAdmin": {
       "api": 19,
       "apiHono": 16,
-      "apiNest": 13,
+      "apiNest": 12,
       "web": 11,
       "webVue": 11
     },
     "b2cTodo": {
       "api": 23,
       "apiHono": 19,
-      "apiNest": 14,
+      "apiNest": 13,
       "web": 12,
       "webVue": 5
     }
   },
-  "generatedAt": "2026-02-08T04:02:05.767Z"
+  "generatedAt": "2026-02-08T04:32:16.833Z"
 }
