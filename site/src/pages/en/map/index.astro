@@ -48,7 +48,7 @@ const row1Nodes = localizedNodes.filter((n) => n.row === 1).sort((a, b) => b.ord
         {row0Nodes.map((node, idx) => (
           <div class="roadmap-step">
             <a
-              href={node.href}
+              href={`/en${node.href}`}
               class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
               data-node-id={node.id}
               data-node-order={node.order}
@@ -86,7 +86,7 @@ const row1Nodes = localizedNodes.filter((n) => n.row === 1).sort((a, b) => b.ord
         {row1Nodes.map((node, idx) => (
           <div class="roadmap-step">
             <a
-              href={node.href}
+              href={`/en${node.href}`}
               class="map-node block p-4 bg-surface border-2 border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1 group"
               data-node-id={node.id}
               data-node-order={node.order}
@@ -122,7 +122,7 @@ const row1Nodes = localizedNodes.filter((n) => n.row === 1).sort((a, b) => b.ord
       <div class="grid sm:grid-cols-3 gap-4">
         {localizedExtraNodes.map(node => (
           <a
-            href={node.href}
+            href={`/en${node.href}`}
             class="extra-node block p-4 bg-surface/50 border border-border rounded-xl hover:border-primary/30 transition-all group"
             data-node-id={node.id}
           >
