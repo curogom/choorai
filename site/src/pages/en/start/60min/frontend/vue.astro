@@ -81,6 +81,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- Terms -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Terms Before Step 2" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>Component</strong>: A reusable unit that makes up the UI.</li>
+          <li><strong>Reactive Data</strong>: Data that updates the UI automatically when values change.</li>
+          <li><strong>Dev Server</strong>: Local runtime to preview your app instantly.</li>
+          <li><strong>Build</strong>: Converting your app into deployable output files.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- Main Content -->
     <article class="prose prose-invert max-w-none">
       <!-- Section 1: Create Project -->
@@ -113,6 +125,15 @@ npm install`}
               <li>Single File Component (.vue) combining HTML/CSS/JS</li>
             </ul>
           </div>
+        </Callout>
+
+        <Callout client:load variant="tip" title="Term Tip: CLI / Dependencies" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>CLI</strong>: Running project tools with terminal commands.</li>
+            <li><strong>npm</strong>: The package manager that installs and updates libraries.</li>
+            <li><strong>Dependency</strong>: An external library your app needs to run.</li>
+            <li>Deep dive: <a href="/en/map/tools" class="text-primary hover:underline">Tools and terminal basics</a></li>
+          </ul>
         </Callout>
       </section>
 

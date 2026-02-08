@@ -74,6 +74,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- 용어 정리 -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="5단계 시작 전에 알아둘 용어">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>빌드(Build)</strong>: 소스 코드를 배포 가능한 정적 파일로 변환하는 과정입니다.</li>
+          <li><strong>정적 파일(Static Assets)</strong>: HTML/CSS/JS처럼 서버 연산 없이 제공되는 파일입니다.</li>
+          <li><strong>환경변수(Environment Variable)</strong>: 배포 환경에서 주입하는 설정값입니다.</li>
+          <li><strong>도메인/URL</strong>: 배포 후 사용자가 접속하는 인터넷 주소입니다.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- 메인 콘텐츠 -->
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: GitHub 저장소 -->
@@ -128,6 +140,15 @@ git push -u origin main`}
             <code>YOUR_USERNAME</code> 부분만 본인의 GitHub 사용자명으로 바꾸세요.
           </p>
         </Callout>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: Repo / Branch / Push">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Repository</strong>: 프로젝트 코드와 변경 이력을 저장하는 공간입니다.</li>
+            <li><strong>Branch</strong>: 변경을 분리해서 관리하는 작업 줄기입니다. 기본 배포는 보통 <code>main</code> 브랜치를 사용합니다.</li>
+            <li><strong>Push</strong>: 내 로컬 변경사항을 GitHub 원격 저장소로 업로드하는 작업입니다.</li>
+            <li>심화 학습: <a href="/map/git" class="text-primary hover:underline">Git 기초</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- 섹션 2: Cloudflare Pages -->
@@ -155,6 +176,14 @@ git push -u origin main`}
           <li>방금 만든 <code>my-admin</code> 저장소 선택</li>
           <li>"Begin setup" 클릭</li>
         </ol>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: 도메인 / DNS">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>도메인</strong>: 사용자가 접속하는 사람이 읽기 쉬운 주소입니다.</li>
+            <li><strong>DNS</strong>: 도메인을 실제 서버 주소로 연결하는 시스템입니다.</li>
+            <li>심화 학습: <a href="/map/dns" class="text-primary hover:underline">DNS 기초</a></li>
+          </ul>
+        </Callout>
 
         <h3 class="text-lg font-bold text-white mt-6 mb-3">2.3 빌드 설정</h3>
 

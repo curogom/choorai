@@ -80,6 +80,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- 용어 정리 -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="3단계 시작 전에 알아둘 용어">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>엔드포인트(Endpoint)</strong>: API가 요청을 받는 URL 주소입니다.</li>
+          <li><strong>요청(Request)</strong>: 프론트엔드가 서버에 보내는 데이터/행동입니다.</li>
+          <li><strong>응답(Response)</strong>: 서버가 프론트엔드에 돌려주는 결과 데이터입니다.</li>
+          <li><strong>CRUD</strong>: 생성(Create), 조회(Read), 수정(Update), 삭제(Delete)의 기본 동작입니다.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- 메인 콘텐츠 -->
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 환경 설정 -->
@@ -135,6 +147,15 @@ pip freeze > requirements.txt`}
         <p class="text-text-secondary mt-4">
           <code>requirements.txt</code> 파일이 생성됩니다. 나중에 배포할 때 이 파일을 사용합니다.
         </p>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: 가상환경 / 의존성">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>가상환경(Virtual Environment)</strong>: 프로젝트별로 Python 패키지를 분리해 충돌을 방지하는 환경입니다.</li>
+            <li><strong>requirements.txt</strong>: 현재 프로젝트에 필요한 Python 패키지 목록입니다.</li>
+            <li><strong>런타임(Runtime)</strong>: 코드가 실제 실행되는 환경입니다.</li>
+            <li>심화 학습: <a href="/map/tools" class="text-primary hover:underline">도구 설치</a>, <a href="/map/runtime" class="text-primary hover:underline">환경변수/런타임</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- 섹션 3: 첫 API 만들기 -->
@@ -184,6 +205,14 @@ def root():
         <p class="text-text-secondary mt-4">
           브라우저에서 <code>http://localhost:8000/docs</code>를 열면 Swagger UI가 나타납니다!
         </p>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: CORS / Swagger">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>CORS</strong>: 브라우저가 다른 출처(포트/도메인) 요청을 허용할지 검사하는 보안 규칙입니다.</li>
+            <li><strong>Swagger UI</strong>: API를 브라우저에서 바로 실행/검증할 수 있는 문서 UI입니다.</li>
+            <li>심화 학습: <a href="/fix/cors" class="text-primary hover:underline">CORS 트러블슈팅</a></li>
+          </ul>
+        </Callout>
 
         <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
           <div class="flex items-center gap-2 text-green-400 font-bold mb-2">

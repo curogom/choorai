@@ -81,6 +81,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- 용어 정리 -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="3단계 시작 전에 알아둘 용어">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>엔드포인트(Endpoint)</strong>: API가 요청을 받는 URL 주소입니다.</li>
+          <li><strong>HTTP 메서드</strong>: GET/POST/PUT/DELETE처럼 요청 의도를 나타내는 방식입니다.</li>
+          <li><strong>요청/응답</strong>: 클라이언트가 보낸 데이터와 서버가 반환한 결과입니다.</li>
+          <li><strong>CRUD</strong>: 생성, 조회, 수정, 삭제의 기본 API 기능 세트입니다.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- 왜 Hono? -->
     <section class="mb-10">
       <Callout client:load variant="info" title="왜 Hono인가?">
@@ -125,6 +137,15 @@ npm install hono @hono/node-server
 npm install -D typescript @types/node tsx`}
           filename="터미널"
         />
+
+        <Callout client:load variant="tip" title="중간 용어 팁: npm init / package.json">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>npm init</strong>: Node 프로젝트 기본 설정 파일을 생성하는 명령입니다.</li>
+            <li><strong>package.json</strong>: 프로젝트 이름, 스크립트, 의존성을 기록하는 메타 파일입니다.</li>
+            <li><strong>Script</strong>: 자주 쓰는 명령을 이름으로 저장해 실행하는 기능입니다.</li>
+            <li>심화 학습: <a href="/map/tools" class="text-primary hover:underline">도구 설치/터미널 기초</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- 섹션 2: 첫 API 작성 -->
@@ -178,6 +199,14 @@ curl http://localhost:8000/health
 curl http://localhost:8000/api/hello?name=Choorai`}
           filename="터미널"
         />
+
+        <Callout client:load variant="tip" title="중간 용어 팁: CORS / Endpoint">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Endpoint</strong>: API 요청을 받는 URL 경로입니다.</li>
+            <li><strong>CORS</strong>: 프론트엔드와 백엔드 출처가 다를 때 필요한 브라우저 허용 설정입니다.</li>
+            <li>심화 학습: <a href="/fix/cors" class="text-primary hover:underline">CORS 트러블슈팅</a></li>
+          </ul>
+        </Callout>
 
         <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
           <div class="flex items-center gap-2 text-green-400 font-bold mb-2">

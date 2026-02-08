@@ -75,6 +75,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- Terms -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Terms Before Step 5" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>Build</strong>: Converting source code into deployable static output.</li>
+          <li><strong>Static Assets</strong>: Files like HTML/CSS/JS served without server-side processing.</li>
+          <li><strong>Environment Variable</strong>: Runtime config injected in the deployment environment.</li>
+          <li><strong>Domain/URL</strong>: Public internet address users use to access your app.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- Main Content -->
     <article class="prose prose-invert max-w-none">
       <!-- Section 1: GitHub Repository -->
@@ -129,6 +141,15 @@ git push -u origin main`}
             Only replace <code>YOUR_USERNAME</code> with your GitHub username.
           </p>
         </Callout>
+
+        <Callout client:load variant="tip" title="Term Tip: Repo / Branch / Push" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Repository</strong>: A place where your code and history are stored.</li>
+            <li><strong>Branch</strong>: A separate line of work. Deploy usually tracks <code>main</code>.</li>
+            <li><strong>Push</strong>: Upload your local commits to a remote GitHub repository.</li>
+            <li>Deep dive: <a href="/en/map/git" class="text-primary hover:underline">Git Basics</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- Section 2: Cloudflare Pages -->
@@ -156,6 +177,14 @@ git push -u origin main`}
           <li>Select the <code>my-admin</code> repository you just created</li>
           <li>Click "Begin setup"</li>
         </ol>
+
+        <Callout client:load variant="tip" title="Term Tip: Domain / DNS" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Domain</strong>: The human-readable address users open in a browser.</li>
+            <li><strong>DNS</strong>: The system that maps domain names to actual server addresses.</li>
+            <li>Deep dive: <a href="/en/map/dns" class="text-primary hover:underline">DNS Basics</a></li>
+          </ul>
+        </Callout>
 
         <h3 class="text-lg font-bold text-white mt-6 mb-3">2.3 Build Settings</h3>
 

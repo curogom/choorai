@@ -80,6 +80,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- 용어 정리 -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="2단계 시작 전에 알아둘 용어">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>컴포넌트(Component)</strong>: UI를 조각 단위로 나눈 재사용 가능한 블록입니다.</li>
+          <li><strong>상태(State)</strong>: 화면에서 바뀌는 데이터(입력값, 목록 등)입니다.</li>
+          <li><strong>개발 서버(Dev Server)</strong>: 로컬에서 코드를 바로 확인하는 실행 환경입니다.</li>
+          <li><strong>빌드(Build)</strong>: 배포 가능한 정적 파일로 변환하는 과정입니다.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- 메인 콘텐츠 -->
     <article class="prose prose-invert max-w-none">
       <!-- 섹션 1: 프로젝트 생성 -->
@@ -107,6 +119,15 @@ npm install`}
           <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
             <li><strong>my-admin</strong>: 프로젝트 이름 (원하는 이름으로 변경 가능)</li>
             <li><strong>react-ts</strong>: React + TypeScript 템플릿</li>
+          </ul>
+        </Callout>
+
+        <Callout client:load variant="tip" title="중간 용어 팁: CLI / 의존성">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>CLI</strong>: 터미널에서 명령어로 도구를 실행하는 방식입니다.</li>
+            <li><strong>npm</strong>: JavaScript 패키지(라이브러리)를 설치/관리하는 도구입니다.</li>
+            <li><strong>의존성(Dependency)</strong>: 내 프로젝트가 동작하려고 필요로 하는 외부 패키지입니다.</li>
+            <li>심화 학습: <a href="/map/tools" class="text-primary hover:underline">도구 설치/터미널 기초</a></li>
           </ul>
         </Callout>
       </section>

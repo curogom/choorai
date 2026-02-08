@@ -76,6 +76,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- Terms -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Terms Before Step 4" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>CORS</strong>: Browser security rules for cross-origin requests.</li>
+          <li><strong>Environment Variable</strong>: External config values (such as API URL).</li>
+          <li><strong>Query</strong>: API call used to fetch data.</li>
+          <li><strong>Mutation</strong>: API call used to create/update/delete data.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- Main Content -->
     <article class="prose prose-invert max-w-none">
       <!-- Pre-check -->
@@ -181,6 +193,15 @@ class ApiClient {
 export const apiClient = new ApiClient(API_URL);`}
           filename="src/api/client.ts"
         />
+
+        <Callout client:load variant="tip" title="Term Tip: Env Vars / JSON" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Environment Variable</strong>: Runtime configuration injected outside code.</li>
+            <li><strong>JSON</strong>: The common data format used between frontend and backend APIs.</li>
+            <li><strong>HTTP Status Code</strong>: Numeric response signals for success/failure.</li>
+            <li>Deep dive: <a href="/en/map/runtime" class="text-primary hover:underline">Environment and Runtime</a>, <a href="/en/fix/cors" class="text-primary hover:underline">CORS troubleshooting</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- Section 3: React Hooks -->

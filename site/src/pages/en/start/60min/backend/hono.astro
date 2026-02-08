@@ -82,6 +82,18 @@ const checklist = [
       </Callout>
     </section>
 
+    <!-- Terms -->
+    <section class="mb-10">
+      <Callout client:load variant="info" title="Terms Before Step 3" locale="en">
+        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+          <li><strong>Endpoint</strong>: A URL where your API receives requests.</li>
+          <li><strong>HTTP Method</strong>: GET/POST/PUT/DELETE that describe request intent.</li>
+          <li><strong>Request/Response</strong>: Input sent by client and output returned by server.</li>
+          <li><strong>CRUD</strong>: Core API operations: Create, Read, Update, Delete.</li>
+        </ul>
+      </Callout>
+    </section>
+
     <!-- Why Hono? -->
     <section class="mb-10">
       <Callout client:load variant="info" title="Why Hono?" locale="en">
@@ -126,6 +138,15 @@ npm install hono @hono/node-server
 npm install -D typescript @types/node tsx`}
           filename="Terminal"
         />
+
+        <Callout client:load variant="tip" title="Term Tip: npm init / package.json" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>npm init</strong>: Command to create a new Node project setup file.</li>
+            <li><strong>package.json</strong>: Metadata file containing scripts and dependencies.</li>
+            <li><strong>Script</strong>: Named command shortcuts you can run with npm.</li>
+            <li>Deep dive: <a href="/en/map/tools" class="text-primary hover:underline">Tools and terminal basics</a></li>
+          </ul>
+        </Callout>
       </section>
 
       <!-- Section 2: Write First API -->
@@ -179,6 +200,14 @@ curl http://localhost:8000/health
 curl http://localhost:8000/api/hello?name=Choorai`}
           filename="Terminal"
         />
+
+        <Callout client:load variant="tip" title="Term Tip: CORS / Endpoint" locale="en">
+          <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+            <li><strong>Endpoint</strong>: A URL path where your API receives requests.</li>
+            <li><strong>CORS</strong>: Browser permission rules for cross-origin frontend/backend calls.</li>
+            <li>Deep dive: <a href="/en/fix/cors" class="text-primary hover:underline">CORS troubleshooting</a></li>
+          </ul>
+        </Callout>
 
         <div class="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
           <div class="flex items-center gap-2 text-green-400 font-bold mb-2">
