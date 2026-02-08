@@ -1,0 +1,38 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout lang="en" title="CORS Basics" description="Understand Same-Origin policy and CORS behavior" currentPath="/map/cors-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">CORS Basics</h1>
+    <p class="text-text-secondary mb-6">Learn why cross-origin calls fail and which headers need to be configured.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core concepts">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Same-Origin</strong>: Same protocol/domain/port</li>
+        <li><strong>CORS</strong>: Cross-origin request permission rules</li>
+        <li><strong>Preflight</strong>: Browser OPTIONS check before actual request</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Why errors happen</h2>
+      <p class="text-text-secondary mb-6">Browsers block cross-origin API calls by default. The server must return allowed CORS headers.</p>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Practical checklist</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>Allow frontend origin (e.g., <code>http://localhost:5173</code>)</li>
+        <li>Set <code>allow_methods</code> and <code>allow_headers</code></li>
+        <li>If using cookies, verify <code>allow_credentials</code></li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Troubleshooting">
+        <a href="/en/fix/cors" class="text-primary hover:underline">Go to CORS Troubleshooting</a>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/cors-basics" />
+  </div>
+</DocsLayout>

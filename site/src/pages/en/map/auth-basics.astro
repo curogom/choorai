@@ -1,0 +1,37 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout lang="en" title="Auth Basics" description="Authentication vs Authorization, Session/JWT, OAuth essentials" currentPath="/map/auth-basics">
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-black text-white mb-4">Auth Basics</h1>
+    <p class="text-text-secondary mb-6">Learn the minimum concepts before adding login to your app.</p>
+
+    <Callout client:load locale="en" variant="tip" title="Core three">
+      <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
+        <li><strong>Authentication</strong>: Verify who the user is</li>
+        <li><strong>Authorization</strong>: Verify what the user can do</li>
+        <li><strong>Session/JWT</strong>: Ways to keep login state</li>
+      </ul>
+    </Callout>
+
+    <article class="prose prose-invert max-w-none mt-8">
+      <h2 class="text-2xl font-bold text-white mb-3">Why OAuth</h2>
+      <p class="text-text-secondary mb-6">Google/GitHub login delegates identity checks to external providers without storing passwords directly.</p>
+
+      <h2 class="text-2xl font-bold text-white mb-3">Beginner recommendation</h2>
+      <ul class="list-disc list-inside text-text-secondary space-y-1 mb-6">
+        <li>Fast start: managed auth like Clerk/Firebase Auth</li>
+        <li>Custom build: requires solid session/JWT security design</li>
+      </ul>
+
+      <Callout client:load locale="en" variant="info" title="Detailed implementation guides">
+        <a href="/en/map/auth" class="text-primary hover:underline">Open auth roadmap</a>
+      </Callout>
+    </article>
+
+    <PageNavigation currentPath="/map/auth-basics" />
+  </div>
+</DocsLayout>

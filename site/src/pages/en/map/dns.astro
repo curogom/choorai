@@ -86,6 +86,15 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 
       <!-- DNS Record Types -->
       <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Beginner practical checklist">
+          <ol class="list-decimal list-inside space-y-1 mt-2 text-sm">
+            <li>Choose a purchased domain or a free subdomain first.</li>
+            <li>Add DNS records in Cloudflare.</li>
+            <li>Propagation may take from minutes to hours.</li>
+            <li>If it fails, verify DNS value, proxy setting, and cache in order.</li>
+          </ol>
+        </Callout>
+
         <h2 class="text-2xl font-bold text-white mb-4">DNS Record Types</h2>
 
         <p class="text-text-secondary mb-4">
