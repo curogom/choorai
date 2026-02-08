@@ -51,9 +51,23 @@ export default function NavGroup({
   };
 
   useEffect(() => {
-    if (isOpen && contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
+    if (!isOpen || !contentRef.current) return;
+
+    const element = contentRef.current;
+    const updateHeight = () => {
+      setContentHeight(element.scrollHeight);
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      observer.disconnect();
+    };
   }, [isOpen, items]);
 
   return (
