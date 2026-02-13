@@ -1,0 +1,162 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Database Lv.1: SQL Basics"
+  description="완전 초보를 위한 SQL 기초: 테이블/CRUD/JOIN/INDEX를 실습 중심으로 이해합니다"
+  currentPath="/map/database/sql-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/database" class="hover:text-white transition-colors">데이터베이스</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SQL Basics</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-4">
+        🌱 Lv.1
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        SQL Basics
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        SQL은 데이터베이스와 대화하는 언어입니다.
+        이 페이지는 "문법 암기"보다 "데이터가 저장/조회/수정/삭제되는 흐름"을 이해하는 데 집중합니다.
+        처음 배우는 분도 바로 따라할 수 있도록 최소 단위로 나눠 설명합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="이 페이지의 학습 목표">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>테이블(Table), 행(Row), 열(Column) 용어를 정확히 구분</li>
+          <li>CRUD 쿼리를 읽고 직접 작성</li>
+          <li>JOIN과 INDEX가 왜 필요한지 감으로 이해</li>
+          <li>다음 단계(RDB 설계)로 넘어갈 준비 완료</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">1) 가장 먼저 잡아야 할 개념</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Table (테이블)</h3>
+            <p class="text-text-secondary text-sm">엑셀의 "시트"처럼 같은 성격의 데이터를 모아두는 공간입니다.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Row (행)</h3>
+            <p class="text-text-secondary text-sm">한 건의 실제 데이터입니다. 예: 프로젝트 1개</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Column (열)</h3>
+            <p class="text-text-secondary text-sm">데이터 속성입니다. 예: name, status, created_at</p>
+          </div>
+        </div>
+        <p class="text-text-secondary text-sm">
+          초보자가 가장 많이 헷갈리는 부분은 "테이블 설계"보다 "행과 열 구분"입니다.
+          SQL이 어렵게 느껴질 때는 항상 "지금 내가 다루는 게 행인지 열인지"부터 확인하세요.
+        </p>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">2) CRUD를 실제 흐름으로 이해하기</h2>
+        <p class="text-text-secondary mb-4">
+          아래 네 줄은 대부분의 서비스에서 가장 많이 실행되는 기본 작업입니다.
+          순서대로 읽으면 "추가 → 조회 → 수정 → 삭제"가 데이터 생명주기라는 걸 알 수 있습니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          filename="sql"
+          code={`-- C: Create (새 데이터 추가)
+INSERT INTO projects (name, status) VALUES ('admin', 'active');
+
+-- R: Read (데이터 조회)
+SELECT id, name, status FROM projects WHERE status = 'active';
+
+-- U: Update (기존 데이터 수정)
+UPDATE projects SET status = 'archived' WHERE id = 1;
+
+-- D: Delete (데이터 삭제)
+DELETE FROM projects WHERE id = 1;`}
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-2">읽는 법 요약</h3>
+          <ul class="list-disc list-inside text-text-secondary text-sm space-y-1">
+            <li><code>INSERT INTO</code>: 어느 테이블에 넣을지 지정</li>
+            <li><code>SELECT ... FROM</code>: 어떤 컬럼을 어떤 테이블에서 가져올지 지정</li>
+            <li><code>WHERE</code>: 조건 필터(없으면 전체 대상)</li>
+            <li><code>UPDATE ... SET</code>: 어떤 값을 어떤 값으로 바꿀지 지정</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">3) JOIN과 INDEX를 쉽게 이해하기</h2>
+        <p class="text-text-secondary mb-4">
+          서비스가 커지면 데이터가 한 테이블에만 있지 않습니다.
+          사용자 테이블(users)과 프로젝트 테이블(projects)을 연결해서 보여줘야 하므로 JOIN이 필요합니다.
+        </p>
+
+        <CodeBlock
+          client:load
+          filename="sql"
+          code={`SELECT p.name, u.email
+FROM projects p
+JOIN users u ON p.owner_id = u.id
+WHERE p.status = 'active';`}
+        />
+
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">JOIN</h3>
+            <p class="text-text-secondary text-sm">서로 다른 테이블을 "공통 키"(예: user_id)로 연결해 하나처럼 조회합니다.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">INDEX</h3>
+            <p class="text-text-secondary text-sm">책의 목차처럼 원하는 데이터를 빨리 찾도록 도와주는 구조입니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">4) 초보자가 자주 하는 실수</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">WHERE 없이 UPDATE/DELETE 실행</h3>
+            <p class="text-text-secondary text-sm">조건이 없으면 전체 데이터가 한 번에 바뀌거나 삭제될 수 있습니다.</p>
+          </div>
+          <div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">ID를 문자열/숫자로 혼용</h3>
+            <p class="text-text-secondary text-sm">컬럼 타입과 값 타입이 맞지 않으면 비교/조회가 꼬입니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <Callout client:load variant="info" title="체크리스트: 다음 단계로 넘어가기 전">
+          <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+            <li>CRUD 쿼리를 직접 1회 이상 실행해봤다</li>
+            <li>JOIN 쿼리가 "두 테이블 연결"이라는 것을 이해했다</li>
+            <li>WHERE 없는 UPDATE/DELETE가 위험하다는 걸 알고 있다</li>
+            <li>준비 완료: <a href="/map/database/rdb" class="text-primary hover:underline">RDB (Lv.2)</a>로 이동</li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database/sql-basics" />
+  </div>
+</DocsLayout>

@@ -36,6 +36,7 @@ import PageNavigation from '../../components/PageNavigation.astro';
     <section class="mb-10">
       <Callout client:load variant="tip" title="이 Cycle에서 배우는 것">
         <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>SQL 기초 (Lv.1)</li>
           <li>PostgreSQL 설치 및 설정</li>
           <li>SQLAlchemy ORM 사용법</li>
           <li>데이터베이스 마이그레이션 (Alembic)</li>
@@ -89,6 +90,14 @@ import PageNavigation from '../../components/PageNavigation.astro';
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-white mb-4">빠른 시작</h2>
 
+        <div class="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+          <h3 class="text-white font-bold mb-2">🌱 Lv.1 먼저: SQL Basics</h3>
+          <p class="text-text-secondary text-sm mb-2">
+            데이터베이스가 처음이라면 SQL 기본 문법과 테이블 구조부터 먼저 학습하세요.
+          </p>
+          <a href="/map/database/sql-basics" class="text-green-400 text-sm font-medium hover:underline">SQL Basics 보기 →</a>
+        </div>
+
         <h3 class="text-lg font-bold text-white mt-6 mb-3">1. 의존성 설치</h3>
 
         <CodeBlock
@@ -127,7 +136,7 @@ class Project(Base):
         <h2 class="text-2xl font-bold text-white mb-4">클라우드 데이터베이스 옵션</h2>
 
         <div class="grid md:grid-cols-3 gap-4">
-          <a href="/map/database/supabase" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
+          <a href="/baas/supabase" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
             <h3 class="text-white font-bold mb-2">Supabase</h3>
             <p class="text-text-secondary text-sm">무료 티어 제공, PostgreSQL 기반</p>
             <span class="text-primary text-xs mt-2 inline-block">가이드 보기 →</span>
@@ -150,7 +159,7 @@ class Project(Base):
         <Callout client:load variant="info" title="BaaS로 빠르게 시작하기">
           <p class="text-sm">
             백엔드 없이 데이터베이스와 인증을 바로 사용하고 싶다면
-            <a href="/map/database/supabase" class="text-primary hover:underline">Supabase 가이드</a>를 참고하세요.
+            <a href="/baas/supabase" class="text-primary hover:underline">Supabase 가이드</a>를 참고하세요.
             SQL 작성 없이 프론트엔드에서 직접 데이터베이스에 접근할 수 있습니다.
           </p>
         </Callout>

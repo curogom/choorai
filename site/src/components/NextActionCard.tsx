@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MAP_NODES, getNextNode } from '../data/mapNodes';
-import { getCompletedMapNodes, getMapNodeStatus } from '../lib/progressStore';
-import { useLearningMode } from './ModeToggle';
+import { calculateOverallProgress, CHALLENGE_STEPS, type StepKey } from '../lib/progressStore';
 
 interface NextActionCardProps {
   locale?: string;
@@ -17,23 +15,85 @@ interface PathStep {
   href: string;
 }
 
-const PATH_STEPS_KO: PathStep[] = [
-  { id: 'tools', step: 1, title: '도구 준비하기', description: 'VS Code, Git, Node.js 설치', estimatedTime: '10분', href: '/path/60min' },
-  { id: 'frontend', step: 2, title: 'React로 UI 만들기', description: 'Vite + React로 프론트엔드 구축', estimatedTime: '15분', href: '/start/60min/frontend/react' },
-  { id: 'backend', step: 3, title: 'API 서버 만들기', description: 'Hono로 백엔드 API 구축', estimatedTime: '20분', href: '/start/60min/backend/hono' },
-  { id: 'connect', step: 4, title: '프론트-백엔드 연결', description: 'API 연동 및 CORS 설정', estimatedTime: '10분', href: '/start/60min/connect' },
-  { id: 'deploy', step: 5, title: '배포하기', description: 'Cloudflare Pages + Cloud Run 배포', estimatedTime: '15분', href: '/start/60min/deploy' },
-  { id: 'complete', step: 6, title: '완료!', description: '축하합니다! 첫 서비스를 배포했습니다', estimatedTime: '', href: '/start/60min/complete' },
-];
+type FrontendChoice = 'react' | 'vue';
+type BackendChoice = 'fastapi' | 'hono';
 
-const PATH_STEPS_EN: PathStep[] = [
-  { id: 'tools', step: 1, title: 'Set Up Tools', description: 'Install VS Code, Git, Node.js', estimatedTime: '10 min', href: '/en/path/60min' },
-  { id: 'frontend', step: 2, title: 'Build UI with React', description: 'Build frontend with Vite + React', estimatedTime: '15 min', href: '/en/start/60min/frontend/react' },
-  { id: 'backend', step: 3, title: 'Build API Server', description: 'Build backend API with Hono', estimatedTime: '20 min', href: '/en/start/60min/backend/hono' },
-  { id: 'connect', step: 4, title: 'Connect Front & Back', description: 'API integration & CORS setup', estimatedTime: '10 min', href: '/en/start/60min/connect' },
-  { id: 'deploy', step: 5, title: 'Deploy', description: 'Deploy to Cloudflare Pages + Cloud Run', estimatedTime: '15 min', href: '/en/start/60min/deploy' },
-  { id: 'complete', step: 6, title: 'Done!', description: 'Congratulations! You deployed your first service', estimatedTime: '', href: '/en/start/60min/complete' },
-];
+function detectFrontendChoice(): FrontendChoice {
+  if (typeof window === 'undefined') return 'react';
+  return localStorage.getItem('checklist-60min-frontend-vue') ? 'vue' : 'react';
+}
+
+function detectBackendChoice(): BackendChoice {
+  if (typeof window === 'undefined') return 'fastapi';
+  return localStorage.getItem('checklist-60min-backend-hono') ? 'hono' : 'fastapi';
+}
+
+function getCheckedCount(stepKey: StepKey): number {
+  if (typeof window === 'undefined') return 0;
+  const saved = localStorage.getItem(`checklist-${stepKey}`);
+  if (!saved) return 0;
+  try {
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function getNextStepIndex(frontend: FrontendChoice, backend: BackendChoice): number {
+  const frontendKey: StepKey = frontend === 'vue' ? '60min-frontend-vue' : '60min-frontend-react';
+  const backendKey: StepKey = backend === 'hono' ? '60min-backend-hono' : '60min-backend-fastapi';
+
+  const ordered: StepKey[] = ['60min-step1', frontendKey, backendKey, '60min-connect', '60min-deploy'];
+
+  for (let i = 0; i < ordered.length; i++) {
+    const key = ordered[i];
+    const total = CHALLENGE_STEPS[key].totalItems;
+    const done = Math.min(getCheckedCount(key), total);
+    if (done < total) return i;
+  }
+
+  // 모든 체크리스트가 완료되면 완료 단계로 이동
+  return 5;
+}
+
+function buildStepsKo(frontend: FrontendChoice, backend: BackendChoice): PathStep[] {
+  const frontendTitle = frontend === 'vue' ? 'Vue로 UI 만들기' : 'React로 UI 만들기';
+  const frontendDesc = frontend === 'vue' ? 'Vite + Vue로 프론트엔드 구축' : 'Vite + React로 프론트엔드 구축';
+  const frontendHref = frontend === 'vue' ? '/start/60min/frontend/vue' : '/start/60min/frontend/react';
+
+  const backendTitle = backend === 'hono' ? 'Hono로 API 서버 만들기' : 'FastAPI로 API 서버 만들기';
+  const backendDesc = backend === 'hono' ? 'Hono로 백엔드 API 구축' : 'FastAPI로 백엔드 API 구축';
+  const backendHref = backend === 'hono' ? '/start/60min/backend/hono' : '/start/60min/backend/fastapi';
+
+  return [
+    { id: 'tools', step: 1, title: '도구 준비하기', description: 'VS Code, Git, Node.js 설치', estimatedTime: '10분', href: '/path/60min' },
+    { id: `frontend-${frontend}`, step: 2, title: frontendTitle, description: frontendDesc, estimatedTime: '15분', href: frontendHref },
+    { id: `backend-${backend}`, step: 3, title: backendTitle, description: backendDesc, estimatedTime: '20분', href: backendHref },
+    { id: 'connect', step: 4, title: '프론트-백엔드 연결', description: 'API 연동 및 CORS 설정', estimatedTime: '10분', href: '/start/60min/connect' },
+    { id: 'deploy', step: 5, title: '배포하기', description: 'Cloudflare Pages + Cloud Run 배포', estimatedTime: '15분', href: '/start/60min/deploy' },
+    { id: 'complete', step: 6, title: '완료!', description: '축하합니다! 첫 서비스를 배포했습니다', estimatedTime: '', href: '/start/60min/complete' },
+  ];
+}
+
+function buildStepsEn(frontend: FrontendChoice, backend: BackendChoice): PathStep[] {
+  const frontendTitle = frontend === 'vue' ? 'Build UI with Vue' : 'Build UI with React';
+  const frontendDesc = frontend === 'vue' ? 'Build frontend with Vite + Vue' : 'Build frontend with Vite + React';
+  const frontendHref = frontend === 'vue' ? '/en/start/60min/frontend/vue' : '/en/start/60min/frontend/react';
+
+  const backendTitle = backend === 'hono' ? 'Build API Server with Hono' : 'Build API Server with FastAPI';
+  const backendDesc = backend === 'hono' ? 'Build backend API with Hono' : 'Build backend API with FastAPI';
+  const backendHref = backend === 'hono' ? '/en/start/60min/backend/hono' : '/en/start/60min/backend/fastapi';
+
+  return [
+    { id: 'tools', step: 1, title: 'Set Up Tools', description: 'Install VS Code, Git, Node.js', estimatedTime: '10 min', href: '/en/path/60min' },
+    { id: `frontend-${frontend}`, step: 2, title: frontendTitle, description: frontendDesc, estimatedTime: '15 min', href: frontendHref },
+    { id: `backend-${backend}`, step: 3, title: backendTitle, description: backendDesc, estimatedTime: '20 min', href: backendHref },
+    { id: 'connect', step: 4, title: 'Connect Front & Back', description: 'API integration & CORS setup', estimatedTime: '10 min', href: '/en/start/60min/connect' },
+    { id: 'deploy', step: 5, title: 'Deploy', description: 'Deploy to Cloudflare Pages + Cloud Run', estimatedTime: '15 min', href: '/en/start/60min/deploy' },
+    { id: 'complete', step: 6, title: 'Done!', description: 'Congratulations! You deployed your first service', estimatedTime: '', href: '/en/start/60min/complete' },
+  ];
+}
 
 const i18n = {
   ko: {
@@ -65,36 +125,46 @@ const i18n = {
 };
 
 export default function NextActionCard({ locale = 'ko', onStartClick }: NextActionCardProps) {
-  const { mode } = useLearningMode();
-  const [completedNodes, setCompletedNodes] = useState<string[]>([]);
+  const [frontendChoice, setFrontendChoice] = useState<FrontendChoice>('react');
+  const [backendChoice, setBackendChoice] = useState<BackendChoice>('fastapi');
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [overallProgress, setOverallProgress] = useState(0);
 
   const t = locale === 'en' ? i18n.en : i18n.ko;
-  const PATH_STEPS = locale === 'en' ? PATH_STEPS_EN : PATH_STEPS_KO;
+  const PATH_STEPS = locale === 'en'
+    ? buildStepsEn(frontendChoice, backendChoice)
+    : buildStepsKo(frontendChoice, backendChoice);
 
   useEffect(() => {
-    const completed = getCompletedMapNodes();
-    setCompletedNodes(completed);
-    const stepIndex = Math.min(completed.length, PATH_STEPS.length - 1);
-    setCurrentStepIndex(stepIndex);
-
-    const handleProgressChange = () => {
-      const newCompleted = getCompletedMapNodes();
-      setCompletedNodes(newCompleted);
-      setCurrentStepIndex(Math.min(newCompleted.length, PATH_STEPS.length - 1));
+    const update = () => {
+      const fe = detectFrontendChoice();
+      const be = detectBackendChoice();
+      setFrontendChoice(fe);
+      setBackendChoice(be);
+      setOverallProgress(calculateOverallProgress());
+      setCurrentStepIndex(getNextStepIndex(fe, be));
     };
 
-    window.addEventListener('map-progress-change', handleProgressChange);
-    window.addEventListener('storage', handleProgressChange);
+    // 초기 로드
+    update();
+
+    // 같은 탭에서의 변경 감지 (커스텀 이벤트)
+    window.addEventListener('60min-progress-change', update);
+
+    // 다른 탭에서의 변경 감지 (storage 이벤트)
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key?.startsWith('checklist-60min')) update();
+    };
+    window.addEventListener('storage', handleStorage);
+
     return () => {
-      window.removeEventListener('map-progress-change', handleProgressChange);
-      window.removeEventListener('storage', handleProgressChange);
+      window.removeEventListener('60min-progress-change', update);
+      window.removeEventListener('storage', handleStorage);
     };
   }, []);
 
   const currentStep = PATH_STEPS[currentStepIndex];
-  const progress = Math.round((currentStepIndex / (PATH_STEPS.length - 1)) * 100);
-  const isCompleted = currentStepIndex >= PATH_STEPS.length - 1;
+  const isCompleted = overallProgress === 100;
 
   const handleClick = () => {
     if (onStartClick) {
@@ -155,10 +225,10 @@ export default function NextActionCard({ locale = 'ko', onStartClick }: NextActi
           <div className="mb-4">
             <div className="flex items-center justify-between text-xs text-text-secondary mb-1">
               <span>{t.progressLabel}</span>
-              <span className="text-primary font-medium">{progress}%</span>
+              <span className="text-primary font-medium">{overallProgress}%</span>
             </div>
             <div className="w-full h-1.5 bg-border rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-primary-dark to-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+              <div className="h-full bg-gradient-to-r from-primary-dark to-primary rounded-full transition-all duration-500" style={{ width: `${overallProgress}%` }} />
             </div>
           </div>
           <button onClick={handleClick} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]">

@@ -1,0 +1,387 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Cycle 3: FastAPI Backend Deployment"
+  description="How to package a FastAPI app with Docker and deploy it to Cloud Run"
+  currentPath="/map/backend/fastapi"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cycle 3: Backend</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Cycle 3
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Backend Deployment
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Package a FastAPI app into a Docker container and deploy it to Google Cloud Run.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Why backend deployment differs from frontend</li>
+          <li>Docker basics (writing a Dockerfile)</li>
+          <li>Cloud Run deployment</li>
+          <li>Health checks and logging</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <!-- Framework Levels -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">🎯 Framework Maturity Levels</h2>
+      <p class="text-text-secondary mb-6">
+        Backend frameworks are categorized by complexity level.
+        Choose a framework that matches your skill level and project scale.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+        <a href="/en/map/backend/hono" class="block p-4 bg-green-500/10 border border-green-500/30 rounded-xl hover:bg-green-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded">Lv.1</span>
+            <span class="text-white font-bold">Hono</span>
+          </div>
+          <p class="text-text-secondary text-sm mb-2">Beginner · Minimal</p>
+          <ul class="text-text-secondary text-xs space-y-1">
+            <li>• Start with a single file</li>
+            <li>• Express-style</li>
+            <li>• 15-minute setup</li>
+          </ul>
+        </a>
+
+        <div class="p-4 bg-blue-500/10 border-2 border-blue-500/50 rounded-xl relative">
+          <div class="absolute -top-2 right-2 px-2 py-0.5 bg-blue-500 text-white text-xs font-bold rounded">Current Page</div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded">Lv.2</span>
+            <span class="text-white font-bold">FastAPI</span>
+          </div>
+          <p class="text-text-secondary text-sm mb-2">Foundational · Type Support</p>
+          <ul class="text-text-secondary text-xs space-y-1">
+            <li>• Auto documentation</li>
+            <li>• Pydantic validation</li>
+            <li>• Python ecosystem</li>
+          </ul>
+        </div>
+
+        <a href="/en/map/backend/go" class="block p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl hover:bg-cyan-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded">Lv.3</span>
+            <span class="text-white font-bold">Go (Chi)</span>
+          </div>
+          <p class="text-text-secondary text-sm mb-2">Performance · Optimization</p>
+          <ul class="text-text-secondary text-xs space-y-1">
+            <li>• Image ~15MB</li>
+            <li>• Fast cold start</li>
+            <li>• Cost optimized</li>
+          </ul>
+        </a>
+
+
+        <a href="/en/map/backend/dotnet" class="block p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl hover:bg-orange-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs font-bold rounded">Lv.3</span>
+            <span class="text-white font-bold">.NET</span>
+          </div>
+          <p class="text-text-secondary text-sm mb-2">Production · Enterprise</p>
+          <ul class="text-text-secondary text-xs space-y-1">
+            <li>• C# + ASP.NET Core</li>
+            <li>• Enterprise/finance standard</li>
+            <li>• Strong type system</li>
+          </ul>
+        </a>
+
+        <a href="/en/map/backend/nest" class="block p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-bold rounded">Lv.4</span>
+            <span class="text-white font-bold">NestJS</span>
+          </div>
+          <p class="text-text-secondary text-sm mb-2">Production · Enterprise</p>
+          <ul class="text-text-secondary text-xs space-y-1">
+            <li>• Module/DI architecture</li>
+            <li>• Decorator pattern</li>
+            <li>• For large teams</li>
+          </ul>
+        </a>
+      </div>
+
+      <Callout client:load locale="en" variant="info" title="Which framework should you choose?">
+        <div class="mt-2 space-y-2 text-sm">
+          <p><strong class="text-green-400">Hono (Lv.1)</strong>: Only need JavaScript, fastest to get started</p>
+          <p><strong class="text-blue-400">FastAPI (Lv.2)</strong>: Prefer Python, need auto documentation</p>
+          <p><strong class="text-cyan-400">Go (Lv.3)</strong>: Performance/cost optimization, serverless environments</p>
+          <p><strong class="text-orange-400">.NET (Lv.3)</strong>: Enterprise/finance, C# ecosystem, strong typing</p>
+          <p><strong class="text-purple-400">NestJS (Lv.4)</strong>: Gaining real-world experience, large-scale projects</p>
+        </div>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <!-- Why Backend Deployment is Different -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Why Backend Deployment is Different</h2>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Frontend</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Static files (HTML/CSS/JS)</li>
+              <li>Just upload to a CDN</li>
+              <li>No server process needed</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Backend</h3>
+            <ul class="text-text-secondary text-sm space-y-1">
+              <li>Requires a running server process</li>
+              <li>Executes code for each request</li>
+              <li>State management, DB connections</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="text-text-secondary">
+          By packaging the backend into a <strong class="text-white">container</strong>,
+          it can run identically on any server.
+        </p>
+      </section>
+
+      <!-- Docker Basics -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Docker Basics</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Writing a Dockerfile</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Use Python image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies first (leverage caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 8080
+
+# Run the app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]`}
+          filename="Dockerfile"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Test Locally</h3>
+
+        <CodeBlock
+          client:load
+          code={`# Build image
+docker build -t my-api .
+
+# Run container
+docker run -p 8080:8080 my-api
+
+# Check at http://localhost:8080`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Multi-stage Build (Optional)</h3>
+
+        <p class="text-text-secondary mb-4">
+          Use multi-stage builds to reduce image size.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`# Build stage
+FROM python:3.11-slim as builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Runtime stage
+FROM python:3.11-slim
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+COPY . .
+ENV PATH=/root/.local/bin:$PATH
+EXPOSE 8080
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]`}
+          filename="Dockerfile (Multi-stage)"
+        />
+      </section>
+
+      <!-- Cloud Run Deployment -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Cloud Run Deployment</h2>
+
+        <div class="space-y-6">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">1</span>
+              Install gcloud CLI
+            </h3>
+            <CodeBlock
+              client:load
+              code={`# macOS
+brew install google-cloud-sdk
+
+# Login
+gcloud auth login
+
+# Set project
+gcloud config set project YOUR_PROJECT_ID`}
+              filename="Terminal"
+            />
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">2</span>
+              Build and Push Image
+            </h3>
+            <CodeBlock
+              client:load
+              code={`# Build with Cloud Build + push to Artifact Registry
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/my-api`}
+              filename="Terminal"
+            />
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">3</span>
+              Deploy to Cloud Run
+            </h3>
+            <CodeBlock
+              client:load
+              code={`gcloud run deploy my-api \\
+  --image gcr.io/YOUR_PROJECT_ID/my-api \\
+  --platform managed \\
+  --region asia-northeast3 \\
+  --allow-unauthenticated`}
+              filename="Terminal"
+            />
+            <p class="text-text-secondary text-sm mt-2">
+              <code class="bg-background px-1 rounded">--allow-unauthenticated</code>: Allow access without authentication (for public APIs)
+            </p>
+          </div>
+
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">4</span>
+              Set Environment Variables
+            </h3>
+            <CodeBlock
+              client:load
+              code={`gcloud run deploy my-api \\
+  --image gcr.io/YOUR_PROJECT_ID/my-api \\
+  --set-env-vars="DATABASE_URL=postgresql://...,API_KEY=secret"`}
+              filename="Terminal"
+            />
+            <Callout client:load locale="en" variant="warning" title="Secret Management">
+              <p class="mt-2 text-sm">
+                For sensitive information, use <a href="https://cloud.google.com/secret-manager" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Secret Manager</a> instead of environment variables.
+              </p>
+            </Callout>
+          </div>
+        </div>
+      </section>
+
+      <!-- Operations Basics -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Operations Basics</h2>
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Health Check Endpoint</h3>
+
+        <p class="text-text-secondary mb-4">
+          Cloud Run performs health checks on the <code class="bg-surface px-1 rounded">/</code> path.
+          It is best practice to create a dedicated health check endpoint.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+@app.get("/")
+def root():
+    return {"message": "Hello, World!"}`}
+          filename="main.py"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">Checking Logs</h3>
+
+        <CodeBlock
+          client:load
+          code={`# View Cloud Run logs
+gcloud run services logs read my-api --region asia-northeast3
+
+# Stream logs in real-time
+gcloud run services logs tail my-api --region asia-northeast3`}
+          filename="Terminal"
+        />
+
+        <h3 class="text-lg font-bold text-white mt-6 mb-3">CORS Configuration</h3>
+
+        <p class="text-text-secondary mb-4">
+          If your frontend and backend are on different domains, you need to configure CORS.
+        </p>
+
+        <CodeBlock
+          client:load
+          code={`from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://myapp.com", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)`}
+          filename="main.py"
+        />
+      </section>
+
+      <!-- Next Steps -->
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Next Steps">
+          <p class="text-sm">
+            If backend deployment is complete, let's connect a database next.
+            In <a href="/en/map/database" class="text-primary hover:underline ml-1">Cycle 4: Database</a>,
+            you will learn how to connect PostgreSQL.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/backend/fastapi" lang="en" />
+  </div>
+</DocsLayout>
