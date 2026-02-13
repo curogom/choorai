@@ -13,9 +13,9 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
       <span>/</span>
-      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
       <span>/</span>
       <span class="text-primary font-medium">Cycle 1: DNS</span>
     </nav>
@@ -236,13 +236,13 @@ ns2.cloudflare.com`}
         <Callout client:load locale="en" variant="info" title="Next Steps">
           <p class="text-sm">
             If your domain setup is complete, let's deploy a frontend app next.
-            In <a href="/map/frontend" class="text-primary hover:underline ml-1">Cycle 2: Frontend Deployment</a>,
+            In <a href="/en/map/frontend" class="text-primary hover:underline ml-1">Cycle 2: Frontend Deployment</a>,
             you will learn how to deploy a React app to Cloudflare Pages.
           </p>
         </Callout>
       </section>
     </article>
 
-    <PageNavigation currentPath="/map/dns" />
+    <PageNavigation currentPath="/map/dns" lang="en" />
   </div>
 </DocsLayout>

@@ -13,9 +13,9 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
       <span>/</span>
-      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
       <span>/</span>
       <span class="text-primary font-medium">Cycle 7: Docker</span>
     </nav>
@@ -616,13 +616,13 @@ docker system prune -a`}
         <Callout client:load locale="en" variant="info" title="Next Steps">
           <p class="text-sm">
             Now that you have completed containerization with Docker,
-            set up <a href="/map/cicd" class="text-primary hover:underline ml-1">CI/CD</a>
+            set up <a href="/en/map/cicd" class="text-primary hover:underline ml-1">CI/CD</a>
             to automatically deploy with just a code push.
           </p>
         </Callout>
       </section>
     </article>
 
-    <PageNavigation currentPath="/map/docker" />
+    <PageNavigation currentPath="/map/docker" lang="en" />
   </div>
 </DocsLayout>

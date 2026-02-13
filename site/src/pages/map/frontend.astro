@@ -1,13 +1,12 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
-import CodeBlock from '../../components/CodeBlock';
 import PageNavigation from '../../components/PageNavigation.astro';
 ---
 
 <DocsLayout
-  title="Cycle 2: Frontend 배포"
-  description="React 앱을 Cloudflare Pages에 배포하는 방법"
+  title="Cycle 2: 프론트엔드 기술 셋 개요"
+  description="초보자가 React로 시작해 Vue까지 확장할 수 있도록 프론트엔드 학습 흐름을 설명합니다"
   currentPath="/map/frontend"
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
@@ -16,7 +15,7 @@ import PageNavigation from '../../components/PageNavigation.astro';
       <span>/</span>
       <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
       <span>/</span>
-      <span class="text-primary font-medium">Cycle 2: Frontend</span>
+      <span class="text-primary font-medium">Cycle 2: 프론트엔드</span>
     </nav>
 
     <header class="mb-8 pb-6 border-b border-border">
@@ -24,236 +23,100 @@ import PageNavigation from '../../components/PageNavigation.astro';
         Cycle 2
       </div>
       <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
-        Frontend 배포
+        프론트엔드 기술 셋 개요
       </h1>
       <p class="text-text-secondary text-lg leading-relaxed">
-        React 앱을 빌드하고 Cloudflare Pages에 배포합니다.
-        전 세계 사용자에게 빠르게 서비스를 제공할 수 있습니다.
+        프론트엔드는 사용자가 직접 보는 화면을 만드는 영역입니다.
+        이 페이지는 "어떤 프레임워크를 먼저 배우면 덜 헤매는지"를 초보자 기준으로 정리합니다.
+        구현 코드를 따라치는 페이지가 아니라, 학습 순서와 판단 기준을 잡아주는 안내서입니다.
       </p>
     </header>
 
     <section class="mb-10">
-      <Callout client:load variant="tip" title="이 Cycle에서 배우는 것">
-        <ul class="list-disc list-inside space-y-1 mt-2">
-          <li>프론트엔드 배포의 개념</li>
-          <li>빌드 프로세스 이해</li>
-          <li>Cloudflare Pages 배포</li>
-          <li>SPA 라우팅 문제 해결</li>
+      <Callout client:load variant="tip" title="이 페이지를 이렇게 활용하세요">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>처음이면 React(Lv.1)부터 시작</li>
+          <li>React가 익숙해지면 Vue(Lv.2)로 같은 기능을 다시 구현</li>
+          <li>각 레벨에서 막히면 마지막의 "자주 막히는 지점"부터 확인</li>
         </ul>
       </Callout>
     </section>
 
-    <article class="prose prose-invert max-w-none">
-      <!-- 프론트엔드 배포란? -->
-      <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4">프론트엔드 배포란?</h2>
-
-        <p class="text-text-secondary mb-4">
-          프론트엔드 앱은 결국 <strong class="text-white">HTML, CSS, JavaScript 파일</strong>입니다.
-          이 정적 파일들을 서버에 올려 누구나 접근할 수 있게 만드는 것이 배포입니다.
-        </p>
-
-        <div class="grid md:grid-cols-2 gap-4 mb-6">
-          <div class="p-4 bg-surface border border-border rounded-xl">
-            <h3 class="text-white font-bold mb-2">정적 사이트</h3>
-            <p class="text-text-secondary text-sm">서버 없이 HTML/CSS/JS 파일만으로 동작</p>
-            <p class="text-text-secondary text-sm mt-2">예: 블로그, 포트폴리오, 문서 사이트</p>
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">레벨 구조 (무엇을 배우는가)</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/frontend/react" class="block p-5 bg-green-500/10 border border-green-500/30 rounded-xl hover:bg-green-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🌱</span>
+            <span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded">Lv.1</span>
+            <span class="text-white font-bold">React</span>
           </div>
-          <div class="p-4 bg-surface border border-border rounded-xl">
-            <h3 class="text-white font-bold mb-2">SPA (Single Page App)</h3>
-            <p class="text-text-secondary text-sm">JavaScript로 페이지 전환, API와 통신</p>
-            <p class="text-text-secondary text-sm mt-2">예: React, Vue, Angular 앱</p>
+          <p class="text-text-secondary text-sm mb-2">컴포넌트, 상태(state), 이벤트 처리, API 호출 등 프론트엔드의 공통 기본기를 익힙니다.</p>
+          <p class="text-text-secondary text-xs">추천 대상: "화면을 처음부터 만들어본 적 없는" 완전 초보</p>
+        </a>
+
+        <a href="/map/frontend/vue" class="block p-5 bg-blue-500/10 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition-colors no-underline">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">🧩</span>
+            <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded">Lv.2</span>
+            <span class="text-white font-bold">Vue</span>
           </div>
-        </div>
+          <p class="text-text-secondary text-sm mb-2">같은 기능을 다른 문법으로 구현하며 "프레임워크를 바꿔도 흔들리지 않는 사고"를 만듭니다.</p>
+          <p class="text-text-secondary text-xs">추천 대상: React로 CRUD UI를 1회 이상 완성한 학습자</p>
+        </a>
+      </div>
+    </section>
 
-        <h3 class="text-lg font-bold text-white mt-6 mb-3">CDN과 엣지 배포</h3>
-        <p class="text-text-secondary mb-4">
-          Cloudflare Pages는 전 세계 300개 이상의 데이터센터에 파일을 복제합니다.
-          사용자와 가장 가까운 서버에서 파일을 제공하므로 빠릅니다.
-        </p>
-
-        <div class="bg-surface border border-border rounded-xl p-4">
-          <div class="flex items-center gap-4 text-sm">
-            <div class="text-center">
-              <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-2">
-                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <span class="text-text-secondary">사용자</span>
-            </div>
-            <div class="text-text-secondary">→</div>
-            <div class="text-center">
-              <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center mb-2">
-                <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
-              </div>
-              <span class="text-text-secondary">CDN 엣지</span>
-            </div>
-            <div class="text-text-secondary">→</div>
-            <div class="text-center">
-              <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-2">
-                <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span class="text-text-secondary">빠른 응답</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 빌드 프로세스 -->
-      <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4">빌드 프로세스</h2>
-
-        <p class="text-text-secondary mb-4">
-          React 소스 코드는 브라우저가 직접 실행할 수 없습니다.
-          <strong class="text-white">빌드</strong> 과정을 통해 브라우저가 이해하는 형태로 변환합니다.
-        </p>
-
-        <CodeBlock
-          client:load
-          code={`# React 프로젝트 빌드
-npm run build
-
-# 결과: dist/ 또는 build/ 폴더 생성`}
-          filename="터미널"
-        />
-
-        <h3 class="text-lg font-bold text-white mt-6 mb-3">빌드 결과물 (dist/)</h3>
-
-        <CodeBlock
-          client:load
-          code={`dist/
-├── index.html          # 진입점 HTML
-├── assets/
-│   ├── index-abc123.js  # 번들된 JavaScript
-│   ├── index-def456.css # 번들된 CSS
-│   └── logo.svg         # 정적 에셋
-└── favicon.ico`}
-          filename="폴더 구조"
-        />
-
-        <p class="text-text-secondary mt-4 text-sm">
-          <code class="bg-surface px-1 rounded">abc123</code> 같은 해시는 캐시 무효화를 위한 것입니다.
-          파일이 변경되면 해시도 바뀌어 사용자가 새 버전을 받습니다.
-        </p>
-      </section>
-
-      <!-- Cloudflare Pages 배포 -->
-      <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4">Cloudflare Pages 배포</h2>
-
-        <div class="space-y-6">
-          <div class="p-4 bg-surface border border-border rounded-xl">
-            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
-              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">1</span>
-              GitHub 저장소 연결
-            </h3>
-            <ol class="text-text-secondary text-sm space-y-2 ml-8">
-              <li>1. <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Cloudflare 대시보드</a> 접속</li>
-              <li>2. Workers & Pages → Create application</li>
-              <li>3. Pages 탭 → Connect to Git</li>
-              <li>4. GitHub 계정 연결 및 저장소 선택</li>
-            </ol>
-          </div>
-
-          <div class="p-4 bg-surface border border-border rounded-xl">
-            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
-              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">2</span>
-              빌드 설정
-            </h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <tbody>
-                  <tr class="border-b border-border/50">
-                    <td class="py-2 px-3 text-white font-medium">Framework preset</td>
-                    <td class="py-2 px-3 text-text-secondary">Create React App / Vite</td>
-                  </tr>
-                  <tr class="border-b border-border/50">
-                    <td class="py-2 px-3 text-white font-medium">Build command</td>
-                    <td class="py-2 px-3"><code class="bg-background px-1 rounded">npm run build</code></td>
-                  </tr>
-                  <tr class="border-b border-border/50">
-                    <td class="py-2 px-3 text-white font-medium">Build output directory</td>
-                    <td class="py-2 px-3"><code class="bg-background px-1 rounded">dist</code> (Vite) / <code class="bg-background px-1 rounded">build</code> (CRA)</td>
-                  </tr>
-                  <tr>
-                    <td class="py-2 px-3 text-white font-medium">Root directory</td>
-                    <td class="py-2 px-3 text-text-secondary">(비워두기 또는 프론트엔드 폴더명)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="p-4 bg-surface border border-border rounded-xl">
-            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
-              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-background text-sm font-bold">3</span>
-              환경 변수 설정
-            </h3>
-            <p class="text-text-secondary text-sm mb-3">
-              Settings → Environment variables에서 설정합니다.
-            </p>
-            <CodeBlock
-              client:load
-              code={`# 예시 환경 변수
-VITE_API_URL=https://api.myapp.com
-VITE_APP_NAME=MyApp`}
-              filename="환경 변수"
-            />
-            <p class="text-text-secondary text-sm mt-2">
-              <strong class="text-white">Vite:</strong> <code class="bg-background px-1 rounded">VITE_</code> 접두사 필수<br/>
-              <strong class="text-white">CRA:</strong> <code class="bg-background px-1 rounded">REACT_APP_</code> 접두사 필수
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- SPA 라우팅 문제 -->
-      <section class="mb-10">
-        <h2 class="text-2xl font-bold text-white mb-4">SPA 라우팅 문제 해결</h2>
-
-        <Callout client:load variant="warning" title="404 에러가 발생한다면?">
-          <p class="mt-2 text-sm">
-            SPA에서 <code class="bg-surface px-1 rounded">/about</code> 같은 경로로 직접 접속하면 404가 발생합니다.
-            서버에는 <code class="bg-surface px-1 rounded">index.html</code>만 있기 때문입니다.
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">초보자가 덜 헷갈리는 학습 순서</h2>
+      <div class="space-y-4">
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-2">1. 화면 구성 (컴포넌트)</h3>
+          <p class="text-text-secondary text-sm">
+            버튼/목록/폼을 작은 조각으로 나누어 만드는 감각을 먼저 잡습니다.
+            이 단계가 약하면 이후 상태 관리와 라우팅에서 계속 꼬입니다.
           </p>
-        </Callout>
-
-        <h3 class="text-lg font-bold text-white mt-6 mb-3">해결: _redirects 파일</h3>
-
-        <p class="text-text-secondary mb-4">
-          <code class="bg-surface px-1 rounded">public/_redirects</code> 파일을 생성합니다.
-          모든 요청을 <code class="bg-surface px-1 rounded">index.html</code>로 보내고,
-          React Router가 클라이언트에서 라우팅을 처리합니다.
-        </p>
-
-        <CodeBlock
-          client:load
-          code={`/* /index.html 200`}
-          filename="public/_redirects"
-        />
-
-        <p class="text-text-secondary mt-4 text-sm">
-          이 한 줄이 모든 경로를 <code class="bg-surface px-1 rounded">index.html</code>로 리다이렉트합니다.
-          200 상태 코드로 응답하므로 새로고침해도 정상 동작합니다.
-        </p>
-      </section>
-
-      <!-- 다음 단계 -->
-      <section class="mb-10">
-        <Callout client:load variant="info" title="다음 단계">
-          <p class="text-sm">
-            프론트엔드 배포가 완료되었다면, 이제 백엔드 API를 배포해봅시다.
-            <a href="/map/backend" class="text-primary hover:underline ml-1">Cycle 3: Backend 배포</a>에서
-            FastAPI를 Cloud Run에 배포하는 방법을 배웁니다.
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-2">2. 데이터 흐름 (state, props, API)</h3>
+          <p class="text-text-secondary text-sm">
+            "어떤 값이 어디서 만들어지고 어디로 전달되는지"를 추적하는 연습입니다.
+            프론트엔드 디버깅의 80%는 데이터 흐름 이해에서 해결됩니다.
           </p>
-        </Callout>
-      </section>
-    </article>
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-2">3. SPA 라우팅 (페이지 전환 + 새로고침)</h3>
+          <p class="text-text-secondary text-sm">
+            URL은 바뀌는데 전체 페이지는 새로 불러오지 않는 구조를 이해합니다.
+            배포 후 새로고침 404 문제를 예방하려면 이 개념을 반드시 먼저 잡아야 합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">자주 막히는 지점</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <h3 class="text-white font-bold mb-2">컴포넌트는 만들었는데 화면이 안 바뀜</h3>
+          <p class="text-text-secondary text-sm">대부분 state 변경 방식(불변성)이나 props 전달 경로 문제입니다.</p>
+        </div>
+        <div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+          <h3 class="text-white font-bold mb-2">로컬은 되는데 배포 후 링크에서 404</h3>
+          <p class="text-text-secondary text-sm">SPA 라우팅 리다이렉트 설정(`_redirects`)이 누락된 경우가 많습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load variant="info" title="다음 액션 (바로 시작)">
+        <div class="text-sm space-y-2">
+          <p>1) React 기본기부터: <a href="/map/frontend/react" class="text-primary hover:underline">/map/frontend/react</a></p>
+          <p>2) Vue로 확장: <a href="/map/frontend/vue" class="text-primary hover:underline">/map/frontend/vue</a></p>
+          <p>3) 배포 시 404 해결: <a href="/fix/spa-404" class="text-primary hover:underline">/fix/spa-404</a></p>
+        </div>
+      </Callout>
+    </section>
 
     <PageNavigation currentPath="/map/frontend" />
   </div>

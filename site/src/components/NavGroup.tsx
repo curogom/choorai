@@ -97,40 +97,47 @@ export default function NavGroup({
                 >
                   <span>{item.label}</span>
                   <span className="flex items-center gap-1">
-                    {item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
-                        {item.badge}
-                      </span>
-                    )}
                     {item.tags?.map((tag, i) => (
                       <span key={i} className="text-xs leading-none" title={tag === '🌱' ? '입문' : tag === '👍' ? '추천' : tag}>
                         {tag}
                       </span>
                     ))}
+                    {item.badge && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary/20 text-primary rounded">
+                        {item.badge}
+                      </span>
+                    )}
                   </span>
                 </a>
               </li>
             ) : (
               <li key={idx}>
+                {/*
+                  indent 1 + no badge/tag 항목은 섹션 헤더처럼 보여주고,
+                  나머지 no href 항목은 기존처럼 비활성 표시합니다.
+                */}
                 <span
                   className={`
                     flex items-center justify-between py-1.5 rounded-lg text-sm font-medium pr-3
                     ${item.indent === 2 ? 'pl-9 text-xs' : item.indent === 1 ? 'pl-6' : 'pl-3'}
-                    text-text-secondary/50 cursor-not-allowed
+                    ${item.indent === 1 && !item.badge && !item.tags?.length
+                      ? 'text-text-secondary font-semibold cursor-default'
+                      : 'text-text-secondary/50 cursor-not-allowed'
+                    }
                   `}
                 >
                   <span>{item.label}</span>
                   <span className="flex items-center gap-1">
-                    {item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-surface text-text-secondary/60 rounded">
-                        {item.badge}
-                      </span>
-                    )}
                     {item.tags?.map((tag, i) => (
                       <span key={i} className="text-xs leading-none opacity-50">
                         {tag}
                       </span>
                     ))}
+                    {item.badge && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-surface text-text-secondary/60 rounded">
+                        {item.badge}
+                      </span>
+                    )}
                   </span>
                 </span>
               </li>

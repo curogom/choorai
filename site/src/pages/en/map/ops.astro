@@ -13,9 +13,9 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
       <span>/</span>
-      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
       <span>/</span>
       <span class="text-primary font-medium">Cycle 6: Ops</span>
     </nav>
@@ -305,12 +305,12 @@ gcloud alpha monitoring policies create \\
             You have completed all learning cycles! You now have the fundamentals to build,
             deploy, and operate a web service.
             Try starting a real project using
-            <a href="/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>.
+            <a href="/en/recipes" class="text-primary hover:underline ml-1">Agent Recipes</a>.
           </p>
         </Callout>
       </section>
     </article>
 
-    <PageNavigation currentPath="/map/ops" />
+    <PageNavigation currentPath="/map/ops" lang="en" />
   </div>
 </DocsLayout>

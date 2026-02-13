@@ -13,9 +13,9 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
       <span>/</span>
-      <a href="/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
       <span>/</span>
       <span class="text-primary font-medium">Cycle 4: Database</span>
     </nav>
@@ -37,6 +37,7 @@ import PageNavigation from '../../../components/PageNavigation.astro';
     <section class="mb-10">
       <Callout client:load locale="en" variant="tip" title="What you'll learn in this Cycle">
         <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>SQL fundamentals (Lv.1)</li>
           <li>PostgreSQL installation and setup</li>
           <li>Using SQLAlchemy ORM</li>
           <li>Database migrations (Alembic)</li>
@@ -90,6 +91,14 @@ import PageNavigation from '../../../components/PageNavigation.astro';
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-white mb-4">Quick Start</h2>
 
+        <div class="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+          <h3 class="text-white font-bold mb-2">🌱 Lv.1 first: SQL Basics</h3>
+          <p class="text-text-secondary text-sm mb-2">
+            If databases are new to you, start with SQL syntax and table fundamentals first.
+          </p>
+          <a href="/en/map/database/sql-basics" class="text-green-400 text-sm font-medium hover:underline">Open SQL Basics →</a>
+        </div>
+
         <h3 class="text-lg font-bold text-white mt-6 mb-3">1. Install Dependencies</h3>
 
         <CodeBlock
@@ -128,7 +137,7 @@ class Project(Base):
         <h2 class="text-2xl font-bold text-white mb-4">Cloud Database Options</h2>
 
         <div class="grid md:grid-cols-3 gap-4">
-          <a href="/map/database/supabase" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
+          <a href="/en/baas/supabase" class="p-4 bg-surface border border-primary/50 rounded-xl hover:border-primary transition-colors no-underline">
             <h3 class="text-white font-bold mb-2">Supabase</h3>
             <p class="text-text-secondary text-sm">Free tier available, PostgreSQL-based</p>
             <span class="text-primary text-xs mt-2 inline-block">View guide →</span>
@@ -151,13 +160,13 @@ class Project(Base):
         <Callout client:load locale="en" variant="info" title="Get started quickly with BaaS">
           <p class="text-sm">
             If you want to use a database and authentication directly without a backend,
-            check out the <a href="/map/database/supabase" class="text-primary hover:underline">Supabase guide</a>.
+            check out the <a href="/en/baas/supabase" class="text-primary hover:underline">Supabase guide</a>.
             You can access the database directly from the frontend without writing SQL.
           </p>
         </Callout>
       </section>
     </article>
 
-    <PageNavigation currentPath="/map/database" />
+    <PageNavigation currentPath="/map/database" lang="en" />
   </div>
 </DocsLayout>
