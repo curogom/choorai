@@ -75,7 +75,7 @@ export const MAP_NODES: MapNode[] = [
     col: 1,
     group: 'dev',
     subNodes: [
-      { id: 'react', label: 'React', href: '/map/frontend' },
+      { id: 'react', label: 'React', href: '/map/frontend/react' },
       { id: 'vue', label: 'Vue', href: '/map/frontend/vue' },
     ],
   },
@@ -95,7 +95,7 @@ export const MAP_NODES: MapNode[] = [
     col: 2,
     group: 'dev',
     subNodes: [
-      { id: 'fastapi', label: 'FastAPI', href: '/map/backend' },
+      { id: 'fastapi', label: 'FastAPI', href: '/map/backend/fastapi' },
       { id: 'hono', label: 'Hono', href: '/map/backend/hono' },
       { id: 'go', label: 'Go', href: '/map/backend/go' },
       { id: 'dotnet', label: '.NET', href: '/map/backend/dotnet' },
@@ -119,6 +119,7 @@ export const MAP_NODES: MapNode[] = [
     group: 'dev',
     subNodes: [
       { id: 'database-overview', label: '개요', href: '/map/database' },
+      { id: 'sql-basics', label: 'SQL Basics', href: '/map/database/sql-basics' },
       { id: 'rdb', label: 'RDB', href: '/map/database/rdb' },
       { id: 'nosql', label: 'NoSQL', href: '/map/database/nosql' },
       { id: 'cache', label: 'Cache', href: '/map/database/cache' },

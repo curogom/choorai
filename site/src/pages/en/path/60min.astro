@@ -13,10 +13,10 @@ import PageNavigation from '../../../components/PageNavigation.astro';
 
 const steps = [
   { label: 'Preparation', status: 'current' as const },
-  { label: 'Frontend', status: 'upcoming' as const },
-  { label: 'Backend', status: 'upcoming' as const },
+  { label: 'Frontend (React/Vue)', status: 'upcoming' as const },
+  { label: 'Backend (FastAPI/Hono)', status: 'upcoming' as const },
   { label: 'Connect', status: 'upcoming' as const },
-  { label: 'Deploy', status: 'upcoming' as const },
+  { label: 'Deploy (Cloudflare)', status: 'upcoming' as const },
   { label: 'Complete', status: 'upcoming' as const },
 ];
 
@@ -277,7 +277,7 @@ python3 --version`}
       </section>
 
       <!-- Navigation -->
-      <PageNavigation currentPath="/path/60min" />
+      <PageNavigation currentPath="/path/60min" lang="en" />
     </article>
   </div>
 </DocsLayout>

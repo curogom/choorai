@@ -1,0 +1,161 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Database Lv.1: SQL Basics"
+  description="SQL basics for complete beginners: understand table/CRUD/JOIN/INDEX with practical flow"
+  currentPath="/map/database/sql-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <a href="/en/map/database" class="hover:text-white transition-colors">Database</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SQL Basics</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-4">
+        🌱 Lv.1
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">SQL Basics</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        SQL is the language you use to talk to a database.
+        This page focuses on understanding data flow, not memorizing syntax in isolation.
+        It is structured so complete beginners can follow step by step.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Learning goals for this page">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>Clearly distinguish tables, rows, and columns</li>
+          <li>Read and write CRUD queries</li>
+          <li>Understand why JOIN and INDEX are needed</li>
+          <li>Be ready for the next step (RDB design)</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">1) Core concepts first</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Table</h3>
+            <p class="text-text-secondary text-sm">A structure that stores data with the same shape, like a sheet in a spreadsheet.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Row</h3>
+            <p class="text-text-secondary text-sm">One record of real data. Example: one project entry.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">Column</h3>
+            <p class="text-text-secondary text-sm">A data attribute. Example: name, status, created_at.</p>
+          </div>
+        </div>
+        <p class="text-text-secondary text-sm">
+          A common beginner confusion is mixing up rows and columns.
+          When SQL feels hard, first ask: "Am I selecting rows, columns, or both?"
+        </p>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">2) Understand CRUD as a real flow</h2>
+        <p class="text-text-secondary mb-4">
+          These four operations represent the core lifecycle of data in almost every service.
+          Read them in order: create, read, update, delete.
+        </p>
+
+        <CodeBlock
+          client:load
+          filename="sql"
+          code={`-- C: Create
+INSERT INTO projects (name, status) VALUES ('admin', 'active');
+
+-- R: Read
+SELECT id, name, status FROM projects WHERE status = 'active';
+
+-- U: Update
+UPDATE projects SET status = 'archived' WHERE id = 1;
+
+-- D: Delete
+DELETE FROM projects WHERE id = 1;`}
+        />
+
+        <div class="mt-4 p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-2">How to read these quickly</h3>
+          <ul class="list-disc list-inside text-text-secondary text-sm space-y-1">
+            <li><code>INSERT INTO</code>: target table for new data</li>
+            <li><code>SELECT ... FROM</code>: columns and table to retrieve</li>
+            <li><code>WHERE</code>: filter condition (without it, scope can be too broad)</li>
+            <li><code>UPDATE ... SET</code>: value changes to apply</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">3) JOIN and INDEX in plain terms</h2>
+        <p class="text-text-secondary mb-4">
+          Real apps store related data across multiple tables.
+          JOIN combines those tables so you can read them together.
+        </p>
+
+        <CodeBlock
+          client:load
+          filename="sql"
+          code={`SELECT p.name, u.email
+FROM projects p
+JOIN users u ON p.owner_id = u.id
+WHERE p.status = 'active';`}
+        />
+
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">JOIN</h3>
+            <p class="text-text-secondary text-sm">Connect multiple tables using a shared key, such as user_id.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-2">INDEX</h3>
+            <p class="text-text-secondary text-sm">A search helper structure, similar to a book index, used to speed up lookups.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">4) Common beginner mistakes</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Running UPDATE/DELETE without WHERE</h3>
+            <p class="text-text-secondary text-sm">This can modify or remove all rows in a table.</p>
+          </div>
+          <div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+            <h3 class="text-white font-bold mb-2">Mixing data types for IDs</h3>
+            <p class="text-text-secondary text-sm">If column types and value types do not match, filtering and joins often break.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <Callout client:load locale="en" variant="info" title="Checklist before moving on">
+          <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+            <li>You have run CRUD queries at least once</li>
+            <li>You can explain JOIN as "combining related tables"</li>
+            <li>You understand why WHERE is critical in UPDATE/DELETE</li>
+            <li>Ready for next step: <a href="/en/map/database/rdb" class="text-primary hover:underline">RDB (Lv.2)</a></li>
+          </ul>
+        </Callout>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/database/sql-basics" lang="en" />
+  </div>
+</DocsLayout>
