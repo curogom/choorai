@@ -47,10 +47,11 @@ const recipes = [
   {
     id: 6,
     category: '개발',
-    title: '에러 디버깅',
-    description: '에러 메시지 분석 및 해결 방법 안내',
-    prompt: '이 에러 메시지를 분석해줘: [에러 메시지를 여기에 붙여넣기]. 원인과 해결 방법을 단계별로 설명해줘.',
-    tags: ['디버깅', '트러블슈팅'],
+    title: '빌드 실패 진단',
+    description: '빌드 로그를 분석해서 원인 우선순위를 정리',
+    prompt: '아래 빌드 로그를 분석해줘: [빌드 로그]. 가능한 원인 Top3와 각 원인의 검증 방법, 즉시 적용할 수정안, 재발 방지 체크리스트를 표로 정리해줘.',
+    tags: ['디버깅', '빌드', '트러블슈팅'],
+    href: '/recipes/debug-build-fail',
   },
   {
     id: 7,
@@ -64,25 +65,28 @@ const recipes = [
     id: 8,
     category: '배포',
     title: 'Cloudflare Pages 배포',
-    description: 'React 앱을 Cloudflare Pages에 배포',
-    prompt: '이 React 프로젝트를 Cloudflare Pages에 배포하는 방법을 알려줘. 환경 변수 설정과 커스텀 도메인 연결까지 포함해줘.',
-    tags: ['Cloudflare', '배포', 'Frontend'],
+    description: 'React/Vite 앱 배포 + SPA 리라이트 + 도메인 연결',
+    prompt: 'React/Vite 프로젝트를 Cloudflare Pages에 배포하려고 해. GitHub 연결부터 build 설정, _redirects(SPA), 환경변수, 커스텀 도메인 연결까지 단계별 실행 가이드를 만들어줘.',
+    tags: ['Cloudflare', '배포', 'Frontend', 'SPA'],
+    href: '/recipes/deploy-cloudflare-pages',
   },
   {
     id: 9,
     category: '배포',
     title: 'Cloud Run 배포',
-    description: 'FastAPI 앱을 Google Cloud Run에 배포',
-    prompt: '이 FastAPI 프로젝트를 Cloud Run에 배포해줘. Dockerfile 작성, 빌드, 배포 명령어를 순서대로 알려줘.',
-    tags: ['Cloud Run', '배포', 'Docker'],
+    description: 'FastAPI 앱을 Cloud Run에 배포 + 기본 운영 설정',
+    prompt: 'FastAPI 프로젝트를 Cloud Run에 배포하려고 해. Dockerfile 작성, gcloud 배포 명령, 환경변수 설정, 최소 운영 체크(max instances, health endpoint)를 포함한 실행 절차를 알려줘.',
+    tags: ['Cloud Run', '배포', 'Docker', 'FastAPI'],
+    href: '/recipes/deploy-cloud-run',
   },
   {
     id: 10,
     category: '배포',
-    title: '환경변수 설정',
-    description: '환경별 설정 파일 정리',
-    prompt: '이 프로젝트의 환경변수를 정리해줘. 개발/스테이징/프로덕션별로 분리하고, .env.example 파일도 만들어줘.',
-    tags: ['환경변수', 'DevOps'],
+    title: '환경변수 일괄 점검',
+    description: '개발/스테이징/프로덕션 환경변수 매트릭스 정리',
+    prompt: '이 프로젝트의 환경변수를 점검해줘. 로컬(.env), CI/CD, 배포 플랫폼 환경변수를 비교해서 누락/오탈자/보안 위험을 표로 정리하고, .env.example 초안을 만들어줘.',
+    tags: ['환경변수', 'DevOps', '보안'],
+    href: '/recipes/check-env-vars',
   },
 ];
 
@@ -188,6 +192,20 @@ const categories = ['프로젝트 시작', '개발', '배포'];
                     </span>
                   ))}
                 </div>
+
+                {recipe.href && (
+                  <div class="mt-3">
+                    <a
+                      href={recipe.href}
+                      class="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors no-underline"
+                    >
+                      상세 가이드 보기
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
         </div>
@@ -214,9 +232,15 @@ const categories = ['프로젝트 시작', '개발', '배포'];
     btn.addEventListener('click', async () => {
       const prompt = btn.getAttribute('data-prompt');
       const copyText = btn.querySelector('.copy-text');
+      const recipeId = btn.closest('[data-recipe-id]')?.getAttribute('data-recipe-id');
 
       try {
         await navigator.clipboard.writeText(prompt || '');
+        window.chooraiTrack?.('copy_prompt', {
+          source: 'recipes',
+          locale: 'ko',
+          recipe_id: recipeId || 'unknown',
+        });
         if (copyText) {
           copyText.textContent = '복사됨!';
           setTimeout(() => {

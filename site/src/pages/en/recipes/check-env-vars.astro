@@ -1,0 +1,111 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to audit environment variables across environments.
+Use the inputs below to detect missing keys, typos, and security risks.
+
+[Inputs]
+- Local files: [.env, .env.local, .env.production, etc.]
+- CI/CD variables: [CI_ENV_LIST]
+- Hosting platform variables: [HOSTING_ENV_LIST]
+- Framework: [Vite/Next.js/FastAPI/other]
+
+[Output requirements]
+1) Environment matrix table (local/staging/prod)
+2) Missing keys and typos
+3) Client-exposure risks for sensitive values
+4) .env.example draft
+5) Priority plan (P0/P1/P2)`;
+
+const checklist = [
+  { id: 'inventory', label: 'Collect variable inventory', description: 'List local, CI, and hosting keys' },
+  { id: 'prefix', label: 'Validate framework prefixes', description: 'Check VITE_, NEXT_PUBLIC_, etc.' },
+  { id: 'secrets', label: 'Check secret exposure risk', description: 'Ensure server-only keys stay server-side' },
+  { id: 'example', label: 'Update .env.example', description: 'Include required keys and descriptions' },
+  { id: 'verify', label: 'Rebuild/redeploy verification', description: 'Validate runtime values' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Environment Variable Audit"
+  description="Prompt recipe for structured environment variable auditing"
+  currentPath="/recipes/check-env-vars"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Environment Variable Audit</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Ops
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Environment Variable Audit Recipe</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Compare local/CI/hosting variables in one pass and quickly surface gaps and security issues.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="Practical tip">
+        <p class="mt-2">
+          If sharing values is risky, provide key names only and mask sensitive values.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Environment Audit Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">.env.example sample</h2>
+      <CodeBlock
+        client:load
+        filename=".env.example"
+        code={`# Frontend
+VITE_API_URL=
+
+# Backend
+DATABASE_URL=
+JWT_SECRET=
+
+# Optional
+SENTRY_DSN=`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        locale="en"
+        storageKey="recipe-check-env-vars"
+        title="Execution Checklist"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Environment Variable Issue</h4>
+          <p class="text-text-secondary text-sm">Runtime undefined troubleshooting</p>
+        </a>
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">API URL misconfiguration checks</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
