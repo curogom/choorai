@@ -3,18 +3,43 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import ErrorCard from '../../components/ErrorCard';
 import CodeBlock from '../../components/CodeBlock';
 import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'SPA에서 새로고침할 때 404가 나는 이유는 무엇인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '브라우저가 현재 경로를 서버에 직접 요청할 때 서버가 해당 파일을 찾지 못하면 404가 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Cloudflare Pages에서 SPA 404를 해결하려면 어떻게 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'public/_redirects 파일에 /* /index.html 200 규칙을 추가해 모든 경로를 index.html로 전달합니다.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
   title="SPA 404 에러 해결하기"
   description="새로고침 시 404 Page Not Found 에러 해결 방법"
-  currentPath="/troubleshooting/spa-404"
+  currentPath="/fix/spa-404"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
       <a href="/" class="hover:text-white transition-colors">홈</a>
       <span>/</span>
-      <a href="/troubleshooting" class="hover:text-white transition-colors">트러블슈팅</a>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
       <span>/</span>
       <span class="text-primary font-medium">SPA 404</span>
     </nav>
@@ -144,10 +169,12 @@ import Callout from '../../components/Callout';
       </section>
     </article>
 
+    <TroubleshootingTemplate topic="spa-404" />
+
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
       <div class="grid md:grid-cols-2 gap-4">
-        <a href="/troubleshooting/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+        <a href="/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
           <h4 class="text-white font-medium mb-1">빌드 실패</h4>
           <p class="text-text-secondary text-sm">npm run build 에러</p>
         </a>

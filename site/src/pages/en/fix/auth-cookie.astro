@@ -3,6 +3,30 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import ErrorCard from '../../../components/ErrorCard';
 import CodeBlock from '../../../components/CodeBlock';
 import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why am I logged out after refresh?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'This usually happens when auth cookies are not persisted or credentials are not included in requests, so session state is lost.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do I keep cookies across different domains?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Enable credentials include on the client, allow credentials and exact origin on the server, and set cookies with SameSite=None and Secure.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
@@ -10,6 +34,7 @@ import Callout from '../../../components/Callout';
   title="Fixing Auth/Cookie Issues"
   description="How to fix cookies not saving or authentication not persisting after login"
   currentPath="/fix/auth-cookie"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
@@ -193,6 +218,8 @@ app.post('/login', (req, res) => {
         </ol>
       </section>
     </article>
+
+    <TroubleshootingTemplate topic="auth-cookie" lang="en" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>

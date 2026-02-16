@@ -1,0 +1,141 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Mixed Content 에러는 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'HTTPS 페이지에서 HTTP 리소스를 요청하면 브라우저가 보안상 요청을 차단하여 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '어떤 항목부터 확인해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '환경변수 API URL, 정적 리소스 URL, 리다이렉트 경로가 모두 https://로 통일되어 있는지 먼저 확인하세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="Mixed Content 차단 해결하기"
+  description="HTTPS 페이지에서 HTTP 리소스 호출 시 발생하는 Mixed Content 에러 해결"
+  currentPath="/fix/mixed-content"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Mixed Content</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        HTTPS 보안 차단
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Mixed Content 차단 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        HTTPS 페이지에서 HTTP API/이미지/스크립트를 호출하면 브라우저가 요청을 차단합니다.
+        배포 환경의 URL 스킴을 <code class="bg-surface px-1 rounded">https://</code>로 일치시켜야 합니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) API/리소스 URL에서 http:// 제거
+          2) 환경변수와 리다이렉트 경로 확인
+          3) 브라우저 콘솔 Mixed Content 경고가 사라졌는지 검증
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource"
+        severity="warning"
+        cause="HTTPS 문서에서 HTTP 자원을 불러와 브라우저 보안 정책에 의해 요청이 차단되었습니다."
+        solution={[
+          '프론트엔드/백엔드 URL을 모두 HTTPS로 통일',
+          '환경변수(VITE_API_URL 등)에 http://가 남아 있는지 확인',
+          'CDN 이미지/스크립트 링크도 HTTPS로 교체',
+          '배포 후 브라우저 캐시를 비우고 재검증'
+        ]}
+        aiPrompt="React 앱에서 Mixed Content 에러가 나와. HTTPS 페이지에서 HTTP API 호출이 섞여 있는지 찾는 체크리스트와 수정 순서를 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">실무 점검 순서</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">1) 환경변수 URL 확인</h3>
+        <CodeBlock
+          client:load
+          filename=".env.production"
+          code={`# Wrong
+VITE_API_URL=http://api.example.com
+
+# Correct
+VITE_API_URL=https://api.example.com`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">2) 코드 내 하드코딩 URL 제거</h3>
+        <CodeBlock
+          client:load
+          filename="api.ts"
+          code={`// Wrong
+fetch('http://api.example.com/users')
+
+// Correct
+fetch(import.meta.env.VITE_API_URL + '/users')`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            Cloudflare/Vercel 프록시를 쓰더라도 원본 호출 URL이 HTTP면 브라우저에서 먼저 차단됩니다.
+            백엔드가 HTTPS를 직접 제공하거나 올바르게 프록시되어야 합니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="mixed-content" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">네트워크 원인 분리 점검</p>
+        </a>
+        <a href="/fix/ssl-cert" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SSL 인증서 오류</h4>
+          <p class="text-text-secondary text-sm">HTTPS 인증서 관련 문제</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
