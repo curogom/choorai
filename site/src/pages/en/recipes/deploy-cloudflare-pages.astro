@@ -1,0 +1,122 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to deploy a React/Vite project to Cloudflare Pages.
+Create an execution-ready runbook using the inputs below.
+
+[Inputs]
+- Repository URL: [REPO_URL]
+- Deploy branch: [BRANCH]
+- Build command: [BUILD_COMMAND]
+- Output directory: [OUTPUT_DIR]
+- API env var: [API_ENV_KEY]=[API_ENV_VALUE]
+- Custom domain: [CUSTOM_DOMAIN or none]
+
+[Output requirements]
+1) Pre-deploy checklist
+2) Cloudflare Pages setup steps
+3) SPA routing (_redirects) config
+4) Deployment verification checklist
+5) Rollback procedure`;
+
+const checklist = [
+  { id: 'repo', label: 'Confirm repository/branch', description: 'Ensure target branch is up to date' },
+  { id: 'build', label: 'Local build passes', description: 'Validate npm run build output' },
+  { id: 'redirects', label: 'Apply _redirects file', description: 'Verify SPA rewrite behavior' },
+  { id: 'env', label: 'Set Pages environment vars', description: 'Check key names and values' },
+  { id: 'verify', label: 'Verify deploy URL/domain', description: 'Check refresh routing and API connectivity' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Deploy to Cloudflare Pages"
+  description="Prompt recipe to ship Cloudflare Pages deployments with AI agents"
+  currentPath="/recipes/deploy-cloudflare-pages"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Deploy to Cloudflare Pages</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Deploy
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Cloudflare Pages Deployment Recipe</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        One prompt covering deploy setup, SPA rewrites, environment variables, and custom domain.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="How to use">
+        <p class="mt-2">
+          Copy the prompt and replace <code class="bg-surface px-1 rounded">[bracketed]</code> values with your real project info.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Cloudflare Pages Deployment Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Input example</h2>
+      <CodeBlock
+        client:load
+        filename="prompt-input.json"
+        code={`{
+  "REPO_URL": "https://github.com/org/my-app",
+  "BRANCH": "main",
+  "BUILD_COMMAND": "npm run build",
+  "OUTPUT_DIR": "dist",
+  "API_ENV_KEY": "VITE_API_URL",
+  "API_ENV_VALUE": "https://api.example.com",
+  "CUSTOM_DOMAIN": "app.example.com"
+}`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Required file</h2>
+      <CodeBlock
+        client:load
+        filename="public/_redirects"
+        code="/* /index.html 200"
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        locale="en"
+        storageKey="recipe-deploy-cloudflare-pages"
+        title="Execution Checklist"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/deploy/cloudflare-pages" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloudflare Pages Deployment Guide</h4>
+          <p class="text-text-secondary text-sm">Step-by-step manual guide</p>
+        </a>
+        <a href="/en/fix/spa-404" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Fixing SPA 404 Errors</h4>
+          <p class="text-text-secondary text-sm">Refresh-route troubleshooting</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

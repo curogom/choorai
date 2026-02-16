@@ -47,10 +47,11 @@ const recipes = [
   {
     id: 6,
     category: 'Development',
-    title: 'Debug Errors',
-    description: 'Analyze error messages and provide solutions',
-    prompt: 'Analyze this error message: [paste error message here]. Explain the cause and solution step by step.',
-    tags: ['Debugging', 'Troubleshooting'],
+    title: 'Debug Build Failures',
+    description: 'Analyze build logs and prioritize likely root causes',
+    prompt: 'Analyze this build log: [paste build log]. Return Top 3 likely causes, how to verify each cause, immediate fixes, and a prevention checklist in a table.',
+    tags: ['Debugging', 'Build', 'Troubleshooting'],
+    href: '/en/recipes/debug-build-fail',
   },
   {
     id: 7,
@@ -64,25 +65,28 @@ const recipes = [
     id: 8,
     category: 'Deployment',
     title: 'Deploy to Cloudflare Pages',
-    description: 'Deploy a React app to Cloudflare Pages',
-    prompt: 'Show me how to deploy this React project to Cloudflare Pages. Include environment variable setup and custom domain connection.',
-    tags: ['Cloudflare', 'Deployment', 'Frontend'],
+    description: 'Deploy React/Vite app with SPA rewrites and custom domain',
+    prompt: 'I want to deploy a React/Vite project to Cloudflare Pages. Provide a step-by-step runbook covering GitHub connection, build settings, _redirects for SPA routing, environment variables, and custom domain setup.',
+    tags: ['Cloudflare', 'Deployment', 'Frontend', 'SPA'],
+    href: '/en/recipes/deploy-cloudflare-pages',
   },
   {
     id: 9,
     category: 'Deployment',
     title: 'Deploy to Cloud Run',
-    description: 'Deploy a FastAPI app to Google Cloud Run',
-    prompt: 'Deploy this FastAPI project to Cloud Run. Provide the Dockerfile, build, and deploy commands in order.',
-    tags: ['Cloud Run', 'Deployment', 'Docker'],
+    description: 'Deploy FastAPI app to Cloud Run with baseline ops settings',
+    prompt: 'I want to deploy a FastAPI project to Cloud Run. Provide Dockerfile, gcloud deploy commands, environment variable setup, and baseline operations settings (health endpoint, max instances).',
+    tags: ['Cloud Run', 'Deployment', 'Docker', 'FastAPI'],
+    href: '/en/recipes/deploy-cloud-run',
   },
   {
     id: 10,
     category: 'Deployment',
-    title: 'Environment Variable Setup',
-    description: 'Organize environment-specific config files',
-    prompt: 'Organize the environment variables for this project. Separate them by development/staging/production, and also create a .env.example file.',
-    tags: ['Environment Variables', 'DevOps'],
+    title: 'Environment Variable Audit',
+    description: 'Audit env vars across local, CI, and production',
+    prompt: 'Audit environment variables for this project across local (.env), CI/CD, and hosting platform settings. Return missing keys, typos, security risks, and a .env.example draft.',
+    tags: ['Environment Variables', 'DevOps', 'Security'],
+    href: '/en/recipes/check-env-vars',
   },
 ];
 
@@ -189,6 +193,20 @@ const categories = ['Project Setup', 'Development', 'Deployment'];
                     </span>
                   ))}
                 </div>
+
+                {recipe.href && (
+                  <div class="mt-3">
+                    <a
+                      href={recipe.href}
+                      class="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors no-underline"
+                    >
+                      View detailed guide
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
         </div>
@@ -216,9 +234,15 @@ const categories = ['Project Setup', 'Development', 'Deployment'];
     btn.addEventListener('click', async () => {
       const prompt = btn.getAttribute('data-prompt');
       const copyText = btn.querySelector('.copy-text');
+      const recipeId = btn.closest('[data-recipe-id]')?.getAttribute('data-recipe-id');
 
       try {
         await navigator.clipboard.writeText(prompt || '');
+        window.chooraiTrack?.('copy_prompt', {
+          source: 'recipes',
+          locale: 'en',
+          recipe_id: recipeId || 'unknown',
+        });
         if (copyText) {
           copyText.textContent = 'Copied!';
           setTimeout(() => {

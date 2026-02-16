@@ -1,0 +1,111 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I need to debug a failing build quickly.
+Create a priority-based debugging plan from the inputs below.
+
+[Inputs]
+- Full build log: [BUILD_LOG]
+- Package manager: [npm/pnpm/yarn]
+- Local Node version: [LOCAL_NODE]
+- CI Node version: [CI_NODE]
+- Recent changed files: [CHANGED_FILES]
+
+[Output requirements]
+1) Top 3 root-cause candidates (with confidence)
+2) Verification commands per candidate
+3) Immediate fix plan
+4) Regression-prevention checklist
+5) PR description template`;
+
+const checklist = [
+  { id: 'reproduce', label: 'Reproduce locally', description: 'Run npm ci && npm run build' },
+  { id: 'node', label: 'Compare Node versions', description: 'Check local vs CI runtime versions' },
+  { id: 'lockfile', label: 'Validate lockfile consistency', description: 'Detect dependency drift' },
+  { id: 'types', label: 'Separate type/lint failures', description: 'Classify by failing stage' },
+  { id: 'fix', label: 'Rebuild after fix', description: 'Verify same commit now passes' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Debug Build Failures"
+  description="Prompt recipe for structured analysis of failing build logs"
+  currentPath="/recipes/debug-build-fail"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Debug Build Failures</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Debug
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Build Failure Debug Recipe</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Paste full build logs and get prioritized root causes plus verification commands.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="Practical tip">
+        <p class="mt-2">
+          Include the entire log, especially the first failing stack section, for higher accuracy.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Build Failure Analysis Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Baseline diagnostic commands</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`node -v
+npm -v
+
+npm ci
+npm run build
+
+# If available
+npm run typecheck`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        locale="en"
+        storageKey="recipe-debug-build-fail"
+        title="Execution Checklist"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build Failure</h4>
+          <p class="text-text-secondary text-sm">General build troubleshooting</p>
+        </a>
+        <a href="/en/fix/build-oom" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build OOM</h4>
+          <p class="text-text-secondary text-sm">Memory-related failures</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
