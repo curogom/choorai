@@ -1,0 +1,144 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does build OOM happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'It usually happens when CI memory is insufficient for build-time workloads or memory usage spikes from source maps/plugins/parallelism.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the fastest temporary fix?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Set NODE_OPTIONS=--max-old-space-size to raise memory limits temporarily, then optimize build configuration for a permanent fix.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Build OOM Errors"
+  description="Resolve JavaScript heap out of memory and OOM build failures in CI"
+  currentPath="/fix/build-oom"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Build OOM</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        CI memory issue
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Build OOM Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Errors like <code class="bg-surface px-1 rounded">JavaScript heap out of memory</code> or
+        <code class="bg-surface px-1 rounded">Killed</code> usually indicate build memory limits were exceeded.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Confirm OOM logs
+          2) Apply NODE_OPTIONS as short-term mitigation
+          3) Optimize source maps/plugins/parallelism
+          4) Upgrade CI runner if needed
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory"
+        severity="critical"
+        cause="The build process exceeded available memory limits."
+        solution={[
+          'Use NODE_OPTIONS=--max-old-space-size for temporary relief',
+          'Reduce source maps, heavy plugins, and parallel tasks',
+          'Inspect duplicated dependencies and oversized bundles',
+          'Increase CI runner memory or split build stages'
+        ]}
+        aiPrompt="My CI build fails with heap out of memory. Give me a triage plan with quick mitigation and long-term optimization steps."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Practical fixes</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="package.json"
+          code={`{
+  "scripts": {
+    "build": "vite build",
+    "build:ci": "NODE_OPTIONS=--max-old-space-size=4096 vite build"
+  }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="vite.config.ts"
+          code={`import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 1200,
+  },
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="info" title="Practical tip">
+          <p class="mt-2">
+            OOM is often a symptom. Use bundle analysis and lazy loading to remove the root memory pressure.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="build-oom" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build Failure</h4>
+          <p class="text-text-secondary text-sm">General build diagnostics</p>
+        </a>
+        <a href="/en/fix/node-version" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Node Version Mismatch</h4>
+          <p class="text-text-secondary text-sm">Align local and CI runtime versions</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

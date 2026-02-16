@@ -3,18 +3,43 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import ErrorCard from '../../components/ErrorCard';
 import CodeBlock from '../../components/CodeBlock';
 import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '빌드가 실패하면 가장 먼저 무엇을 확인해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '에러 로그의 파일 경로와 라인 번호를 먼저 확인하고, 타입 오류인지 의존성 문제인지 원인 범주를 구분해야 합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Module not found 에러는 어떻게 해결하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '누락된 패키지를 설치하고 import 경로를 점검한 뒤 lockfile 상태에서 npm install 또는 npm ci를 다시 실행합니다.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
   title="빌드 실패 해결하기"
   description="npm run build 에러 해결 방법"
-  currentPath="/troubleshooting/build-fail"
+  currentPath="/fix/build-fail"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
       <a href="/" class="hover:text-white transition-colors">홈</a>
       <span>/</span>
-      <a href="/troubleshooting" class="hover:text-white transition-colors">트러블슈팅</a>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
       <span>/</span>
       <span class="text-primary font-medium">빌드 실패</span>
     </nav>
@@ -151,10 +176,12 @@ npm run preview`}
       </section>
     </article>
 
+    <TroubleshootingTemplate topic="build-fail" />
+
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
       <div class="grid md:grid-cols-2 gap-4">
-        <a href="/troubleshooting/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+        <a href="/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
           <h4 class="text-white font-medium mb-1">환경 변수 에러</h4>
           <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
         </a>

@@ -1,0 +1,144 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does HTTP 429 Too Many Requests happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Your client exceeded API/WAF request limits in a short period and was throttled by server-side rate limiting rules.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How should clients handle 429?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Respect Retry-After and implement exponential backoff with jitter to avoid retry storms.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing 429 Rate Limit Errors"
+  description="How to fix HTTP 429 Too Many Requests"
+  currentPath="/fix/rate-limit"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">429 Rate Limit</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        API throughput limit issue
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing 429 Rate Limit Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">HTTP 429 Too Many Requests</code>
+        means request frequency exceeded server or WAF policy.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Reduce duplicate requests
+          2) Respect Retry-After
+          3) Apply exponential backoff with jitter
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="429 Too Many Requests"
+        errorCode="429"
+        severity="warning"
+        cause="Client sent too many requests in a short time and exceeded configured rate limits."
+        solution={[
+          "Reduce polling/request frequency",
+          "Implement Retry-After aware retry",
+          "Use exponential backoff",
+          "Review server-side rate limit thresholds"
+        ]}
+        aiPrompt="Our frontend gets many 429 responses. Provide a production-safe retry strategy with backoff and jitter in TypeScript."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Retry example</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="retry.ts"
+          code={`async function fetchWithBackoff(url: string, attempts = 5) {
+  let delay = 500;
+
+  for (let i = 0; i < attempts; i++) {
+    const res = await fetch(url);
+
+    if (res.status !== 429) {
+      return res;
+    }
+
+    const retryAfter = Number(res.headers.get('Retry-After'));
+    const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
+      ? retryAfter * 1000
+      : delay + Math.floor(Math.random() * 200);
+
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    delay *= 2;
+  }
+
+  throw new Error('Rate limit exceeded after retries');
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            Do not retry immediately in a tight loop. That amplifies throttling and can trigger wider service blocks.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="rate-limit" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/ops" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Operations & Monitoring</h4>
+          <p class="text-text-secondary text-sm">Runtime metrics and alerts</p>
+        </a>
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">Network request diagnostics</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

@@ -3,6 +3,30 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import ErrorCard from '../../../components/ErrorCard';
 import CodeBlock from '../../../components/CodeBlock';
 import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What should I check first when build fails?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Start with the exact file path and line number in the error log, then classify whether it is a type issue, syntax issue, or dependency issue.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do I fix Module not found errors?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Install missing packages, verify import paths, and rerun npm install or npm ci to restore dependency consistency.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
@@ -10,6 +34,7 @@ import Callout from '../../../components/Callout';
   title="Fixing Build Failures"
   description="How to fix npm run build errors"
   currentPath="/fix/build-fail"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
@@ -151,6 +176,8 @@ npm run preview`}
         />
       </section>
     </article>
+
+    <TroubleshootingTemplate topic="build-fail" lang="en" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>

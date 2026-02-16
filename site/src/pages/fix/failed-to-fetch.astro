@@ -1,0 +1,148 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'TypeError: Failed to fetch 에러 원인은 무엇인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '대부분 네트워크 차단, 잘못된 API URL, CORS 실패, HTTPS 혼합 콘텐츠 문제 중 하나입니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '어디서부터 디버깅해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '브라우저 Network 탭에서 요청이 실제로 나갔는지 확인하고, 서버 로그에서 요청 도달 여부를 함께 확인하세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="Failed to fetch 에러 해결하기"
+  description="TypeError: Failed to fetch 에러 해결 방법"
+  currentPath="/fix/failed-to-fetch"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Failed to fetch</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        네트워크/연결 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Failed to fetch 에러 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">TypeError: Failed to fetch</code>는 원인이 하나가 아닙니다.
+        URL, CORS, HTTPS, DNS를 순서대로 분리해서 확인해야 빠르게 해결됩니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) API URL 오타/환경변수 확인
+          2) Network 탭에서 요청 전송 여부 확인
+          3) CORS/HTTPS mixed content/인증서 오류를 순차 점검
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="TypeError: Failed to fetch"
+        severity="critical"
+        cause="브라우저가 네트워크 요청을 완료하지 못했습니다. CORS, DNS, SSL, 잘못된 URL, 서버 다운 등 다양한 원인이 있습니다."
+        solution={[
+          "브라우저 Network 탭에서 실제 요청이 나가는지 확인",
+          "API base URL 및 환경변수 값 재확인",
+          "서버 로그에서 요청이 도달하는지 확인",
+          "CORS와 HTTPS mixed content를 우선 점검"
+        ]}
+        aiPrompt="브라우저에서 TypeError: Failed to fetch가 떠. React + FastAPI 구조고, 어떤 순서로 원인을 좁혀야 하는지 체크리스트로 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">진단 체크리스트</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="fetch example"
+          code={`const apiUrl = import.meta.env.VITE_API_URL;
+
+if (!apiUrl) {
+  throw new Error('VITE_API_URL is missing');
+}
+
+const response = await fetch(apiUrl + '/health', {
+  method: 'GET',
+  credentials: 'include',
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Mixed Content 여부 확인</h3>
+        <p class="text-text-secondary mb-3">
+          프론트가 HTTPS인데 API를 HTTP로 호출하면 브라우저가 요청 자체를 차단합니다.
+        </p>
+        <CodeBlock
+          client:load
+          filename="wrong vs correct"
+          code={`# Wrong
+https://app.example.com -> http://api.example.com
+
+# Correct
+https://app.example.com -> https://api.example.com`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="info" title="실무 팁">
+          <p class="mt-2">
+            이 에러는 콘솔 메시지만으로 원인 판단이 어렵습니다.
+            브라우저 Network + 서버 로그를 항상 함께 보세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="failed-to-fetch" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS 에러</h4>
+          <p class="text-text-secondary text-sm">크로스 도메인 요청 차단</p>
+        </a>
+        <a href="/fix/ssl-cert" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SSL 인증서 오류</h4>
+          <p class="text-text-secondary text-sm">HTTPS 인증 문제</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

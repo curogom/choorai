@@ -3,18 +3,43 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import ErrorCard from '../../components/ErrorCard';
 import CodeBlock from '../../components/CodeBlock';
 import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '로그인 후 새로고침하면 로그아웃되는 이유는 무엇인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '브라우저가 인증 쿠키를 저장하지 못했거나, 요청 시 credentials 설정이 누락되어 서버 세션이 유지되지 않을 때 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '크로스 도메인 환경에서 쿠키를 유지하려면 어떻게 해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '클라이언트는 credentials include를 설정하고, 서버는 allow_credentials와 정확한 origin 허용, SameSite=None; Secure 쿠키 속성을 사용합니다.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
   title="인증/쿠키 문제 해결하기"
   description="로그인 후 쿠키가 저장되지 않거나 인증이 유지되지 않는 문제 해결"
-  currentPath="/troubleshooting/auth-cookie"
+  currentPath="/fix/auth-cookie"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
       <a href="/" class="hover:text-white transition-colors">홈</a>
       <span>/</span>
-      <a href="/troubleshooting" class="hover:text-white transition-colors">트러블슈팅</a>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
       <span>/</span>
       <span class="text-primary font-medium">인증/쿠키</span>
     </nav>
@@ -193,6 +218,8 @@ app.post('/login', (req, res) => {
       </section>
     </article>
 
+    <TroubleshootingTemplate topic="auth-cookie" />
+
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
       <div class="grid md:grid-cols-2 gap-4">
@@ -200,7 +227,7 @@ app.post('/login', (req, res) => {
           <h4 class="text-white font-medium mb-1">CORS 에러</h4>
           <p class="text-text-secondary text-sm">API 호출 시 CORS 문제</p>
         </a>
-        <a href="/troubleshooting/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+        <a href="/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
           <h4 class="text-white font-medium mb-1">환경 변수 에러</h4>
           <p class="text-text-secondary text-sm">process.env.XXX is undefined</p>
         </a>

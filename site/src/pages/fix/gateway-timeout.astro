@@ -1,0 +1,139 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '502/504 Gateway Timeout은 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '프록시가 업스트림 서버 응답을 제시간에 받지 못하거나, 애플리케이션이 타임아웃보다 오래 걸릴 때 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '가장 먼저 무엇을 점검해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '문제가 나는 경로를 재현하고 프록시 로그와 백엔드 로그를 같은 시각으로 맞춰 지연 구간을 먼저 찾으세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="502/504 Gateway Timeout 해결하기"
+  description="프록시-백엔드 구간에서 발생하는 502/504 타임아웃 문제 해결"
+  currentPath="/fix/gateway-timeout"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">502/504 Timeout</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        런타임/프록시 타임아웃
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        502/504 Gateway Timeout 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        프록시와 애플리케이션 타임아웃 설정이 어긋나면 <code class="bg-surface px-1 rounded">502</code>,
+        <code class="bg-surface px-1 rounded">504</code>가 반복됩니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) 문제 요청 경로/소요시간 측정
+          2) 프록시 타임아웃과 앱 처리시간 비교
+          3) 장시간 작업은 비동기 처리로 분리
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="504 Gateway Timeout"
+        severity="critical"
+        cause="업스트림 서버 응답이 프록시 타임아웃 제한 내에 도착하지 못했습니다."
+        solution={[
+          '문제 엔드포인트의 평균/최대 처리시간 측정',
+          '프록시와 런타임 timeout 설정값 정렬',
+          '느린 DB 쿼리 및 외부 API 호출 구간 최적화',
+          '장시간 작업은 큐 기반 비동기 작업으로 분리'
+        ]}
+        aiPrompt="Cloud Run + Cloudflare 환경에서 504가 반복돼. 프록시/앱 타임아웃과 느린 쿼리 원인을 분리하는 진단 절차를 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">점검 예시</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="terminal"
+          code={`# 응답 시간 확인
+curl -w "status=%{http_code} total=%{time_total}\n" -o /dev/null -s https://api.example.com/reports
+
+# 헬스체크 분리
+curl -i https://api.example.com/health`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="nginx.conf"
+          code={`location /api/ {
+  proxy_connect_timeout 10s;
+  proxy_send_timeout 60s;
+  proxy_read_timeout 60s;
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            타임아웃만 무작정 늘리면 장애 감지와 복구가 늦어집니다.
+            원인 쿼리/외부 연동 지연을 먼저 줄인 뒤 필요한 범위만 조정하세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="gateway-timeout" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/deploy/cloud-run" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloud Run 배포</h4>
+          <p class="text-text-secondary text-sm">런타임 구성 기본</p>
+        </a>
+        <a href="/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">네트워크 요청 실패 진단</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

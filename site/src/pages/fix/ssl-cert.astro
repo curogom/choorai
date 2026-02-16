@@ -1,0 +1,136 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'ERR_CERT_COMMON_NAME_INVALID는 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '현재 접속 도메인이 인증서 SAN 항목에 포함되지 않았거나, 잘못된 인증서가 서버에 연결된 경우 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '인증서 문제를 빠르게 확인하는 방법은?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'openssl s_client로 인증서 체인과 만료일을 확인하고, 도메인별 SAN 매칭을 우선 점검합니다.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="SSL 인증서 오류 해결하기"
+  description="ERR_CERT_COMMON_NAME_INVALID, NET::ERR_CERT_AUTHORITY_INVALID 해결 방법"
+  currentPath="/fix/ssl-cert"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SSL 인증서</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        HTTPS/보안 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        SSL 인증서 오류 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">ERR_CERT_COMMON_NAME_INVALID</code> 또는
+        <code class="bg-surface px-1 rounded">NET::ERR_CERT_AUTHORITY_INVALID</code>가 보이나요?
+        인증서 도메인 매칭 또는 체인 구성 문제일 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) 인증서 SAN에 도메인이 포함되어 있는지 확인
+          2) 인증서 만료/체인 상태 확인
+          3) 프록시(Cloudflare)와 원본 서버 SSL 모드 일치 확인
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="NET::ERR_CERT_COMMON_NAME_INVALID"
+        severity="critical"
+        cause="현재 요청한 호스트명이 인증서의 SAN(Subject Alternative Name)에 없거나, 잘못된 인증서가 연결되어 있습니다."
+        solution={[
+          "대상 도메인으로 인증서를 재발급",
+          "프록시/로드밸런서가 올바른 인증서를 바인딩했는지 확인",
+          "중간 인증서 포함 여부 확인"
+        ]}
+        aiPrompt="배포 후 HTTPS 접속 시 ERR_CERT_COMMON_NAME_INVALID가 나와. 도메인과 인증서 매칭을 어떻게 확인하고 고치는지 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">진단 명령</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="terminal"
+          code={`# 인증서 체인/만료일 확인
+openssl s_client -connect your-domain.com:443 -servername your-domain.com
+
+# SAN 확인
+openssl s_client -connect your-domain.com:443 -servername your-domain.com </dev/null 2>/dev/null | openssl x509 -noout -text | grep -A1 "Subject Alternative Name"`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">Cloudflare 사용 시 체크</h3>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>SSL/TLS 모드가 <code class="bg-surface px-1 rounded">Full (strict)</code>인지 확인</li>
+          <li>원본 서버에도 유효한 인증서가 설치되어 있는지 확인</li>
+          <li>도메인 추가/변경 직후 인증서 발급 완료까지 대기</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="보안 권장 사항">
+          <p class="mt-2">
+            임시로 HTTPS 경고를 무시하고 진행하면 사용자 신뢰와 보안이 모두 저하됩니다.
+            원인 수정 후 재발급/재배포하는 방식으로 해결하세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="ssl-cert" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/dns-nxdomain" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">DNS NXDOMAIN</h4>
+          <p class="text-text-secondary text-sm">도메인 조회 실패 문제</p>
+        </a>
+        <a href="/deploy/cloudflare-pages" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloudflare Pages 배포</h4>
+          <p class="text-text-secondary text-sm">도메인/SSL 설정 가이드</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

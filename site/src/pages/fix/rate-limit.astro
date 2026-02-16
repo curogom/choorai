@@ -1,0 +1,153 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '429 Too Many Requests는 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '짧은 시간에 너무 많은 요청을 보내 API 또는 WAF의 rate limit 정책을 초과했을 때 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '클라이언트에서는 어떻게 대응해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Retry-After 헤더를 존중하고 지수 백오프와 jitter를 적용해 재시도 폭주를 방지해야 합니다.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="429 Rate Limit 에러 해결하기"
+  description="HTTP 429 Too Many Requests 에러 해결 방법"
+  currentPath="/fix/rate-limit"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">429 Rate Limit</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        API 호출량 제한 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        429 Rate Limit 에러 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">HTTP 429 Too Many Requests</code>는
+        요청 빈도가 정책 한도를 초과했을 때 발생합니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) 중복 요청/폴링 주기 축소
+          2) Retry-After 기반 재시도 적용
+          3) 지수 백오프 + jitter 적용
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="429 Too Many Requests"
+        errorCode="429"
+        severity="warning"
+        cause="클라이언트가 짧은 시간에 과도한 요청을 보내 서버의 rate limit 규칙을 초과했습니다."
+        solution={[
+          "요청 빈도 낮추기 (debounce/throttle)",
+          "Retry-After 헤더 확인 후 재시도",
+          "지수 백오프 적용",
+          "필요 시 서버 rate limit 정책 조정"
+        ]}
+        aiPrompt="우리 API에서 429가 자주 나와. 프론트에서 재시도 폭주를 막는 backoff 코드를 예시로 작성해줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">재시도 예시 코드</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="retry.ts"
+          code={`async function fetchWithBackoff(url: string, attempts = 5) {
+  let delay = 500;
+
+  for (let i = 0; i < attempts; i++) {
+    const res = await fetch(url);
+
+    if (res.status !== 429) {
+      return res;
+    }
+
+    const retryAfter = Number(res.headers.get('Retry-After'));
+    const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
+      ? retryAfter * 1000
+      : delay + Math.floor(Math.random() * 200);
+
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    delay *= 2;
+  }
+
+  throw new Error('Rate limit exceeded after retries');
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">요청량 줄이는 방법</h3>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>검색 입력은 debounce 300~500ms 적용</li>
+          <li>페이지 전환 시 중복 API 요청 취소(AbortController)</li>
+          <li>동일 데이터는 캐시 사용 (TanStack Query 등)</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            429 발생 시 즉시 무한 재시도를 하면 더 빠르게 차단됩니다.
+            반드시 대기 시간과 최대 시도 횟수를 두세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="rate-limit" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/ops" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">모니터링/운영</h4>
+          <p class="text-text-secondary text-sm">운영 지표와 알림 전략</p>
+        </a>
+        <a href="/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">네트워크 요청 실패 진단</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

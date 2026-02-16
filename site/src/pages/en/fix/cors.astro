@@ -3,6 +3,30 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import ErrorCard from '../../../components/ErrorCard';
 import CodeBlock from '../../../components/CodeBlock';
 import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does a CORS error happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A CORS error occurs when your frontend origin is not included in the backend allowlist for cross-origin requests.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the fastest way to fix CORS?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Add the exact frontend origin to backend CORS settings and verify preflight OPTIONS handling and credentials configuration.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
@@ -10,6 +34,7 @@ import Callout from '../../../components/Callout';
   title="Fixing CORS Errors"
   description="How to fix Access to XMLHttpRequest blocked by CORS policy error"
   currentPath="/fix/cors"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <!-- Breadcrumb -->
@@ -136,6 +161,8 @@ app.use(cors({
         </ol>
       </section>
     </article>
+
+    <TroubleshootingTemplate topic="cors" lang="en" />
 
     <!-- Related docs -->
     <section class="mt-12 pt-8 border-t border-border">
