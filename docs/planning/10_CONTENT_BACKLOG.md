@@ -13,7 +13,7 @@
 - 후보 묶음 (10개 주제 / ko-en 동시):
   - Recipes 6개: `react-bootstrap`, `fastapi-bootstrap`, `hono-bootstrap`, `add-crud-endpoint`, `add-auth-cookie`, `review-pr-quality`
   - Deploy 2개: `netlify`, `railway`
-  - Ops/Runtime 2개: `release-rollback`, `environments`
+  - Ops/Runtime 2개: `environments`, `release-rollback`
 
 ---
 
