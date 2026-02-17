@@ -1,0 +1,91 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+
+const guides = [
+  {
+    title: 'Cloudflare Pages',
+    description: 'Deploy static frontend apps and configure SPA rewrites',
+    href: '/en/deploy/cloudflare-pages',
+    tags: ['Frontend', 'Static', 'SPA'],
+  },
+  {
+    title: 'Vercel',
+    description: 'Deploy Next.js/React apps with environment variable workflow',
+    href: '/en/deploy/vercel',
+    tags: ['Frontend', 'Next.js', 'Serverless'],
+  },
+  {
+    title: 'Netlify',
+    description: 'Deploy React/Vite and protect route refreshes with `_redirects`',
+    href: '/en/deploy/netlify',
+    tags: ['Frontend', 'Vite', 'Routing'],
+  },
+  {
+    title: 'Railway',
+    description: 'Simple backend deployment entry point for FastAPI/Hono APIs',
+    href: '/en/deploy/railway',
+    tags: ['Backend', 'API', 'Beginner'],
+  },
+  {
+    title: 'Cloud Run',
+    description: 'Container-based deployment with baseline operation checks',
+    href: '/en/deploy/cloud-run',
+    tags: ['Container', 'GCP', 'Ops'],
+  },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Deploy Guides"
+  description="Index page for deployment guides by platform"
+  currentPath="/deploy"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Deploy</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        Deploy Index
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Deployment Guide Collection</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Platform-specific deploy guides for both frontend and backend workloads. Start with the guide that matches your stack.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="Selection Guide">
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <li>Frontend SPA: Cloudflare Pages / Netlify / Vercel</li>
+          <li>Backend API: Railway / Cloud Run</li>
+          <li>If this is your first deployment, start with Railway or Cloudflare Pages</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-4">
+      {guides.map((guide) => (
+        <a
+          href={guide.href}
+          class="group p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all no-underline"
+        >
+          <h2 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
+            {guide.title}
+          </h2>
+          <p class="text-text-secondary text-sm mb-3">{guide.description}</p>
+          <div class="flex flex-wrap gap-1.5">
+            {guide.tags.map((tag) => (
+              <span class="px-2 py-0.5 bg-background rounded text-xs text-text-secondary">{tag}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </section>
+  </div>
+</DocsLayout>

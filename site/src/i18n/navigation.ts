@@ -165,6 +165,7 @@ export function getNavigation(lang: Lang): NavSection[] {
     },
     {
       title: t('nav.deploy'),
+      href: lp('/deploy'),
       items: [
         { label: 'Cloudflare Pages', href: lp('/deploy/cloudflare-pages') },
         { label: 'Vercel', href: lp('/deploy/vercel') },
