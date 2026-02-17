@@ -1,0 +1,82 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Ops 심화: 릴리즈/롤백 런북"
+  description="배포 전 점검부터 장애 시 롤백까지 운영 런북 표준"
+  currentPath="/map/ops/release-rollback"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <a href="/map/ops" class="hover:text-white transition-colors">Ops</a>
+      <span>/</span>
+      <span class="text-primary font-medium">릴리즈/롤백 런북</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Ops Deep Dive
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">릴리즈/롤백 런북</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        배포 전 게이트, 배포 직후 검증, 롤백 트리거를 표준화해 운영 리스크를 줄입니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="warning" title="롤백 트리거 예시">
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <li>5xx 에러율 1% 이상 급증</li>
+          <li>핵심 API p95 지연 2배 이상</li>
+          <li>핵심 기능 장애 5분 이상 지속</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">배포 전 체크</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>빌드/테스트/링크 점검 완료</li>
+          <li>담당자(배포/검증/모니터링) 지정</li>
+          <li>핫픽스 경로와 연락 채널 확정</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">배포 후 15분 검증</h2>
+        <CodeBlock
+          client:load
+          filename="runbook"
+          code={`1) 핵심 URL 3개 샘플링
+2) 5xx/4xx 비율 확인
+3) 주요 사용자 플로우 1회 수행
+4) 이상 시 즉시 롤백 여부 판단`}
+        />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">롤백 실행 로그 템플릿</h2>
+        <CodeBlock
+          client:load
+          filename="markdown"
+          code={`- Trigger: [what happened]
+- Decision Time (KST): [YYYY-MM-DD HH:mm]
+- Rollback Target: [deploy or revision]
+- Owner: [name]
+- Follow-up: [next action]`}
+        />
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/ops/release-rollback" />
+  </div>
+</DocsLayout>

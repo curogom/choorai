@@ -1,0 +1,81 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Netlify Deployment Guide"
+  description="Deploy a React/Vite SPA to Netlify with rewrite rules"
+  currentPath="/deploy/netlify"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/deploy" class="hover:text-white transition-colors">Deploy</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Netlify</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-300 text-xs font-bold mb-4">
+        Frontend Hosting
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Netlify Deployment Guide</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Deploy React/Vite apps with Git integration and configure SPA rewrites for route safety.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Connect GitHub repository</li>
+          <li>Set build command and publish directory</li>
+          <li>Apply SPA rewrite via <code>_redirects</code> or <code>netlify.toml</code></li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <SectionHeader number={1} title="Baseline build setup" />
+        <CodeBlock
+          client:load
+          locale="en"
+          filename="Netlify Build"
+          code={`Build command: npm run build
+Publish directory: dist`}
+        />
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={2} title="Configure SPA rewrites" />
+        <CodeBlock
+          client:load
+          locale="en"
+          filename="public/_redirects"
+          code={`/*    /index.html   200`}
+        />
+        <Callout client:load locale="en" variant="info" title="Why this matters">
+          <p class="text-sm">Prevents 404 when users directly open client-side routes.</p>
+        </Callout>
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={3} title="Post-deploy validation" />
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Check root and deep-link routes</li>
+          <li>Validate environment variable injection</li>
+          <li>Review build logs for warnings/errors</li>
+        </ul>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/deploy/netlify" lang="en" />
+  </div>
+</DocsLayout>

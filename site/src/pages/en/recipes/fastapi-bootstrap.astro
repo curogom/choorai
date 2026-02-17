@@ -1,0 +1,100 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to bootstrap a FastAPI backend quickly.
+Create an execution-ready starter based on the inputs below.
+
+[Inputs]
+- Python version: [3.11/3.12]
+- Package manager: [pip/uv/poetry]
+- DB: [PostgreSQL/SQLite]
+- Auth: [none/jwt/session]
+- Deployment target: [Cloud Run/Railway]
+
+[Output requirements]
+1) Folder structure and core files
+2) Base routes including /health
+3) Config separation (.env, config module)
+4) Pytest starter tests
+5) Local run + pre-deploy validation list`;
+
+const checklist = [
+  { id: 'init', label: 'Initialize project', description: 'Set venv and dependencies' },
+  { id: 'health', label: 'Add /health route', description: 'Create baseline health endpoint' },
+  { id: 'config', label: 'Separate configuration', description: 'Split .env and config module' },
+  { id: 'test', label: 'Add test starter', description: 'Create pytest smoke tests' },
+  { id: 'verify', label: 'Verify runtime', description: 'Run uvicorn and API checks' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: FastAPI Bootstrap"
+  description="Prompt recipe to bootstrap a FastAPI backend with baseline structure"
+  currentPath="/recipes/fastapi-bootstrap"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">FastAPI Bootstrap</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Backend
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">FastAPI Bootstrap</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Use this recipe to generate FastAPI structure, config separation, and test starter in one pass.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="When to use">
+        <p class="mt-2">Ideal for spinning up a new API or restructuring a legacy backend baseline.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="FastAPI Bootstrap Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Command Example</h2>
+      <CodeBlock
+        client:load
+        locale="en"
+        filename="terminal"
+        code={`python -m venv .venv
+source .venv/bin/activate
+pip install fastapi uvicorn pytest
+uvicorn app.main:app --reload`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-fastapi-bootstrap" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/backend/fastapi" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">FastAPI Backend Guide</h4>
+          <p class="text-text-secondary text-sm">Routing and architecture basics</p>
+        </a>
+        <a href="/en/fix/gateway-timeout" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Fix Gateway Timeouts</h4>
+          <p class="text-text-secondary text-sm">Post-deploy latency diagnostics</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

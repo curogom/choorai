@@ -5,6 +5,7 @@ interface CodeBlockProps {
   language?: string;
   filename?: string;
   showLineNumbers?: boolean;
+  locale?: 'ko' | 'en';
 }
 
 export default function CodeBlock({
@@ -12,6 +13,7 @@ export default function CodeBlock({
   language: _language = 'typescript',
   filename,
   showLineNumbers = false,
+  locale = 'ko',
 }: CodeBlockProps) {
   // Note: language prop reserved for future syntax highlighting integration
   const [copied, setCopied] = useState(false);
@@ -27,6 +29,9 @@ export default function CodeBlock({
   };
 
   const lines = code.split('\n');
+  const labels = locale === 'en'
+    ? { copy: 'Copy', copied: 'Copied!' }
+    : { copy: '복사', copied: '복사됨!' };
 
   return (
     <div className="rounded-xl border border-border bg-background overflow-hidden shadow-xl">
@@ -55,7 +60,7 @@ export default function CodeBlock({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              복사됨!
+              {labels.copied}
             </>
           ) : (
             <>
@@ -67,7 +72,7 @@ export default function CodeBlock({
                   d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                 />
               </svg>
-              복사
+              {labels.copy}
             </>
           )}
         </button>

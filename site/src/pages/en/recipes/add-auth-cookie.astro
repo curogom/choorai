@@ -1,0 +1,100 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I need to add session/cookie-based authentication.
+Create an implementation runbook with the constraints below.
+
+[Inputs]
+- Frontend origin: [FRONTEND_ORIGIN]
+- Backend origin: [BACKEND_ORIGIN]
+- HTTPS enabled: [true/false]
+- Cookie strategy: [httpOnly/session/refresh]
+- Backend stack: [FastAPI/Hono/Nest]
+
+[Output requirements]
+1) Login/logout/session-check API design
+2) Recommended CORS + cookie attributes (SameSite/Secure)
+3) Client credentials configuration
+4) Test scenarios
+5) Common failure cases and fixes`;
+
+const checklist = [
+  { id: 'api', label: 'Design auth APIs', description: 'Define login/logout/session-check' },
+  { id: 'cookie', label: 'Configure cookie attributes', description: 'Finalize SameSite/Secure/httpOnly' },
+  { id: 'cors', label: 'Apply CORS policy', description: 'Validate origin and credentials pairing' },
+  { id: 'client', label: 'Set client behavior', description: 'Enable credentials in fetch/axios' },
+  { id: 'verify', label: 'Run integration checks', description: 'Reproduce in browser and deployed env' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Add Auth (Session/Cookie)"
+  description="Prompt recipe to add session/cookie auth safely"
+  currentPath="/recipes/add-auth-cookie"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Add Auth (Cookie)</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Auth
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Add Auth (Session/Cookie)</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        This recipe helps validate cookie attributes, CORS, and client credential settings together.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="warning" title="Important">
+        <p class="mt-2">For cross-origin flows, always review `SameSite=None` together with `Secure=true`.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Cookie Auth Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Client Request Example</h2>
+      <CodeBlock
+        client:load
+        locale="en"
+        filename="typescript"
+        code={`await fetch('https://api.example.com/session', {
+  method: 'GET',
+  credentials: 'include',
+});`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-add-auth-cookie" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/auth" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Auth Overview</h4>
+          <p class="text-text-secondary text-sm">Compare authentication approaches</p>
+        </a>
+        <a href="/en/fix/auth-cookie" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Auth Cookie Errors</h4>
+          <p class="text-text-secondary text-sm">Diagnose cookie delivery issues</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

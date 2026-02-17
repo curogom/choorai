@@ -1,0 +1,99 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to bootstrap a minimal Hono API quickly.
+Design an execution-ready starter based on the inputs below.
+
+[Inputs]
+- Runtime: [Node/Bun/Cloudflare Workers]
+- Validation: [zod/none]
+- Storage: [in-memory/postgres]
+- Test tool: [vitest/jest]
+
+[Output requirements]
+1) Minimal folder structure
+2) /health and CRUD starter routes
+3) Error/logging middleware
+4) 1-2 sample tests
+5) Local run and deploy checklist`;
+
+const checklist = [
+  { id: 'init', label: 'Create project', description: 'Initialize Hono + TypeScript' },
+  { id: 'routes', label: 'Add core routes', description: 'Create /health and CRUD starter' },
+  { id: 'middleware', label: 'Add middleware', description: 'Configure logging and error handling' },
+  { id: 'tests', label: 'Add baseline tests', description: 'Health/CRUD smoke tests' },
+  { id: 'verify', label: 'Verify runtime', description: 'Confirm local runtime works' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Hono Bootstrap"
+  description="Prompt recipe to bootstrap a Hono API server"
+  currentPath="/recipes/hono-bootstrap"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Hono Bootstrap</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Backend
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Hono Bootstrap</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        This recipe helps you start a lightweight API with testable baseline architecture.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="When to use">
+        <p class="mt-2">Best for POC APIs, serverless endpoints, and lightweight backend MVPs.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Hono Bootstrap Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Command Example</h2>
+      <CodeBlock
+        client:load
+        locale="en"
+        filename="terminal"
+        code={`npm create hono@latest my-hono-api
+cd my-hono-api
+npm install
+npm run dev`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-hono-bootstrap" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/backend/hono" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Hono Backend Guide</h4>
+          <p class="text-text-secondary text-sm">Routing and runtime fundamentals</p>
+        </a>
+        <a href="/en/fix/preflight-405" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Preflight 405</h4>
+          <p class="text-text-secondary text-sm">Diagnose early CORS setup issues</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

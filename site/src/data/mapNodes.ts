@@ -145,6 +145,7 @@ export const MAP_NODES: MapNode[] = [
     group: 'ops',
     subNodes: [
       { id: 'env-vars', label: '환경변수 설정', href: '/map/runtime#env' },
+      { id: 'env-split', label: '멀티 환경 운영', href: '/map/runtime/environments' },
       { id: 'secrets', label: '시크릿 관리', href: '/map/runtime#secrets' },
     ],
   },
@@ -167,6 +168,7 @@ export const MAP_NODES: MapNode[] = [
       { id: 'logging', label: '로깅', href: '/map/ops#logging' },
       { id: 'monitoring', label: '모니터링', href: '/map/ops#monitoring' },
       { id: 'alerting', label: '알림 설정', href: '/map/ops#alerting' },
+      { id: 'release-rollback', label: '릴리즈/롤백 런북', href: '/map/ops/release-rollback' },
     ],
   },
   // === 인프라 영역 (infra) ===

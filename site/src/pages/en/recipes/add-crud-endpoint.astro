@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I need to add CRUD endpoints to an existing service.
+Create an implementation plan and starter code based on the inputs below.
+
+[Inputs]
+- Resource name: [RESOURCE]
+- Field definition: [FIELDS]
+- Backend stack: [FastAPI/Hono/Nest]
+- Storage: [RDB/NoSQL/in-memory]
+- Auth required: [true/false]
+
+[Output requirements]
+1) Route/DTO/validation structure
+2) Create/Read/Update/Delete API design
+3) Error and status code policy
+4) At least 5 test cases
+5) Frontend integration checklist`;
+
+const checklist = [
+  { id: 'schema', label: 'Define schema', description: 'Finalize fields, validation, defaults' },
+  { id: 'routes', label: 'Implement CRUD routes', description: 'Add full C/R/U/D API set' },
+  { id: 'errors', label: 'Define error policy', description: 'Validate 400/404/409/500 behavior' },
+  { id: 'tests', label: 'Add tests', description: 'Add baseline unit/integration tests' },
+  { id: 'integration', label: 'Verify frontend integration', description: 'Check request/response type alignment' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Add CRUD Endpoints"
+  description="Prompt recipe to add CRUD APIs safely to an existing service"
+  currentPath="/recipes/add-crud-endpoint"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Add CRUD Endpoints</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · API
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Add CRUD Endpoints</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Quickly define the full path from model design to tests when adding CRUD features.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="When to use">
+        <p class="mt-2">Use when adding a new domain model, expanding admin APIs, or shipping MVP features.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="CRUD Endpoint Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Response Policy Example</h2>
+      <CodeBlock
+        client:load
+        locale="en"
+        filename="http"
+        code={`POST /api/v1/projects -> 201 Created
+GET /api/v1/projects/{id} -> 200 OK
+PATCH /api/v1/projects/{id} -> 200 OK
+DELETE /api/v1/projects/{id} -> 204 No Content
+GET /api/v1/projects/{missing} -> 404 Not Found`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-add-crud-endpoint" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/database/rdb" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">RDB Basics</h4>
+          <p class="text-text-secondary text-sm">Schema, relationships, query design</p>
+        </a>
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">Diagnose network and path mismatches</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

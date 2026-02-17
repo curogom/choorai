@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `FastAPI 백엔드를 빠르게 부트스트랩하고 싶어.
+아래 조건에 맞춰 바로 실행 가능한 초기 구성을 만들어줘.
+
+[입력 정보]
+- Python 버전: [3.11/3.12]
+- 패키지 매니저: [pip/uv/poetry]
+- DB: [PostgreSQL/SQLite]
+- 인증: [none/jwt/session]
+- 배포 대상: [Cloud Run/Railway]
+
+[출력 요구사항]
+1) 폴더 구조와 핵심 파일
+2) /health 포함 기본 라우트
+3) 설정 분리(.env, config)
+4) pytest 기반 테스트 시작점
+5) 로컬 실행 + 배포 전 점검 항목`;
+
+const checklist = [
+  { id: 'init', label: '프로젝트 초기화', description: '가상환경/의존성 설치' },
+  { id: 'health', label: '/health 라우트 구성', description: '기본 헬스체크 추가' },
+  { id: 'config', label: '환경설정 분리', description: '.env와 config 모듈 분리' },
+  { id: 'test', label: '테스트 템플릿 작성', description: 'pytest 스모크 테스트 구성' },
+  { id: 'verify', label: '실행 검증', description: 'uvicorn 실행 및 API 응답 확인' },
+];
+---
+
+<DocsLayout
+  title="레시피: FastAPI 부트스트랩"
+  description="FastAPI 백엔드 초기 구성을 빠르게 만드는 프롬프트 레시피"
+  currentPath="/recipes/fastapi-bootstrap"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">FastAPI 부트스트랩</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Backend
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">FastAPI 부트스트랩</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        FastAPI 기본 구조, 환경설정 분리, 테스트 시작점을 한 번에 생성하는 레시피입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="추천 사용 시점">
+        <p class="mt-2">새 API 서비스를 빠르게 열거나, 기존 레거시를 구조화할 때 유용합니다.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="FastAPI 부트스트랩 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">명령어 예시</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`python -m venv .venv
+source .venv/bin/activate
+pip install fastapi uvicorn pytest
+uvicorn app.main:app --reload`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-fastapi-bootstrap" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/backend/fastapi" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">FastAPI 백엔드 가이드</h4>
+          <p class="text-text-secondary text-sm">라우팅/구조화 기본</p>
+        </a>
+        <a href="/fix/gateway-timeout" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Gateway Timeout 해결</h4>
+          <p class="text-text-secondary text-sm">배포 후 응답 지연 점검</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
