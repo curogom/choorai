@@ -4,6 +4,7 @@ import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
 import PromptBox from '../../components/PromptBox';
 import Checklist from '../../components/Checklist';
+import TemplateSections from '../../components/TemplateSections.astro';
 
 const prompt = `React 프로젝트를 빠르게 시작하고 싶어.
 아래 조건에 맞춰 실행 가능한 초기화 절차를 만들어줘.
@@ -81,6 +82,8 @@ npm run dev`}
     <section class="mb-10">
       <Checklist client:load storageKey="recipe-react-bootstrap" title="실행 체크리스트" items={checklist} />
     </section>
+
+    <TemplateSections topic="react-bootstrap" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>

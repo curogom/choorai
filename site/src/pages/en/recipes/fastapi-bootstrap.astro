@@ -4,6 +4,7 @@ import Callout from '../../../components/Callout';
 import CodeBlock from '../../../components/CodeBlock';
 import PromptBox from '../../../components/PromptBox';
 import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
 
 const prompt = `I want to bootstrap a FastAPI backend quickly.
 Create an execution-ready starter based on the inputs below.
@@ -82,6 +83,8 @@ uvicorn app.main:app --reload`}
     <section class="mb-10">
       <Checklist client:load locale="en" storageKey="recipe-fastapi-bootstrap" title="Execution Checklist" items={checklist} />
     </section>
+
+    <TemplateSections locale="en" topic="fastapi-bootstrap" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>

@@ -4,6 +4,7 @@ import Callout from '../../../components/Callout';
 import CodeBlock from '../../../components/CodeBlock';
 import SectionHeader from '../../../components/SectionHeader';
 import PageNavigation from '../../../components/PageNavigation.astro';
+import TemplateSections from '../../../components/TemplateSections.astro';
 ---
 
 <DocsLayout
@@ -75,6 +76,8 @@ APP_ENV=production`}
         </ul>
       </section>
     </article>
+
+    <TemplateSections locale="en" topic="deploy-railway" />
 
     <PageNavigation currentPath="/deploy/railway" lang="en" />
   </div>

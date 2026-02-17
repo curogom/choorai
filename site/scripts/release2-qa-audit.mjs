@@ -159,17 +159,26 @@ function extractJsonLdTypesFromHtml(htmlText) {
 
 const sectionMatchers = {
   tldr: [/TL;DR/i],
-  prerequisites: [/Prerequisites/i, /사전 준비/, /준비 사항/, /준비물/],
-  steps: [/Steps/i, /단계/, /절차/, /실행 순서/],
-  validation: [/Validation/i, /검증/, /점검/],
-  troubleshooting: [/Troubleshooting/i, /문제 해결/, /트러블슈팅/],
-  references: [/References/i, /관련 문서/, /참고/],
+  prerequisites: [/Prerequisites/i, /사전 준비/i],
+  steps: [/Steps/i, /실행 순서/i, /단계/i, /절차/i],
+  validation: [/Validation/i, /검증/i],
+  troubleshooting: [/Troubleshooting/i, /문제 해결/i, /트러블슈팅/i],
+  references: [/References/i, /관련 문서/i, /참고/i],
 };
 
-function auditTemplateSections(sourceText) {
+function extractVisibleText(htmlText) {
+  return htmlText
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function auditTemplateSections(visibleText) {
   const result = {};
   for (const [section, patterns] of Object.entries(sectionMatchers)) {
-    result[section] = patterns.some((pattern) => pattern.test(sourceText));
+    result[section] = patterns.some((pattern) => pattern.test(visibleText));
   }
   return result;
 }
@@ -232,7 +241,8 @@ function runAudit() {
       });
     }
 
-    const templateResult = auditTemplateSections(sourceText);
+    const visibleText = extractVisibleText(htmlText);
+    const templateResult = auditTemplateSections(visibleText);
     const missingSections = Object.entries(templateResult)
       .filter(([, ok]) => !ok)
       .map(([section]) => section);

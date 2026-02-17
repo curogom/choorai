@@ -1,0 +1,172 @@
+---
+type Locale = 'ko' | 'en';
+type Topic =
+  | 'react-bootstrap'
+  | 'fastapi-bootstrap'
+  | 'hono-bootstrap'
+  | 'add-crud-endpoint'
+  | 'add-auth-cookie'
+  | 'review-pr-quality'
+  | 'deploy-netlify'
+  | 'deploy-railway'
+  | 'runtime-environments'
+  | 'ops-release-rollback';
+
+interface ReferenceItem {
+  ko: string;
+  en: string;
+  href: string;
+}
+
+interface Props {
+  locale?: Locale;
+  topic: Topic;
+}
+
+const { locale = 'ko', topic } = Astro.props as Props;
+
+const topicLabel: Record<Topic, { ko: string; en: string }> = {
+  'react-bootstrap': { ko: 'React 부트스트랩', en: 'React bootstrap' },
+  'fastapi-bootstrap': { ko: 'FastAPI 부트스트랩', en: 'FastAPI bootstrap' },
+  'hono-bootstrap': { ko: 'Hono 부트스트랩', en: 'Hono bootstrap' },
+  'add-crud-endpoint': { ko: 'CRUD 엔드포인트 추가', en: 'CRUD endpoint changes' },
+  'add-auth-cookie': { ko: '인증(쿠키) 추가', en: 'cookie/session auth changes' },
+  'review-pr-quality': { ko: 'PR 품질 점검', en: 'PR quality review' },
+  'deploy-netlify': { ko: 'Netlify 배포', en: 'Netlify deployment' },
+  'deploy-railway': { ko: 'Railway 배포', en: 'Railway deployment' },
+  'runtime-environments': { ko: '멀티 환경 운영', en: 'multi-environment runtime operation' },
+  'ops-release-rollback': { ko: '릴리즈/롤백 운영', en: 'release/rollback operation' },
+};
+
+const referencesByTopic: Record<Topic, ReferenceItem[]> = {
+  'react-bootstrap': [
+    { ko: 'React 공식 문서', en: 'React official docs', href: 'https://react.dev/learn' },
+    { ko: 'Vite 가이드', en: 'Vite guide', href: 'https://vite.dev/guide/' },
+    { ko: 'TypeScript 핸드북', en: 'TypeScript handbook', href: 'https://www.typescriptlang.org/docs/' },
+  ],
+  'fastapi-bootstrap': [
+    { ko: 'FastAPI 공식 문서', en: 'FastAPI official docs', href: 'https://fastapi.tiangolo.com/' },
+    { ko: 'Pydantic 문서', en: 'Pydantic docs', href: 'https://docs.pydantic.dev/latest/' },
+    { ko: 'Uvicorn 문서', en: 'Uvicorn docs', href: 'https://www.uvicorn.org/' },
+  ],
+  'hono-bootstrap': [
+    { ko: 'Hono 공식 문서', en: 'Hono official docs', href: 'https://hono.dev/docs/' },
+    { ko: 'Zod 공식 문서', en: 'Zod official docs', href: 'https://zod.dev/' },
+    { ko: 'Vitest 문서', en: 'Vitest docs', href: 'https://vitest.dev/guide/' },
+  ],
+  'add-crud-endpoint': [
+    { ko: 'MDN HTTP Methods', en: 'MDN HTTP Methods', href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods' },
+    { ko: 'OpenAPI 명세', en: 'OpenAPI specification', href: 'https://spec.openapis.org/oas/latest.html' },
+    { ko: 'JSON Schema 문서', en: 'JSON Schema docs', href: 'https://json-schema.org/' },
+  ],
+  'add-auth-cookie': [
+    { ko: 'MDN Set-Cookie', en: 'MDN Set-Cookie', href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie' },
+    { ko: 'MDN CORS', en: 'MDN CORS', href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS' },
+    { ko: 'OWASP Session Cheat Sheet', en: 'OWASP Session Cheat Sheet', href: 'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html' },
+  ],
+  'review-pr-quality': [
+    { ko: 'GitHub PR 리뷰 문서', en: 'GitHub PR review docs', href: 'https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests' },
+    { ko: 'GitHub 보호 브랜치', en: 'GitHub protected branches', href: 'https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches' },
+    { ko: 'pytest 공식 문서', en: 'pytest official docs', href: 'https://docs.pytest.org/' },
+  ],
+  'deploy-netlify': [
+    { ko: 'Netlify 공식 문서', en: 'Netlify official docs', href: 'https://docs.netlify.com/' },
+    { ko: 'Netlify Redirects', en: 'Netlify Redirects', href: 'https://docs.netlify.com/routing/redirects/' },
+    { ko: 'Vite 정적 배포 가이드', en: 'Vite static deploy guide', href: 'https://vite.dev/guide/static-deploy.html' },
+  ],
+  'deploy-railway': [
+    { ko: 'Railway 공식 문서', en: 'Railway official docs', href: 'https://docs.railway.com/' },
+    { ko: 'Railway 서비스 가이드', en: 'Railway service guides', href: 'https://docs.railway.com/guides/services' },
+    { ko: 'FastAPI 배포 문서', en: 'FastAPI deployment docs', href: 'https://fastapi.tiangolo.com/deployment/' },
+  ],
+  'runtime-environments': [
+    { ko: '12-Factor App (Config)', en: '12-Factor App (Config)', href: 'https://12factor.net/config' },
+    { ko: 'Node.js 환경변수 문서', en: 'Node.js environment variables', href: 'https://nodejs.org/api/environment_variables.html' },
+    { ko: 'Vite Env & Mode', en: 'Vite Env & Mode', href: 'https://vite.dev/guide/env-and-mode.html' },
+  ],
+  'ops-release-rollback': [
+    { ko: 'GitHub Deployments 문서', en: 'GitHub Deployments docs', href: 'https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions' },
+    { ko: 'Kubernetes Rollback 문서', en: 'Kubernetes rollback docs', href: 'https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment' },
+    { ko: 'Google SRE Workbook', en: 'Google SRE Workbook', href: 'https://sre.google/workbook/' },
+  ],
+};
+
+const ko = locale === 'ko';
+const label = topicLabel[topic];
+const refs = referencesByTopic[topic];
+---
+
+<section class="mt-12 pt-8 border-t border-border">
+  <h2 class="text-2xl font-bold text-white mb-4">TL;DR</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2">
+    <li>
+      {ko
+        ? `${label.ko} 작업 시 필요한 최소 기준과 검증 포인트를 빠르게 확인합니다.`
+        : `Use this section as a quick baseline for ${label.en}.`}
+    </li>
+    <li>
+      {ko
+        ? '실제 프로젝트 환경값(브랜치, 시크릿, URL, 임계치)은 팀 기준에 맞게 치환하세요.'
+        : 'Replace branch names, secrets, URLs, and thresholds with your team-specific values.'}
+    </li>
+  </ul>
+</section>
+
+<section class="mt-10">
+  <h2 class="text-2xl font-bold text-white mb-4">
+    {ko ? '사전 준비 (Prerequisites)' : 'Prerequisites'}
+  </h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2">
+    <li>{ko ? '대상 리포지토리와 실행 환경 접근 권한 확인' : 'Confirm repository and runtime access permissions.'}</li>
+    <li>{ko ? '로컬/CI에서 사용할 기본 명령어(`install`, `build`, `test`) 점검' : 'Verify baseline commands (`install`, `build`, `test`) for local/CI.'}</li>
+    <li>{ko ? '환경변수/시크릿/배포 대상 정보를 최신 상태로 정리' : 'Ensure environment variables, secrets, and deployment targets are up to date.'}</li>
+  </ul>
+</section>
+
+<section class="mt-10">
+  <h2 class="text-2xl font-bold text-white mb-4">
+    {ko ? '실행 순서 (Steps)' : 'Steps'}
+  </h2>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2">
+    <li>{ko ? '변경 목표와 범위를 한 줄로 고정한다.' : 'Lock the change goal and scope in one sentence.'}</li>
+    <li>{ko ? `핵심 변경(${label.ko})을 최소 단위 커밋으로 적용한다.` : `Apply the core ${label.en} changes in minimal commits.`}</li>
+    <li>{ko ? '검증 로그를 남기고 체크리스트/문서를 즉시 업데이트한다.' : 'Capture validation logs and immediately update checklist/docs.'}</li>
+  </ol>
+</section>
+
+<section class="mt-10">
+  <h2 class="text-2xl font-bold text-white mb-4">
+    {ko ? '검증 (Validation)' : 'Validation'}
+  </h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2">
+    <li>{ko ? '빌드/테스트가 현재 브랜치에서 재현 가능하게 통과하는지 확인' : 'Confirm build/test pass reproducibly on the current branch.'}</li>
+    <li>{ko ? '핵심 경로(사용자 플로우 또는 운영 플로우)를 수동 샘플 점검' : 'Run manual sample checks on critical user/operation flows.'}</li>
+    <li>{ko ? 'ko/en 문서와 링크가 동일 의도를 유지하는지 대조' : 'Cross-check ko/en docs and links for intent consistency.'}</li>
+  </ul>
+</section>
+
+<section class="mt-10">
+  <h2 class="text-2xl font-bold text-white mb-4">
+    {ko ? '문제 해결 (Troubleshooting)' : 'Troubleshooting'}
+  </h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2">
+    <li>{ko ? '오류 발생 시 로그/요청 본문/환경값을 먼저 캡처한다.' : 'Capture logs, request payloads, and environment values first on failures.'}</li>
+    <li>{ko ? '권한/환경변수/라우팅/빌드 산출물 순서로 원인을 좁힌다.' : 'Narrow down by permissions, env vars, routing, and build artifacts.'}</li>
+    <li>{ko ? '임시 조치와 근본 원인 수정을 분리해 기록한다.' : 'Record temporary mitigation and root-cause fix separately.'}</li>
+  </ul>
+</section>
+
+<section class="mt-10">
+  <h2 class="text-2xl font-bold text-white mb-4">
+    {ko ? '관련 문서 (References)' : 'References'}
+  </h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2">
+    {refs.map((ref) => (
+      <li>
+        <a href={ref.href} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+          {ko ? ref.ko : ref.en}
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>

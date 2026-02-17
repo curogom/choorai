@@ -4,6 +4,7 @@ import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
 import PromptBox from '../../components/PromptBox';
 import Checklist from '../../components/Checklist';
+import TemplateSections from '../../components/TemplateSections.astro';
 
 const prompt = `기존 서비스에 CRUD 엔드포인트를 추가하려고 해.
 아래 조건으로 구현 계획 + 코드 초안을 만들어줘.
@@ -81,6 +82,8 @@ GET /api/v1/projects/{missing} -> 404 Not Found`}
     <section class="mb-10">
       <Checklist client:load storageKey="recipe-add-crud-endpoint" title="실행 체크리스트" items={checklist} />
     </section>
+
+    <TemplateSections topic="add-crud-endpoint" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
