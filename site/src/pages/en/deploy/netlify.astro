@@ -46,6 +46,7 @@ import PageNavigation from '../../../components/PageNavigation.astro';
         <SectionHeader number={1} title="Baseline build setup" />
         <CodeBlock
           client:load
+          locale="en"
           filename="Netlify Build"
           code={`Build command: npm run build
 Publish directory: dist`}
@@ -56,6 +57,7 @@ Publish directory: dist`}
         <SectionHeader number={2} title="Configure SPA rewrites" />
         <CodeBlock
           client:load
+          locale="en"
           filename="public/_redirects"
           code={`/*    /index.html   200`}
         />
