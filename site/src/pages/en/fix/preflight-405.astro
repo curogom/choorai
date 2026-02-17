@@ -1,0 +1,152 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does CORS preflight return 405?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'It happens when your server or proxy rejects browser OPTIONS preflight requests with 405 Method Not Allowed.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What should I fix first?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Place CORS middleware before route handlers and make OPTIONS return 200/204 with proper CORS headers.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing CORS Preflight 405"
+  description="Resolve OPTIONS preflight 405 errors in cross-origin API calls"
+  currentPath="/fix/preflight-405"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Preflight 405</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        CORS preflight failure
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing CORS Preflight 405
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        If browser <code class="bg-surface px-1 rounded">OPTIONS</code> preflight fails with
+        <code class="bg-surface px-1 rounded">405 Method Not Allowed</code>, the actual API request will fail too.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Inspect OPTIONS response in Network tab
+          2) Put CORS middleware before routes
+          3) Verify allowed methods/headers/origins
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Response to preflight request doesn't pass access control check: It does not have HTTP ok status"
+        severity="warning"
+        cause="The browser's OPTIONS preflight request was rejected (often 405), so CORS validation failed before the actual request."
+        solution={[
+          'Allow OPTIONS method in server routes',
+          'Apply CORS middleware before route handlers',
+          'Set explicit allowed methods/headers/origins',
+          'Ensure proxy/WAF does not block OPTIONS'
+        ]}
+        aiPrompt="My FastAPI API returns 405 for preflight OPTIONS. Give me a debugging checklist for CORS middleware order and allowed methods."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Configuration examples</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="FastAPI"
+          code={`from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["https://app.example.com"],
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="Express"
+          code={`import express from 'express';
+import cors from 'cors';
+
+const app = express();
+
+app.use(cors({
+  origin: 'https://app.example.com',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            Do not combine <code class="bg-surface px-1 rounded">allow_origins=['*']</code> with
+            <code class="bg-surface px-1 rounded">allow_credentials=true</code>.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="preflight-405" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Error</h4>
+          <p class="text-text-secondary text-sm">Core CORS configuration issues</p>
+        </a>
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">Client request failure triage</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

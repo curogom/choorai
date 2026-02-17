@@ -1,0 +1,144 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '빌드 OOM은 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '빌드 단계에서 필요한 메모리보다 CI 러너 메모리가 부족하거나, 소스맵/플러그인/병렬 처리로 메모리 사용량이 급증해 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '가장 빠른 임시 대응은 무엇인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'NODE_OPTIONS=--max-old-space-size 값을 적용해 임시로 메모리를 늘리고, 이후 빌드 옵션 최적화로 근본 원인을 줄이세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="빌드 OOM (메모리 부족) 해결하기"
+  description="JavaScript heap out of memory, Killed(137) 등 빌드 메모리 오류 해결"
+  currentPath="/fix/build-oom"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Build OOM</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        CI 빌드 메모리 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        빌드 OOM (메모리 부족) 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">JavaScript heap out of memory</code>,
+        <code class="bg-surface px-1 rounded">Killed</code> 오류는 빌드 메모리 한도 초과가 원인입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) OOM 로그 확인
+          2) NODE_OPTIONS로 임시 완화
+          3) 소스맵/플러그인/병렬도 최적화
+          4) 필요 시 CI 러너 스펙 상향
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory"
+        severity="critical"
+        cause="빌드 프로세스가 허용 메모리 한도를 초과했습니다."
+        solution={[
+          '빌드 명령에 NODE_OPTIONS=--max-old-space-size 적용',
+          '소스맵/불필요 플러그인/병렬 작업 최소화',
+          '의존성 중복/대용량 번들 구간 점검',
+          'CI 러너 메모리 증설 또는 단계 분리'
+        ]}
+        aiPrompt="CI에서 npm run build가 heap out of memory로 실패해. 임시 완화 + 근본 원인 최적화 순서로 체크리스트를 만들어줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">실전 대응 예시</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="package.json"
+          code={`{
+  "scripts": {
+    "build": "vite build",
+    "build:ci": "NODE_OPTIONS=--max-old-space-size=4096 vite build"
+  }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="vite.config.ts"
+          code={`import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 1200,
+  },
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="info" title="실무 팁">
+          <p class="mt-2">
+            OOM은 증상이고 원인은 번들 구조인 경우가 많습니다.
+            대용량 라이브러리 lazy load, 번들 분석 도구로 원인 패키지를 먼저 찾아보세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="build-oom" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">빌드 실패</h4>
+          <p class="text-text-secondary text-sm">일반 빌드 오류 점검</p>
+        </a>
+        <a href="/fix/node-version" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Node 버전 불일치</h4>
+          <p class="text-text-secondary text-sm">CI/로컬 버전 차이 해결</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

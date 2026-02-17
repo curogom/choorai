@@ -3,6 +3,30 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import ErrorCard from '../../../components/ErrorCard';
 import CodeBlock from '../../../components/CodeBlock';
 import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does refresh cause 404 in an SPA?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'On refresh, the browser requests the current route directly from the server. Without rewrite rules, the server returns 404 for client-only routes.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do I fix SPA 404 on Cloudflare Pages?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Add a public/_redirects file with /* /index.html 200 so every route is served through index.html.',
+      },
+    },
+  ],
+};
 ---
 
 <DocsLayout
@@ -10,6 +34,7 @@ import Callout from '../../../components/Callout';
   title="Fixing SPA 404 Errors"
   description="How to fix 404 Page Not Found error on page refresh"
   currentPath="/fix/spa-404"
+  structuredData={[faqStructuredData]}
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
@@ -144,6 +169,8 @@ import Callout from '../../../components/Callout';
         </Callout>
       </section>
     </article>
+
+    <TroubleshootingTemplate topic="spa-404" lang="en" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>

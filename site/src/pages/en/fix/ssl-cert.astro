@@ -1,0 +1,125 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does ERR_CERT_COMMON_NAME_INVALID happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The requested domain is not included in certificate SAN, or an incorrect certificate is served by proxy/load balancer.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How can I quickly verify certificate issues?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Use openssl s_client to inspect SAN, expiry, and certificate chain, then confirm your hostname matches SAN entries.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing SSL Certificate Errors"
+  description="How to fix ERR_CERT_COMMON_NAME_INVALID and certificate chain issues"
+  currentPath="/fix/ssl-cert"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">SSL Certificate</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        HTTPS/TLS issue
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing SSL Certificate Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Seeing <code class="bg-surface px-1 rounded">ERR_CERT_COMMON_NAME_INVALID</code> or
+        <code class="bg-surface px-1 rounded">NET::ERR_CERT_AUTHORITY_INVALID</code>?
+        This is usually a hostname mismatch or chain configuration problem.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Check certificate SAN contains your domain
+          2) Verify expiry and chain completeness
+          3) Align proxy/origin SSL mode
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="NET::ERR_CERT_COMMON_NAME_INVALID"
+        severity="critical"
+        cause="The certificate served does not match the requested hostname, or a wrong cert is attached at proxy/origin layer."
+        solution={[
+          "Re-issue certificate with correct SAN entries",
+          "Bind the right certificate to the host",
+          "Validate intermediate certificate chain"
+        ]}
+        aiPrompt="After deployment I get ERR_CERT_COMMON_NAME_INVALID. Show me how to validate SAN and fix cert binding in proxy/origin setup."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Diagnostic command</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="terminal"
+          code={`openssl s_client -connect your-domain.com:443 -servername your-domain.com
+
+openssl s_client -connect your-domain.com:443 -servername your-domain.com </dev/null 2>/dev/null | openssl x509 -noout -text | grep -A1 "Subject Alternative Name"`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Security guidance">
+          <p class="mt-2">
+            Do not bypass browser certificate warnings in production. Fix certificate issuance and chain configuration first.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="ssl-cert" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/dns-nxdomain" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">DNS NXDOMAIN</h4>
+          <p class="text-text-secondary text-sm">DNS resolution failures</p>
+        </a>
+        <a href="/en/deploy/cloudflare-pages" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Deploy on Cloudflare Pages</h4>
+          <p class="text-text-secondary text-sm">Domain and HTTPS setup</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

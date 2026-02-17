@@ -1,0 +1,765 @@
+---
+import type { Lang } from '../i18n/ui';
+
+type Topic =
+  | 'cors'
+  | 'env'
+  | 'spa-404'
+  | 'build-fail'
+  | 'auth-cookie'
+  | 'dns-nxdomain'
+  | 'ssl-cert'
+  | 'failed-to-fetch'
+  | 'node-version'
+  | 'rate-limit'
+  | 'mixed-content'
+  | 'gateway-timeout'
+  | 'build-oom'
+  | 'preflight-405'
+  | 'webhook-signature';
+
+interface ReferenceItem {
+  label: string;
+  href: string;
+}
+
+interface TopicData {
+  prerequisites: string[];
+  validation: string[];
+  troubleshooting: string[];
+  references: ReferenceItem[];
+}
+
+interface Props {
+  topic: Topic;
+  lang?: Lang;
+}
+
+const CONTENT: Record<'ko' | 'en', Record<Topic, TopicData>> = {
+  ko: {
+    cors: {
+      prerequisites: [
+        '프론트엔드 URL과 백엔드 URL을 정확히 확인할 수 있어야 합니다.',
+        '백엔드 CORS 설정 파일(main.py 또는 server.js)에 접근할 수 있어야 합니다.',
+        '브라우저 개발자 도구 Network 탭을 열 수 있어야 합니다.',
+      ],
+      validation: [
+        'OPTIONS preflight 요청이 200 또는 204로 응답됩니다.',
+        '응답 헤더에 Access-Control-Allow-Origin이 정확한 도메인으로 포함됩니다.',
+        'credentials를 쓰는 경우 Access-Control-Allow-Credentials=true이며 origin에 *를 쓰지 않습니다.',
+      ],
+      troubleshooting: [
+        'Nginx/Cloudflare 같은 프록시 계층이 CORS 헤더를 덮어쓰는지 확인하세요.',
+        'origin 문자열의 프로토콜(http/https), 포트, 끝 슬래시가 일치하는지 확인하세요.',
+        '브라우저 캐시를 비우고 강력 새로고침 후 다시 확인하세요.',
+      ],
+      references: [
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+        { label: 'FastAPI - CORS Middleware', href: 'https://fastapi.tiangolo.com/tutorial/cors/' },
+        { label: 'Express - cors middleware', href: 'https://expressjs.com/en/resources/middleware/cors.html' },
+      ],
+    },
+    env: {
+      prerequisites: [
+        '프로젝트 루트의 .env 파일을 수정할 수 있어야 합니다.',
+        '현재 프레임워크(Vite/Next.js/FastAPI)와 실행 모드를 알고 있어야 합니다.',
+        '서버 재시작 후 로그를 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        'Vite는 import.meta.env.VITE_* 값이 정상 출력됩니다.',
+        'Next.js는 process.env.NEXT_PUBLIC_* 값이 브라우저에서 확인됩니다.',
+        '민감한 서버 전용 키는 클라이언트 번들에 포함되지 않습니다.',
+      ],
+      troubleshooting: [
+        '.env 파일 위치가 프로젝트 루트인지 다시 확인하세요.',
+        '변수명 접두사(VITE_, NEXT_PUBLIC_) 누락 여부를 확인하세요.',
+        '개발 서버/빌드 프로세스를 재시작하고 다시 확인하세요.',
+      ],
+      references: [
+        { label: 'Vite - Env Variables and Modes', href: 'https://vite.dev/guide/env-and-mode' },
+        { label: 'Next.js - Environment Variables', href: 'https://nextjs.org/docs/app/guides/environment-variables' },
+        { label: 'Pydantic Settings', href: 'https://docs.pydantic.dev/latest/concepts/pydantic_settings/' },
+      ],
+    },
+    'spa-404': {
+      prerequisites: [
+        'React/Vue Router 등 클라이언트 라우팅을 사용 중이어야 합니다.',
+        '배포 대상 플랫폼 설정 파일(_redirects, vercel.json, nginx.conf)을 수정할 수 있어야 합니다.',
+        '실제 배포 URL에서 새로고침 동작을 테스트할 수 있어야 합니다.',
+      ],
+      validation: [
+        '서브 경로(/about, /dashboard)로 직접 진입해도 index.html이 로드됩니다.',
+        '새로고침(F5) 시 404가 발생하지 않습니다.',
+        '정적 파일(js/css) 응답이 정상이며 라우팅만 리라이트됩니다.',
+      ],
+      troubleshooting: [
+        '리라이트 규칙 파일이 빌드 산출물에 포함되는지 확인하세요.',
+        '플랫폼별 우선순위(redirect/rewrite/order)가 예상과 같은지 확인하세요.',
+        'API 경로까지 모두 index.html로 보내고 있지 않은지 분리 규칙을 확인하세요.',
+      ],
+      references: [
+        { label: 'React Router - Deploying', href: 'https://reactrouter.com/start/framework/deploying' },
+        { label: 'Cloudflare Pages - Redirects', href: 'https://developers.cloudflare.com/pages/configuration/redirects/' },
+        { label: 'Vercel - Rewrites', href: 'https://vercel.com/docs/rewrites' },
+      ],
+    },
+    'build-fail': {
+      prerequisites: [
+        '로컬에서 npm run build를 재현할 수 있어야 합니다.',
+        '에러 로그 전체(파일 경로, 라인 번호)를 확인할 수 있어야 합니다.',
+        'package-lock.json 또는 pnpm-lock.yaml 상태를 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        '로컬 빌드가 경고 외 오류 없이 성공합니다.',
+        '배포 플랫폼의 빌드 로그에서도 동일 커밋이 성공합니다.',
+        'npm run preview 또는 배포 URL에서 주요 경로가 정상 동작합니다.',
+      ],
+      troubleshooting: [
+        'Node.js 버전이 로컬과 CI에서 동일한지 확인하세요.',
+        'lockfile이 최신인지 확인하고 클린 설치를 다시 실행하세요.',
+        'TypeScript strict 관련 오류는 임시 완화보다 타입 수정을 우선하세요.',
+      ],
+      references: [
+        { label: 'npm - scripts', href: 'https://docs.npmjs.com/cli/v11/using-npm/scripts' },
+        { label: 'TypeScript - TSConfig', href: 'https://www.typescriptlang.org/tsconfig/' },
+        { label: 'Vite - Build', href: 'https://vite.dev/guide/build' },
+      ],
+    },
+    'auth-cookie': {
+      prerequisites: [
+        '프론트엔드 요청 코드(fetch/axios)와 백엔드 쿠키 설정 코드를 확인할 수 있어야 합니다.',
+        'HTTPS 환경 여부와 도메인 구성을 확인할 수 있어야 합니다.',
+        '브라우저 개발자 도구에서 쿠키/네트워크 헤더를 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        '응답 헤더 Set-Cookie가 기대한 속성(HttpOnly, Secure, SameSite)을 포함합니다.',
+        '후속 요청에 Cookie 헤더가 포함되어 인증이 유지됩니다.',
+        '새로고침 후에도 세션이 유지되고 CORS 오류가 발생하지 않습니다.',
+      ],
+      troubleshooting: [
+        'SameSite=None 사용 시 Secure=true 및 HTTPS가 적용되었는지 확인하세요.',
+        'credentials: include / withCredentials=true 누락 여부를 확인하세요.',
+        'allow_origins에 * 와 allow_credentials=true를 동시에 쓰지 않았는지 확인하세요.',
+      ],
+      references: [
+        { label: 'MDN - Set-Cookie', href: 'https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie' },
+        { label: 'MDN - Request.credentials', href: 'https://developer.mozilla.org/docs/Web/API/Request/credentials' },
+        { label: 'FastAPI - Response Cookies', href: 'https://fastapi.tiangolo.com/advanced/response-cookies/' },
+      ],
+    },
+    'dns-nxdomain': {
+      prerequisites: [
+        '도메인/서브도메인 이름과 목표 IP 또는 CNAME 값을 알고 있어야 합니다.',
+        'DNS 제공자(Cloudflare/Route53 등) 콘솔 접근 권한이 있어야 합니다.',
+        '터미널에서 dig 또는 nslookup 명령을 실행할 수 있어야 합니다.',
+      ],
+      validation: [
+        '권한 있는 DNS 서버에서 A/AAAA/CNAME 레코드가 조회됩니다.',
+        '공용 DNS(8.8.8.8, 1.1.1.1)에서도 동일한 결과가 조회됩니다.',
+        '브라우저에서 NXDOMAIN 대신 실제 서비스 응답이 확인됩니다.',
+      ],
+      troubleshooting: [
+        '오탈자(`api.example.com` vs `api.exmaple.com`)를 먼저 확인하세요.',
+        '루트/서브도메인에 A와 CNAME을 동시에 잘못 구성하지 않았는지 확인하세요.',
+        'TTL 캐시를 고려해 DNS 반영 시간을 충분히 기다린 뒤 재조회하세요.',
+      ],
+      references: [
+        { label: 'Cloudflare - Create DNS records', href: 'https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/' },
+        { label: 'Google Public DNS', href: 'https://developers.google.com/speed/public-dns' },
+        { label: 'MDN - DNS', href: 'https://developer.mozilla.org/docs/Learn/Common_questions/Web_mechanics/What_is_a_domain_name' },
+      ],
+    },
+    'ssl-cert': {
+      prerequisites: [
+        '도메인이 올바르게 DNS 연결되어 있어야 합니다.',
+        'HTTPS를 제공하는 플랫폼 설정(Cloudflare/Vercel/Nginx)에 접근 가능해야 합니다.',
+        '브라우저 인증서 오류 코드(ERR_CERT_*)를 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        '브라우저 주소창에서 자물쇠가 정상 표시됩니다.',
+        '인증서 체인이 완전하고 SAN에 대상 도메인이 포함됩니다.',
+        '만료일(Expiry)과 자동 갱신 상태가 정상입니다.',
+      ],
+      troubleshooting: [
+        '인증서 발급 전 도메인 검증(CNAME/TXT)이 완료됐는지 확인하세요.',
+        '프록시/원본 서버 간 Full(Strict) SSL 모드 불일치를 점검하세요.',
+        '중간 인증서 누락으로 체인이 끊기지 않았는지 확인하세요.',
+      ],
+      references: [
+        { label: 'Cloudflare - SSL/TLS', href: 'https://developers.cloudflare.com/ssl/' },
+        { label: 'Let\'s Encrypt - Challenge Types', href: 'https://letsencrypt.org/docs/challenge-types/' },
+        { label: 'MDN - TLS', href: 'https://developer.mozilla.org/docs/Glossary/TLS' },
+      ],
+    },
+    'failed-to-fetch': {
+      prerequisites: [
+        '실패한 요청 URL, 메서드, 헤더를 Network 탭에서 확인할 수 있어야 합니다.',
+        '백엔드 서버 로그를 조회할 수 있어야 합니다.',
+        'CORS/SSL/DNS 중 어느 계층 문제인지 최소한 분류할 수 있어야 합니다.',
+      ],
+      validation: [
+        '브라우저 Network 탭에서 요청이 실제로 전송되고 응답 코드가 기록됩니다.',
+        '서버 로그에 동일 요청이 도달하며 예상 상태 코드가 반환됩니다.',
+        '클라이언트에서 예외 없이 정상 데이터가 렌더링됩니다.',
+      ],
+      troubleshooting: [
+        '상대경로/절대경로 base URL 설정이 배포 환경과 일치하는지 확인하세요.',
+        'HTTPS 페이지에서 HTTP API를 호출하는 mixed content 문제를 점검하세요.',
+        'CORS 프리플라이트 실패 시 서버 OPTIONS 핸들링을 먼저 확인하세요.',
+      ],
+      references: [
+        { label: 'MDN - Fetch API', href: 'https://developer.mozilla.org/docs/Web/API/Fetch_API' },
+        { label: 'MDN - Mixed content', href: 'https://developer.mozilla.org/docs/Web/Security/Mixed_content' },
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+      ],
+    },
+    'node-version': {
+      prerequisites: [
+        '로컬 Node.js 버전(`node -v`)과 CI/배포 환경 버전을 확인할 수 있어야 합니다.',
+        '프로젝트의 package.json engines 설정 여부를 확인할 수 있어야 합니다.',
+        'nvm 또는 volta 같은 버전 관리 도구를 사용할 수 있어야 합니다.',
+      ],
+      validation: [
+        '로컬/CI/배포의 Node.js major 버전이 동일합니다.',
+        'npm ci 후 빌드가 동일하게 성공합니다.',
+        '런타임에서 ESM/CJS 관련 버전 오류가 재발하지 않습니다.',
+      ],
+      troubleshooting: [
+        'CI 설정 파일에서 Node 버전이 고정(pin)되어 있는지 확인하세요.',
+        'package-lock.json을 현재 Node 버전에서 재생성할 필요가 있는지 점검하세요.',
+        '네이티브 모듈 사용 시 아키텍처 및 Node ABI 호환성을 확인하세요.',
+      ],
+      references: [
+        { label: 'Node.js - Download', href: 'https://nodejs.org/en/download' },
+        { label: 'npm - package.json engines', href: 'https://docs.npmjs.com/cli/v11/configuring-npm/package-json#engines' },
+        { label: 'GitHub Actions - setup-node', href: 'https://github.com/actions/setup-node' },
+      ],
+    },
+    'rate-limit': {
+      prerequisites: [
+        '429 응답이 발생하는 엔드포인트와 호출 빈도를 파악할 수 있어야 합니다.',
+        '서버 또는 WAF의 rate limit 정책을 확인할 수 있어야 합니다.',
+        '재시도(backoff) 로직 적용이 가능한 클라이언트 코드에 접근할 수 있어야 합니다.',
+      ],
+      validation: [
+        '429 발생 시 Retry-After 값을 존중해 재시도합니다.',
+        '정상 호출 구간에서 2xx 응답 비율이 회복됩니다.',
+        '동일 사용자/토큰 기준으로 과도한 중복 요청이 감소합니다.',
+      ],
+      troubleshooting: [
+        '폴링 간격을 늘리거나 debounce/throttle로 요청량을 줄이세요.',
+        '백엔드 키 기반 한도와 프런트 병렬 요청 개수를 함께 점검하세요.',
+        '재시도 폭주를 막기 위해 지수 백오프 + jitter를 적용하세요.',
+      ],
+      references: [
+        { label: 'MDN - 429 Too Many Requests', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/429' },
+        { label: 'RFC 6585 (429)', href: 'https://www.rfc-editor.org/rfc/rfc6585' },
+        { label: 'Cloudflare - Rate limiting', href: 'https://developers.cloudflare.com/waf/rate-limiting-rules/' },
+      ],
+    },
+    'mixed-content': {
+      prerequisites: [
+        '프론트엔드 서비스가 HTTPS로 배포되어 있어야 합니다.',
+        'API 호출 URL 또는 정적 리소스 URL을 확인할 수 있어야 합니다.',
+        '브라우저 콘솔의 Mixed Content 경고를 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        'HTTPS 페이지에서 호출하는 모든 API/리소스 URL이 HTTPS입니다.',
+        '브라우저 콘솔에 Mixed Content 경고가 더 이상 나타나지 않습니다.',
+        '네트워크 탭에서 차단된 요청 없이 2xx 응답이 정상 확인됩니다.',
+      ],
+      troubleshooting: [
+        '환경변수의 API URL이 http://로 남아 있지 않은지 확인하세요.',
+        '리다이렉트 중간 경로에서 HTTP로 내려가는 구간이 없는지 점검하세요.',
+        '이미지/스크립트/CDN 링크도 전부 HTTPS로 통일하세요.',
+      ],
+      references: [
+        { label: 'MDN - Mixed content', href: 'https://developer.mozilla.org/docs/Web/Security/Mixed_content' },
+        { label: 'MDN - Content Security Policy', href: 'https://developer.mozilla.org/docs/Web/HTTP/CSP' },
+        { label: 'web.dev - Fixing mixed content', href: 'https://web.dev/fixing-mixed-content/' },
+      ],
+    },
+    'gateway-timeout': {
+      prerequisites: [
+        '502/504가 발생하는 요청 경로와 시점을 파악할 수 있어야 합니다.',
+        '프록시(Nginx/Cloudflare)와 애플리케이션 서버 로그를 확인할 수 있어야 합니다.',
+        '백엔드 타임아웃 설정 값을 점검할 수 있어야 합니다.',
+      ],
+      validation: [
+        '문제 구간 요청이 502/504 대신 2xx/4xx로 안정적으로 응답합니다.',
+        '프록시와 앱 서버 타임아웃 값이 일관되게 설정됩니다.',
+        '장시간 처리 작업이 비동기 큐 또는 백그라운드 작업으로 분리됩니다.',
+      ],
+      troubleshooting: [
+        '업스트림 서버가 느린 쿼리로 지연되는지 APM/로그로 확인하세요.',
+        'Nginx proxy_read_timeout, Cloud Run timeout 설정을 재검토하세요.',
+        '동기 처리 대신 작업 큐/웹훅 콜백 모델로 전환을 고려하세요.',
+      ],
+      references: [
+        { label: 'MDN - 502 Bad Gateway', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/502' },
+        { label: 'MDN - 504 Gateway Timeout', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/504' },
+        { label: 'Nginx proxy timeout directives', href: 'https://nginx.org/en/docs/http/ngx_http_proxy_module.html' },
+      ],
+    },
+    'build-oom': {
+      prerequisites: [
+        '빌드 실패 로그에서 OOM/heap out of memory 메시지를 확인할 수 있어야 합니다.',
+        'CI 실행 환경의 메모리 제한값을 확인할 수 있어야 합니다.',
+        'Node 메모리 옵션 설정(`--max-old-space-size`)이 가능한 환경이어야 합니다.',
+      ],
+      validation: [
+        '동일 커밋에서 CI 빌드가 OOM 없이 완료됩니다.',
+        '빌드 단계별 메모리 사용량이 임계치 아래로 안정화됩니다.',
+        '불필요한 번들/테스트/소스맵 생성이 줄어 전체 메모리 사용량이 감소합니다.',
+      ],
+      troubleshooting: [
+        '빌드 명령에 NODE_OPTIONS=--max-old-space-size를 적용해 임시 완화하세요.',
+        '대용량 의존성/소스맵/병렬 빌드 옵션을 줄여 메모리 사용량을 낮추세요.',
+        'CI 머신 타입을 상향하거나 빌드 단계를 분리하세요.',
+      ],
+      references: [
+        { label: 'Node.js CLI options', href: 'https://nodejs.org/api/cli.html' },
+        { label: 'Vite - Build options', href: 'https://vite.dev/config/build-options' },
+        { label: 'GitHub Actions - Larger runners', href: 'https://docs.github.com/actions/using-github-hosted-runners/using-larger-runners' },
+      ],
+    },
+    'preflight-405': {
+      prerequisites: [
+        '브라우저 Network 탭에서 OPTIONS 요청과 응답 코드를 확인할 수 있어야 합니다.',
+        '서버 라우팅/미들웨어 설정을 수정할 수 있어야 합니다.',
+        'API 게이트웨이 또는 프록시에서 메서드 허용 설정을 확인할 수 있어야 합니다.',
+      ],
+      validation: [
+        'OPTIONS preflight가 200 또는 204로 응답합니다.',
+        'Access-Control-Allow-Methods에 실제 요청 메서드가 포함됩니다.',
+        '실제 본요청(PUT/DELETE/PATCH 등)이 정상 처리됩니다.',
+      ],
+      troubleshooting: [
+        '라우터에서 OPTIONS 메서드를 별도 핸들링하거나 CORS 미들웨어 순서를 앞에 두세요.',
+        '프록시/WAF가 OPTIONS를 차단하지 않는지 확인하세요.',
+        '허용 헤더(Authorization, Content-Type 등)를 명시적으로 추가하세요.',
+      ],
+      references: [
+        { label: 'MDN - Preflight request', href: 'https://developer.mozilla.org/docs/Glossary/Preflight_request' },
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+        { label: 'FastAPI - CORS', href: 'https://fastapi.tiangolo.com/tutorial/cors/' },
+      ],
+    },
+    'webhook-signature': {
+      prerequisites: [
+        '웹훅 공급자(Stripe/GitHub 등)의 서명 검증 문서를 확인할 수 있어야 합니다.',
+        '서버에서 원본 request body(raw body)를 읽을 수 있어야 합니다.',
+        '웹훅 시크릿 키를 안전하게 환경변수로 관리해야 합니다.',
+      ],
+      validation: [
+        '정상 웹훅 요청에서 서명 검증이 성공합니다.',
+        '잘못된 시크릿 또는 변조된 payload에서는 4xx로 거부됩니다.',
+        '재시도 요청(idempotency) 처리로 중복 사이드이펙트가 발생하지 않습니다.',
+      ],
+      troubleshooting: [
+        'JSON 파싱 전에 raw body 기준으로 서명을 검증하세요.',
+        '운영/스테이징 웹훅 시크릿이 섞여 있지 않은지 확인하세요.',
+        '타임스탬프 허용 오차와 재생 공격 방지 설정을 점검하세요.',
+      ],
+      references: [
+        { label: 'Stripe - Webhook signatures', href: 'https://docs.stripe.com/webhooks/signatures' },
+        { label: 'GitHub - Validating webhook deliveries', href: 'https://docs.github.com/webhooks/using-webhooks/validating-webhook-deliveries' },
+        { label: 'OWASP - Webhook Security', href: 'https://cheatsheetseries.owasp.org/cheatsheets/Webhook_Security_Guidelines.html' },
+      ],
+    },
+  },
+  en: {
+    cors: {
+      prerequisites: [
+        'You can identify exact frontend and backend URLs.',
+        'You can edit backend CORS settings (main.py or server.js).',
+        'You can inspect requests in browser DevTools Network tab.',
+      ],
+      validation: [
+        'OPTIONS preflight returns 200 or 204.',
+        'Access-Control-Allow-Origin is present with the exact origin.',
+        'If credentials are enabled, Access-Control-Allow-Credentials=true and origin is not *.',
+      ],
+      troubleshooting: [
+        'Check whether reverse proxies (Nginx/Cloudflare) overwrite CORS headers.',
+        'Verify protocol/port/trailing-slash consistency in origin matching.',
+        'Clear browser cache and re-test with hard refresh.',
+      ],
+      references: [
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+        { label: 'FastAPI - CORS Middleware', href: 'https://fastapi.tiangolo.com/tutorial/cors/' },
+        { label: 'Express - cors middleware', href: 'https://expressjs.com/en/resources/middleware/cors.html' },
+      ],
+    },
+    env: {
+      prerequisites: [
+        'You can edit the project root .env file.',
+        'You know your framework runtime (Vite/Next.js/FastAPI).',
+        'You can restart app processes and inspect logs.',
+      ],
+      validation: [
+        'Vite exposes expected values via import.meta.env.VITE_*.',
+        'Next.js exposes expected values via process.env.NEXT_PUBLIC_* in browser code.',
+        'Server-only secrets are not exposed in client bundles.',
+      ],
+      troubleshooting: [
+        'Confirm .env file path is project root.',
+        'Verify required prefixes (VITE_, NEXT_PUBLIC_) are present.',
+        'Restart dev/build process after changing environment variables.',
+      ],
+      references: [
+        { label: 'Vite - Env Variables and Modes', href: 'https://vite.dev/guide/env-and-mode' },
+        { label: 'Next.js - Environment Variables', href: 'https://nextjs.org/docs/app/guides/environment-variables' },
+        { label: 'Pydantic Settings', href: 'https://docs.pydantic.dev/latest/concepts/pydantic_settings/' },
+      ],
+    },
+    'spa-404': {
+      prerequisites: [
+        'Your app uses client-side routing (React Router, Vue Router, etc.).',
+        'You can modify platform config files (_redirects, vercel.json, nginx.conf).',
+        'You can test deep-link refresh behavior on production URLs.',
+      ],
+      validation: [
+        'Direct access to deep routes loads index.html successfully.',
+        'Hard refresh no longer returns 404 for app routes.',
+        'Static assets still resolve correctly while only route paths are rewritten.',
+      ],
+      troubleshooting: [
+        'Ensure rewrite files are included in final build output.',
+        'Check redirect/rewrite rule order on your hosting platform.',
+        'Keep API routes separate so they are not rewritten to index.html.',
+      ],
+      references: [
+        { label: 'React Router - Deploying', href: 'https://reactrouter.com/start/framework/deploying' },
+        { label: 'Cloudflare Pages - Redirects', href: 'https://developers.cloudflare.com/pages/configuration/redirects/' },
+        { label: 'Vercel - Rewrites', href: 'https://vercel.com/docs/rewrites' },
+      ],
+    },
+    'build-fail': {
+      prerequisites: [
+        'You can reproduce npm run build locally.',
+        'You can read full error logs with file path and line numbers.',
+        'You can verify lockfile consistency (npm/pnpm/yarn).',
+      ],
+      validation: [
+        'Local build succeeds without blocking errors.',
+        'CI/CD build for the same commit also succeeds.',
+        'Preview/runtime checks pass on key routes after build.',
+      ],
+      troubleshooting: [
+        'Ensure Node.js version is consistent between local and CI.',
+        'Regenerate dependencies from lockfile with clean install.',
+        'Prefer fixing type errors rather than relaxing strict options permanently.',
+      ],
+      references: [
+        { label: 'npm - scripts', href: 'https://docs.npmjs.com/cli/v11/using-npm/scripts' },
+        { label: 'TypeScript - TSConfig', href: 'https://www.typescriptlang.org/tsconfig/' },
+        { label: 'Vite - Build', href: 'https://vite.dev/guide/build' },
+      ],
+    },
+    'auth-cookie': {
+      prerequisites: [
+        'You can inspect frontend request code and backend cookie logic.',
+        'You can verify HTTPS/domain settings in your deployment.',
+        'You can inspect Set-Cookie and Cookie headers in DevTools.',
+      ],
+      validation: [
+        'Set-Cookie includes expected attributes (HttpOnly, Secure, SameSite).',
+        'Subsequent authenticated requests include Cookie header.',
+        'Session persists after refresh without CORS regression.',
+      ],
+      troubleshooting: [
+        'With SameSite=None, ensure Secure=true and HTTPS are enabled.',
+        'Check credentials include / withCredentials settings on client requests.',
+        'Do not combine allow_origins=* with allow_credentials=true.',
+      ],
+      references: [
+        { label: 'MDN - Set-Cookie', href: 'https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie' },
+        { label: 'MDN - Request.credentials', href: 'https://developer.mozilla.org/docs/Web/API/Request/credentials' },
+        { label: 'FastAPI - Response Cookies', href: 'https://fastapi.tiangolo.com/advanced/response-cookies/' },
+      ],
+    },
+    'dns-nxdomain': {
+      prerequisites: [
+        'You know the exact domain/subdomain and target A or CNAME value.',
+        'You have access to your DNS provider console.',
+        'You can run dig or nslookup from terminal.',
+      ],
+      validation: [
+        'Authoritative DNS returns expected A/AAAA/CNAME records.',
+        'Public resolvers (8.8.8.8, 1.1.1.1) return the same answers.',
+        'Browser no longer shows NXDOMAIN and reaches your service.',
+      ],
+      troubleshooting: [
+        'Double-check typos in hostnames.',
+        'Avoid conflicting records (e.g., invalid A+CNAME combinations).',
+        'Account for TTL/propagation delay before concluding failure.',
+      ],
+      references: [
+        { label: 'Cloudflare - Create DNS records', href: 'https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/' },
+        { label: 'Google Public DNS', href: 'https://developers.google.com/speed/public-dns' },
+        { label: 'MDN - Domain names', href: 'https://developer.mozilla.org/docs/Learn/Common_questions/Web_mechanics/What_is_a_domain_name' },
+      ],
+    },
+    'ssl-cert': {
+      prerequisites: [
+        'DNS is correctly configured for your domain.',
+        'You can access HTTPS/TLS settings on your hosting platform.',
+        'You can inspect browser error codes (ERR_CERT_*).',
+      ],
+      validation: [
+        'Browser shows a valid HTTPS lock icon.',
+        'Certificate SAN includes the target domain.',
+        'Certificate chain and renewal state are healthy.',
+      ],
+      troubleshooting: [
+        'Confirm domain validation challenge (CNAME/TXT) is completed.',
+        'Check SSL mode mismatch between proxy and origin.',
+        'Ensure intermediate certificates are not missing.',
+      ],
+      references: [
+        { label: 'Cloudflare - SSL/TLS', href: 'https://developers.cloudflare.com/ssl/' },
+        { label: 'Let\'s Encrypt - Challenge Types', href: 'https://letsencrypt.org/docs/challenge-types/' },
+        { label: 'MDN - TLS', href: 'https://developer.mozilla.org/docs/Glossary/TLS' },
+      ],
+    },
+    'failed-to-fetch': {
+      prerequisites: [
+        'You can inspect failed request URL/method/headers in DevTools.',
+        'You can read backend logs for the same request.',
+        'You can classify whether issue is DNS/SSL/CORS/network.',
+      ],
+      validation: [
+        'Request appears in Network tab with expected status code.',
+        'Backend receives the request and returns expected response.',
+        'Frontend renders data without fetch exceptions.',
+      ],
+      troubleshooting: [
+        'Verify base URL config for each environment.',
+        'Check mixed content (HTTPS page calling HTTP API).',
+        'If preflight fails, validate OPTIONS handling first.',
+      ],
+      references: [
+        { label: 'MDN - Fetch API', href: 'https://developer.mozilla.org/docs/Web/API/Fetch_API' },
+        { label: 'MDN - Mixed content', href: 'https://developer.mozilla.org/docs/Web/Security/Mixed_content' },
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+      ],
+    },
+    'node-version': {
+      prerequisites: [
+        'You can compare Node versions across local/CI/deploy.',
+        'You can inspect package.json engines settings.',
+        'You can use nvm/volta or equivalent version manager.',
+      ],
+      validation: [
+        'Node major versions are aligned across environments.',
+        'Clean install + build succeeds consistently.',
+        'Runtime no longer throws ESM/CJS compatibility errors.',
+      ],
+      troubleshooting: [
+        'Pin Node version in CI configuration.',
+        'Regenerate lockfile if it was created with a different Node version.',
+        'Check native module ABI compatibility on target architecture.',
+      ],
+      references: [
+        { label: 'Node.js - Download', href: 'https://nodejs.org/en/download' },
+        { label: 'npm - package.json engines', href: 'https://docs.npmjs.com/cli/v11/configuring-npm/package-json#engines' },
+        { label: 'GitHub Actions - setup-node', href: 'https://github.com/actions/setup-node' },
+      ],
+    },
+    'rate-limit': {
+      prerequisites: [
+        'You can identify endpoint patterns returning HTTP 429.',
+        'You can inspect server or WAF rate limit policies.',
+        'You can implement retry/backoff in client code.',
+      ],
+      validation: [
+        'Client respects Retry-After on 429 responses.',
+        '2xx success rate recovers after request shaping.',
+        'Duplicate burst requests are reduced per user/token.',
+      ],
+      troubleshooting: [
+        'Increase polling interval or apply debounce/throttle.',
+        'Align client concurrency with backend rate policy.',
+        'Use exponential backoff with jitter to prevent retry storms.',
+      ],
+      references: [
+        { label: 'MDN - 429 Too Many Requests', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/429' },
+        { label: 'RFC 6585 (429)', href: 'https://www.rfc-editor.org/rfc/rfc6585' },
+        { label: 'Cloudflare - Rate limiting', href: 'https://developers.cloudflare.com/waf/rate-limiting-rules/' },
+      ],
+    },
+    'mixed-content': {
+      prerequisites: [
+        'Your frontend app is served over HTTPS.',
+        'You can inspect API/static asset URLs used by the page.',
+        'You can view Mixed Content warnings in browser console.',
+      ],
+      validation: [
+        'All API and asset URLs requested by HTTPS pages use HTTPS.',
+        'No Mixed Content warnings appear in browser console.',
+        'Blocked requests are gone and network calls return expected statuses.',
+      ],
+      troubleshooting: [
+        'Check environment variables for leftover http:// base URLs.',
+        'Ensure redirects do not downgrade traffic to HTTP mid-chain.',
+        'Update image/script/CDN links to HTTPS as well.',
+      ],
+      references: [
+        { label: 'MDN - Mixed content', href: 'https://developer.mozilla.org/docs/Web/Security/Mixed_content' },
+        { label: 'MDN - Content Security Policy', href: 'https://developer.mozilla.org/docs/Web/HTTP/CSP' },
+        { label: 'web.dev - Fixing mixed content', href: 'https://web.dev/fixing-mixed-content/' },
+      ],
+    },
+    'gateway-timeout': {
+      prerequisites: [
+        'You can identify exact endpoints returning 502/504.',
+        'You can inspect proxy logs and application logs.',
+        'You can review timeout settings across proxy and app runtime.',
+      ],
+      validation: [
+        'Affected requests return stable 2xx/4xx instead of 502/504.',
+        'Timeout values are aligned across proxy and upstream services.',
+        'Long-running tasks are moved to async jobs or background workers.',
+      ],
+      troubleshooting: [
+        'Check slow queries or blocking upstream handlers in logs/APM.',
+        'Review timeout configs such as proxy_read_timeout and service timeout.',
+        'Consider queue + callback/webhook patterns for long operations.',
+      ],
+      references: [
+        { label: 'MDN - 502 Bad Gateway', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/502' },
+        { label: 'MDN - 504 Gateway Timeout', href: 'https://developer.mozilla.org/docs/Web/HTTP/Status/504' },
+        { label: 'Nginx proxy timeout directives', href: 'https://nginx.org/en/docs/http/ngx_http_proxy_module.html' },
+      ],
+    },
+    'build-oom': {
+      prerequisites: [
+        'You can confirm OOM/heap out of memory messages in build logs.',
+        'You can inspect CI memory limits.',
+        'You can set Node memory options (e.g., --max-old-space-size).',
+      ],
+      validation: [
+        'Build completes on the same commit without OOM.',
+        'Per-step memory usage remains below runner limits.',
+        'Memory-heavy build artifacts are reduced where possible.',
+      ],
+      troubleshooting: [
+        'Apply NODE_OPTIONS=--max-old-space-size as a short-term mitigation.',
+        'Reduce source maps/parallelism/heavy plugins to lower memory usage.',
+        'Upgrade CI runner memory or split build stages.',
+      ],
+      references: [
+        { label: 'Node.js CLI options', href: 'https://nodejs.org/api/cli.html' },
+        { label: 'Vite - Build options', href: 'https://vite.dev/config/build-options' },
+        { label: 'GitHub Actions - Larger runners', href: 'https://docs.github.com/actions/using-github-hosted-runners/using-larger-runners' },
+      ],
+    },
+    'preflight-405': {
+      prerequisites: [
+        'You can inspect OPTIONS preflight requests in browser DevTools.',
+        'You can modify API routing/middleware order.',
+        'You can review gateway/proxy method allow-list settings.',
+      ],
+      validation: [
+        'OPTIONS preflight returns 200 or 204.',
+        'Access-Control-Allow-Methods includes the actual request method.',
+        'The actual cross-origin request succeeds after preflight.',
+      ],
+      troubleshooting: [
+        'Handle OPTIONS explicitly or place CORS middleware before routers.',
+        'Verify proxies/WAF are not blocking OPTIONS requests.',
+        'Include required headers such as Authorization/Content-Type.',
+      ],
+      references: [
+        { label: 'MDN - Preflight request', href: 'https://developer.mozilla.org/docs/Glossary/Preflight_request' },
+        { label: 'MDN - CORS', href: 'https://developer.mozilla.org/docs/Web/HTTP/CORS' },
+        { label: 'FastAPI - CORS', href: 'https://fastapi.tiangolo.com/tutorial/cors/' },
+      ],
+    },
+    'webhook-signature': {
+      prerequisites: [
+        'You can access webhook provider docs (Stripe/GitHub/etc.).',
+        'You can read raw request body in your server.',
+        'Webhook secret keys are managed securely via environment variables.',
+      ],
+      validation: [
+        'Valid webhook payloads pass signature verification.',
+        'Invalid or tampered payloads are rejected with 4xx.',
+        'Idempotency logic prevents duplicate side effects on retries.',
+      ],
+      troubleshooting: [
+        'Verify signatures against raw body before JSON parsing.',
+        'Ensure production/staging webhook secrets are not mixed.',
+        'Check timestamp tolerance and replay protection settings.',
+      ],
+      references: [
+        { label: 'Stripe - Webhook signatures', href: 'https://docs.stripe.com/webhooks/signatures' },
+        { label: 'GitHub - Validating webhook deliveries', href: 'https://docs.github.com/webhooks/using-webhooks/validating-webhook-deliveries' },
+        { label: 'OWASP - Webhook Security', href: 'https://cheatsheetseries.owasp.org/cheatsheets/Webhook_Security_Guidelines.html' },
+      ],
+    },
+  },
+};
+
+const LABELS = {
+  ko: {
+    prerequisites: 'Prerequisites',
+    validation: 'Validation',
+    troubleshooting: 'Troubleshooting',
+    references: 'References',
+  },
+  en: {
+    prerequisites: 'Prerequisites',
+    validation: 'Validation',
+    troubleshooting: 'Troubleshooting',
+    references: 'References',
+  },
+} as const;
+
+const { topic, lang = 'ko' } = Astro.props;
+const locale = lang === 'en' ? 'en' : 'ko';
+const section = CONTENT[locale][topic];
+const labels = LABELS[locale];
+---
+
+<section class="mt-10 space-y-8">
+  <section>
+    <h2 class="text-2xl font-bold text-white mb-4">{labels.prerequisites}</h2>
+    <ul class="list-disc list-inside text-text-secondary space-y-2">
+      {section.prerequisites.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="text-2xl font-bold text-white mb-4">{labels.validation}</h2>
+    <ol class="list-decimal list-inside text-text-secondary space-y-2">
+      {section.validation.map((item) => <li>{item}</li>)}
+    </ol>
+  </section>
+
+  <section>
+    <h2 class="text-2xl font-bold text-white mb-4">{labels.troubleshooting}</h2>
+    <ul class="list-disc list-inside text-text-secondary space-y-2">
+      {section.troubleshooting.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="text-2xl font-bold text-white mb-4">{labels.references}</h2>
+    <ul class="list-disc list-inside text-text-secondary space-y-2">
+      {section.references.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary hover:text-primary/80 transition-colors"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</section>

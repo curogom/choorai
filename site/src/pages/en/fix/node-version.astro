@@ -1,0 +1,141 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does Node version mismatch break builds?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Different Node major versions can change dependency resolution and runtime behavior, causing CI-only build failures or module errors.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the safest fix?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Pin Node version in .nvmrc/engines and CI config, then reinstall dependencies with the aligned version.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Node Version Mismatch"
+  description="How to fix build/runtime issues caused by Node.js version mismatch"
+  currentPath="/fix/node-version"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Node version</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        Common in CI/CD
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Node Version Mismatch
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Works locally but fails in CI?
+        Your local and CI Node.js versions may not be aligned.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Align Node version across local/CI/deploy
+          2) Declare <code class="bg-surface px-1 rounded">.nvmrc</code> or <code class="bg-surface px-1 rounded">engines</code>
+          3) Reinstall dependencies and rebuild
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage='The engine "node" is incompatible with this module'
+        severity="warning"
+        cause="Current Node version does not satisfy package engine constraints."
+        solution={[
+          "Declare project Node version",
+          "Pin same version in CI",
+          "Remove node_modules and reinstall"
+        ]}
+        aiPrompt="My project builds on Node 20 locally but fails on Node 18 in CI. Show me a safe migration and version pinning plan."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Version pinning</h2>
+
+      <section class="mb-8">
+        <CodeBlock client:load filename=".nvmrc" code={`20`} />
+        <CodeBlock
+          client:load
+          filename="package.json"
+          code={`{
+  "engines": {
+    "node": ">=20 <21"
+  }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename=".github/workflows/ci.yml"
+          code={`- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+
+- run: npm ci
+- run: npm run build`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            If lockfile was generated on a different Node major version, regenerate it after version alignment.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="node-version" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build Failure</h4>
+          <p class="text-text-secondary text-sm">General npm build failures</p>
+        </a>
+        <a href="/en/deploy/vercel" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Deploy on Vercel</h4>
+          <p class="text-text-secondary text-sm">Environment/build settings</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

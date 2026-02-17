@@ -6,24 +6,110 @@ import LanguagePicker from '../components/LanguagePicker.astro';
 import type { Lang } from '../i18n/ui';
 import { useTranslations, getLocalePath } from '../i18n/utils';
 import { getNavigation } from '../i18n/navigation';
+import { existsSync, statSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import packageJson from '../../package.json';
+
+type JsonLd = Record<string, unknown>;
 
 interface Props {
   title: string;
   description?: string;
   currentPath?: string;
   lang?: Lang;
+  structuredData?: JsonLd | JsonLd[];
 }
 
-const { title, description, currentPath, lang = 'ko' } = Astro.props;
+const { title, description, currentPath, lang = 'ko', structuredData } = Astro.props;
 const t = useTranslations(lang);
 const navigation = getNavigation(lang);
 const lp = (path: string) => getLocalePath(lang, path);
+const docsVersion = `v${packageJson.version}`;
 // `currentPath` is stored without locale (e.g. `/map/frontend`). Sidebar hrefs are localized (e.g. `/en/map/frontend`),
 // so compare using a localized version to keep active highlighting correct.
 const currentPathLocalized = currentPath ? lp(currentPath) : undefined;
+const localizedDocPath = currentPath ? lp(currentPath) : Astro.url.pathname;
+const absoluteDocUrl = `https://choorai.com${localizedDocPath}`;
+const absoluteHomeUrl = `https://choorai.com${lp('/')}`;
+const inLanguage = lang === 'en' ? 'en-US' : 'ko-KR';
+const docsSourceRoot = path.join(fileURLToPath(new URL('..', import.meta.url)), 'pages');
+const sourceRoutePath = currentPath ? `${lang === 'en' ? '/en' : ''}${currentPath}` : Astro.url.pathname;
+const normalizedSourceRoutePath = sourceRoutePath.replace(/\/+$/, '') || '/';
+const sourcePathSegments = normalizedSourceRoutePath === '/' ? [] : normalizedSourceRoutePath.slice(1).split('/');
+const sourceCandidates = sourcePathSegments.length === 0
+  ? [path.join(docsSourceRoot, 'index.astro')]
+  : [
+      `${path.join(docsSourceRoot, ...sourcePathSegments)}.astro`,
+      path.join(docsSourceRoot, ...sourcePathSegments, 'index.astro'),
+    ];
+const sourceFilePath = sourceCandidates.find((candidate) => existsSync(candidate));
+const lastUpdatedDate = sourceFilePath ? statSync(sourceFilePath).mtime : new Date();
+const lastUpdatedIso = lastUpdatedDate.toISOString();
+const lastUpdatedText = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'ko-KR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(lastUpdatedDate);
+const docsMetaText = lang === 'en'
+  ? `Last updated: ${lastUpdatedText} · Version: ${docsVersion}`
+  : `마지막 업데이트: ${lastUpdatedText} · 버전: ${docsVersion}`;
+const docsStructuredData: JsonLd[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    inLanguage,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': absoluteDocUrl,
+    },
+    author: {
+      '@type': 'Person',
+      name: 'CuroGom',
+      url: 'https://curogom.dev',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Choorai',
+      url: 'https://choorai.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://choorai.com/logo-64.png',
+      },
+    },
+    dateModified: lastUpdatedIso,
+    version: docsVersion,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: t('layout.home'),
+        item: absoluteHomeUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: title,
+        item: absoluteDocUrl,
+      },
+    ],
+  },
+];
+const pageStructuredData = Array.isArray(structuredData)
+  ? structuredData
+  : structuredData
+    ? [structuredData]
+    : [];
+const allStructuredData = [...docsStructuredData, ...pageStructuredData];
 ---
 
-<BaseLayout title={title} description={description} lang={lang}>
+<BaseLayout title={title} description={description} lang={lang} structuredData={allStructuredData}>
   <div class="min-h-screen flex flex-col">
     <!-- 헤더 -->
     <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -134,6 +220,9 @@ const currentPathLocalized = currentPath ? lp(currentPath) : undefined;
       <main class="flex-1 min-w-0">
         <slot />
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mt-10 mb-6 pt-6 border-t border-border/70">
+            <p class="text-xs text-text-muted">{docsMetaText}</p>
+          </div>
           <FeedbackBox client:load currentPath={currentPathLocalized} lang={lang} />
         </div>
 

@@ -1,0 +1,137 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why do 502/504 gateway timeouts happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'They happen when a proxy cannot get upstream responses in time or your backend exceeds timeout limits.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What should I check first?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Reproduce the failing endpoint and correlate proxy logs with backend logs to identify where latency accumulates.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing 502/504 Gateway Timeouts"
+  description="How to diagnose and resolve 502/504 timeout issues between proxy and backend"
+  currentPath="/fix/gateway-timeout"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">502/504 Timeout</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Runtime/proxy timeout
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing 502/504 Gateway Timeouts
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Repeated <code class="bg-surface px-1 rounded">502</code> and <code class="bg-surface px-1 rounded">504</code>
+        usually mean proxy timeout settings and backend processing time are misaligned.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Measure failing endpoint latency
+          2) Compare proxy timeout vs app execution time
+          3) Move long jobs to async processing
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="504 Gateway Timeout"
+        severity="critical"
+        cause="The upstream response did not return before the gateway timeout threshold."
+        solution={[
+          'Measure average and peak latency on failing endpoints',
+          'Align timeout values across proxy and runtime',
+          'Optimize slow database/external API calls',
+          'Move long-running work to queue/background workers'
+        ]}
+        aiPrompt="I see repeated 504 errors in Cloud Run behind a proxy. Give me a practical troubleshooting plan to isolate timeout bottlenecks."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Diagnostic examples</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="terminal"
+          code={`curl -w "status=%{http_code} total=%{time_total}\n" -o /dev/null -s https://api.example.com/reports
+
+curl -i https://api.example.com/health`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="nginx.conf"
+          code={`location /api/ {
+  proxy_connect_timeout 10s;
+  proxy_send_timeout 60s;
+  proxy_read_timeout 60s;
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            Increasing timeout values alone can delay failure detection. Fix slow queries and blocking calls first.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="gateway-timeout" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/deploy/cloud-run" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloud Run Deployment</h4>
+          <p class="text-text-secondary text-sm">Runtime configuration basics</p>
+        </a>
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">Client network failure triage</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

@@ -1,0 +1,113 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to deploy a FastAPI project to Google Cloud Run.
+Create an execution-ready deployment plan based on the inputs below.
+
+[Inputs]
+- Project root: [PROJECT_PATH]
+- Service name: [SERVICE_NAME]
+- GCP project ID: [GCP_PROJECT_ID]
+- Region: [REGION]
+- Auth policy: [ALLOW_UNAUTH]
+- Environment variables: [ENV_LIST]
+
+[Output requirements]
+1) Dockerfile checklist
+2) Ordered gcloud commands
+3) Baseline operations settings (max instances, health endpoint, timeout)
+4) Post-deploy verification scenarios
+5) Rollback and redeploy steps`;
+
+const checklist = [
+  { id: 'gcloud', label: 'Authenticate and set project', description: 'Run gcloud auth and project config' },
+  { id: 'docker', label: 'Validate Dockerfile and health endpoint', description: 'Check PORT/start command' },
+  { id: 'deploy', label: 'Run Cloud Run deploy command', description: 'Confirm service URL is issued' },
+  { id: 'env', label: 'Inject env vars/secrets', description: 'Verify runtime variables' },
+  { id: 'verify', label: 'Validate health and key APIs', description: 'Check status code and latency' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Deploy to Cloud Run"
+  description="Prompt recipe to ship FastAPI on Cloud Run with AI agents"
+  currentPath="/recipes/deploy-cloud-run"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Deploy to Cloud Run</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Deploy
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Cloud Run Deployment Recipe</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        A deployment prompt that covers Dockerfile checks, commands, and baseline operations.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="How to use">
+        <p class="mt-2">
+          Copy the prompt and replace service name, project ID, and region values.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Cloud Run Deployment Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Command example</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`gcloud auth login
+
+gcloud config set project my-project-id
+
+gcloud run deploy my-api \\
+  --source . \\
+  --region asia-northeast3 \\
+  --allow-unauthenticated \\
+  --max-instances 3`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        locale="en"
+        storageKey="recipe-deploy-cloud-run"
+        title="Execution Checklist"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/deploy/cloud-run" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloud Run Deployment Guide</h4>
+          <p class="text-text-secondary text-sm">Base deployment flow</p>
+        </a>
+        <a href="/en/fix/gateway-timeout" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Fixing 502/504 Timeouts</h4>
+          <p class="text-text-secondary text-sm">Runtime timeout diagnostics</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

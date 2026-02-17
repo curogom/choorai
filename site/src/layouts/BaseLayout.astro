@@ -2,13 +2,16 @@
 import { getPathWithoutLocale } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
+type JsonLd = Record<string, unknown>;
+
 interface Props {
   title: string;
   description?: string;
   lang?: Lang;
+  structuredData?: JsonLd | JsonLd[];
 }
 
-const { title, lang = 'ko' } = Astro.props;
+const { title, lang = 'ko', structuredData } = Astro.props;
 const defaultDescs: Record<Lang, string> = {
   ko: 'AI와 함께 60분 만에 나만의 웹서비스를 배포하세요',
   en: 'Deploy your own web service in 60 minutes with AI',
@@ -16,9 +19,24 @@ const defaultDescs: Record<Lang, string> = {
 const description = Astro.props.description || defaultDescs[lang];
 const ogLocale = lang === 'en' ? 'en_US' : 'ko_KR';
 const canonicalPath = getPathWithoutLocale(Astro.url.pathname);
+const canonicalUrl = `https://choorai.com${Astro.url.pathname}`;
 const ogImageAlt = lang === 'en'
   ? 'Choorai - Deploy a web service in 60 minutes with AI!'
   : 'Choorai - AI와 함께 60분 만에 웹 서비스 배포 체험하기!';
+const defaultStructuredData: JsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Choorai',
+  url: 'https://choorai.com',
+  inLanguage: lang === 'en' ? 'en-US' : 'ko-KR',
+  description,
+};
+const userStructuredData = Array.isArray(structuredData)
+  ? structuredData
+  : structuredData
+    ? [structuredData]
+    : [];
+const allStructuredData = [defaultStructuredData, ...userStructuredData];
 ---
 
 <!doctype html>
@@ -31,6 +49,7 @@ const ogImageAlt = lang === 'en'
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="canonical" href={canonicalUrl} />
 
     <!-- hreflang -->
     <link rel="alternate" hreflang="ko" href={`https://choorai.com${canonicalPath}`} />
@@ -55,11 +74,105 @@ const ogImageAlt = lang === 'en'
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content="https://choorai.com/og-image.png" />
 
+    <!-- Structured Data -->
+    {allStructuredData.map((item) => (
+      <script type="application/ld+json" set:html={JSON.stringify(item)} />
+    ))}
+
     <!-- Google Analytics 4 -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-YXS32NS94P"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+
+      window.chooraiTrack = function(eventName, params = {}) {
+        try {
+          gtag('event', eventName, params);
+        } catch (err) {
+          console.warn('Analytics tracking failed', err);
+        }
+      };
+
+      function sanitizeToken(value, fallback = 'external') {
+        const sanitized = (value || '')
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^_+|_+$/g, '')
+          .slice(0, 20);
+        return sanitized || fallback;
+      }
+
+      function getServiceName(url) {
+        const host = url.hostname.replace(/^www\./, '').toLowerCase();
+        const knownServices = [
+          { match: 'github.com', name: 'github' },
+          { match: 'cloudflare.com', name: 'cloudflare' },
+          { match: 'google.com', name: 'google' },
+          { match: 'run.app', name: 'google_cloud' },
+          { match: 'vercel.com', name: 'vercel' },
+          { match: 'supabase.com', name: 'supabase' },
+          { match: 'firebase.google.com', name: 'firebase' },
+          { match: 'openai.com', name: 'openai' },
+          { match: 'claude.ai', name: 'claude' },
+          { match: 'cursor.com', name: 'cursor' },
+          { match: 'cursor.sh', name: 'cursor' },
+          { match: 'python.org', name: 'python' },
+          { match: 'nodejs.org', name: 'nodejs' },
+          { match: 'x.com', name: 'x' },
+          { match: 'twitter.com', name: 'twitter' },
+        ];
+
+        for (const service of knownServices) {
+          if (host === service.match || host.endsWith(`.${service.match}`)) {
+            return service.name;
+          }
+        }
+
+        const firstLabel = host.split('.')[0] || 'external';
+        return sanitizeToken(firstLabel);
+      }
+
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const anchor = event.target.closest('a[href]');
+        if (!anchor) return;
+
+        const rawHref = anchor.getAttribute('href');
+        if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
+
+        let targetUrl;
+        try {
+          targetUrl = new URL(anchor.href, window.location.origin);
+        } catch {
+          return;
+        }
+
+        if (!/^https?:$/.test(targetUrl.protocol)) return;
+
+        const currentPath = window.location.pathname;
+        const normalizedTargetPath = targetUrl.pathname.replace(/\/+$/, '') || '/';
+        const sameOrigin = targetUrl.origin === window.location.origin;
+
+        if (sameOrigin) {
+          if (normalizedTargetPath === '/path/60min' || normalizedTargetPath === '/en/path/60min') {
+            window.chooraiTrack?.('start_60min', {
+              source: 'internal_link',
+              from_path: currentPath,
+              target_path: targetUrl.pathname,
+            });
+          }
+          return;
+        }
+
+        const service = getServiceName(targetUrl);
+        window.chooraiTrack?.(`click_external_${service}`, {
+          href: `${targetUrl.origin}${targetUrl.pathname}`,
+          from_path: currentPath,
+        });
+      }, { capture: true });
+
       gtag('js', new Date());
       gtag('config', 'G-YXS32NS94P');
     </script>

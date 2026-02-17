@@ -1,0 +1,140 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Webhook signature verification failed는 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '대부분 raw body가 변형되었거나, 잘못된 webhook secret을 사용했거나, 서명 계산 방식이 공급자 문서와 다른 경우 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '어떤 점을 우선 확인해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'JSON 파싱 전에 raw body 그대로 검증하는지와 환경별 webhook secret이 정확한지 먼저 확인하세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="Webhook 서명 검증 실패 해결하기"
+  description="Webhook signature verification failed 오류 해결"
+  currentPath="/fix/webhook-signature"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Webhook Signature</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        결제/외부 연동 핵심 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Webhook 서명 검증 실패 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        결제/외부 이벤트 웹훅에서 <code class="bg-surface px-1 rounded">signature verification failed</code>가 발생하면
+        이벤트가 무시되어 데이터 불일치가 생길 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) raw body 기준으로 서명 검증
+          2) 환경별 webhook secret 확인
+          3) 재시도/중복 처리(idempotency) 적용
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Webhook signature verification failed"
+        severity="critical"
+        cause="웹훅 payload 무결성 검증에 실패했습니다. raw body 변형, 시크릿 불일치, 헤더 누락이 흔한 원인입니다."
+        solution={[
+          'JSON 파싱 전에 raw body로 서명 검증',
+          '운영/테스트 webhook secret 혼용 여부 확인',
+          '공급자 문서의 서명 알고리즘/헤더 형식 준수',
+          '중복 이벤트 대비 idempotency 키 처리'
+        ]}
+        aiPrompt="Stripe webhook에서 signature verification failed가 나와. raw body 처리부터 secret 검증까지 서버 코드 체크리스트를 만들어줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">검증 포인트</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="Express + Stripe 예시"
+          code={`import express from 'express';
+import Stripe from 'stripe';
+
+const app = express();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+
+app.post('/webhook/stripe', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['stripe-signature'];
+  const secret = process.env.STRIPE_WEBHOOK_SECRET || '';
+
+  try {
+    const event = stripe.webhooks.constructEvent(req.body, String(signature), secret);
+    // TODO: handle event with idempotency check
+    res.status(200).send('ok');
+  } catch (err) {
+    res.status(400).send('signature verification failed');
+  }
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            body parser를 먼저 적용하면 raw body가 변경되어 서명 검증이 실패할 수 있습니다.
+            webhook 라우트에는 raw parser를 우선 적용하세요.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="webhook-signature" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">환경변수 문제</h4>
+          <p class="text-text-secondary text-sm">시크릿 키 주입 점검</p>
+        </a>
+        <a href="/fix/rate-limit" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">429 Rate Limit</h4>
+          <p class="text-text-secondary text-sm">재시도/중복 호출 제어</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

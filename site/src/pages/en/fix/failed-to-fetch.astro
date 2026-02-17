@@ -1,0 +1,144 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What causes TypeError: Failed to fetch?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Typical causes are invalid API URL, DNS failure, CORS rejection, HTTPS mixed content, or backend connectivity issues.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Where should I start debugging?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Check browser Network tab first, then verify whether request reaches backend logs to isolate browser-level vs server-level failures.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Failed to Fetch Errors"
+  description="How to fix TypeError: Failed to fetch"
+  currentPath="/fix/failed-to-fetch"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Failed to fetch</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Network/connectivity issue
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Failed to Fetch Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        <code class="bg-surface px-1 rounded">TypeError: Failed to fetch</code> has multiple root causes.
+        You need to isolate URL, CORS, HTTPS, and DNS step by step.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Verify API URL and env vars
+          2) Confirm request appears in Network tab
+          3) Check CORS / mixed content / certificate issues
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="TypeError: Failed to fetch"
+        severity="critical"
+        cause="Browser failed to complete the request due to network/CORS/SSL/DNS/backend issues."
+        solution={[
+          "Check if request is sent in browser Network tab",
+          "Validate API base URL and environment variable values",
+          "Verify request reaches backend logs",
+          "Inspect CORS and HTTPS mixed content rules"
+        ]}
+        aiPrompt="I get TypeError: Failed to fetch in React + FastAPI. Give me a practical triage checklist to find the root cause quickly."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Quick checks</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="fetch.ts"
+          code={`const apiUrl = import.meta.env.VITE_API_URL;
+
+if (!apiUrl) {
+  throw new Error('VITE_API_URL is missing');
+}
+
+const response = await fetch(apiUrl + '/health', {
+  method: 'GET',
+  credentials: 'include',
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="wrong vs correct"
+          code={`# Wrong
+https://app.example.com -> http://api.example.com
+
+# Correct
+https://app.example.com -> https://api.example.com`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="info" title="Practical tip">
+          <p class="mt-2">
+            This error message alone is too generic. Always inspect both browser Network panel and backend logs together.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="failed-to-fetch" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/cors" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Error</h4>
+          <p class="text-text-secondary text-sm">Cross-origin request failures</p>
+        </a>
+        <a href="/en/fix/ssl-cert" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SSL Certificate Error</h4>
+          <p class="text-text-secondary text-sm">HTTPS/TLS issues</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

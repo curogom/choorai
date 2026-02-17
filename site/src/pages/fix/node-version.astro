@@ -1,0 +1,145 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Node 버전 불일치가 왜 문제를 일으키나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '로컬과 CI의 Node major 버전이 다르면 의존성 해석과 빌드 동작이 달라져 빌드 실패나 런타임 오류가 발생할 수 있습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '가장 안전한 해결 방법은 무엇인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '프로젝트에 .nvmrc 또는 engines를 명시하고 CI에서도 같은 버전을 고정해 재설치/재빌드하세요.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="Node 버전 불일치 해결하기"
+  description="Node.js 버전 차이로 인한 빌드/실행 오류 해결 방법"
+  currentPath="/fix/node-version"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Node 버전</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning/10 text-warning text-xs font-bold mb-4">
+        CI/배포 환경 빈번 이슈
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Node 버전 불일치 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        로컬에서는 되는데 CI에서만 실패하나요?
+        Node.js 버전이 서로 다르면 빌드 결과가 달라질 수 있습니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) 로컬/CI Node 버전 통일
+          2) <code class="bg-surface px-1 rounded">.nvmrc</code> 또는 <code class="bg-surface px-1 rounded">engines</code> 명시
+          3) 클린 설치 후 재빌드
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage='The engine "node" is incompatible with this module'
+        severity="warning"
+        cause="현재 실행 중인 Node 버전이 패키지가 요구하는 최소/최대 버전 조건과 맞지 않습니다."
+        solution={[
+          "프로젝트 권장 Node 버전을 명시",
+          "CI에서도 같은 버전 사용",
+          "node_modules 삭제 후 재설치"
+        ]}
+        aiPrompt="로컬 Node 20에서는 빌드되는데 CI(Node 18)에서 실패해. 버전 고정과 마이그레이션 방법을 단계별로 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">버전 고정 방법</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename=".nvmrc"
+          code={`20`}
+        />
+        <CodeBlock
+          client:load
+          filename="package.json"
+          code={`{
+  "engines": {
+    "node": ">=20 <21"
+  }
+}`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename=".github/workflows/ci.yml"
+          code={`- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+
+- run: npm ci
+- run: npm run build`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            lockfile이 오래되었거나 다른 Node 버전에서 생성된 경우,
+            버전을 맞춘 뒤 lockfile 재생성이 필요할 수 있습니다.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="node-version" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">빌드 실패</h4>
+          <p class="text-text-secondary text-sm">npm run build 오류 전반</p>
+        </a>
+        <a href="/deploy/vercel" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Vercel 배포</h4>
+          <p class="text-text-secondary text-sm">환경/빌드 설정 참고</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

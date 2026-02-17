@@ -1,0 +1,140 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does webhook signature verification fail?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Common causes are modified raw payloads, wrong webhook secrets, or implementation mismatch with provider signature docs.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What should I verify first?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Check whether signature validation uses raw request body before JSON parsing, and confirm environment-specific webhook secrets.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Webhook Signature Verification Errors"
+  description="Resolve webhook signature verification failed errors in payment or external integrations"
+  currentPath="/fix/webhook-signature"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Webhook Signature</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        Critical integration issue
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Webhook Signature Verification Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        If <code class="bg-surface px-1 rounded">signature verification failed</code> occurs on payment or external webhooks,
+        events may be dropped and state can diverge.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Verify against raw body
+          2) Confirm environment-specific webhook secrets
+          3) Add idempotency handling for retries
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Webhook signature verification failed"
+        severity="critical"
+        cause="Payload integrity check failed. Common causes are raw body mutation, secret mismatch, and missing signature headers."
+        solution={[
+          'Validate signature using raw body before JSON parsing',
+          'Check that production/test webhook secrets are not mixed',
+          'Follow provider-specific signature algorithm and header format',
+          'Handle duplicate retries with idempotency keys'
+        ]}
+        aiPrompt="My Stripe webhook fails signature verification. Give me a debug checklist for raw body handling, secret validation, and idempotent processing."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Validation points</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="Express + Stripe example"
+          code={`import express from 'express';
+import Stripe from 'stripe';
+
+const app = express();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+
+app.post('/webhook/stripe', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['stripe-signature'];
+  const secret = process.env.STRIPE_WEBHOOK_SECRET || '';
+
+  try {
+    const event = stripe.webhooks.constructEvent(req.body, String(signature), secret);
+    // TODO: handle event with idempotency check
+    res.status(200).send('ok');
+  } catch (err) {
+    res.status(400).send('signature verification failed');
+  }
+});`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            If JSON/body parsers run first, raw payload may change and signature checks can fail.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="webhook-signature" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Environment Variable Issue</h4>
+          <p class="text-text-secondary text-sm">Secret key configuration checks</p>
+        </a>
+        <a href="/en/fix/rate-limit" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">429 Rate Limit</h4>
+          <p class="text-text-secondary text-sm">Retry and duplicate control</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

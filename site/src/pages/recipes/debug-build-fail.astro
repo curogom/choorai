@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `빌드 실패 로그를 분석해서 원인을 빠르게 좁히고 싶어.
+아래 입력을 바탕으로 우선순위 기반 디버깅 플랜을 만들어줘.
+
+[입력 정보]
+- 에러 로그 전문: [BUILD_LOG]
+- 패키지 매니저: [npm/pnpm/yarn]
+- Node 버전(로컬): [LOCAL_NODE]
+- Node 버전(CI): [CI_NODE]
+- 최근 변경 파일: [CHANGED_FILES]
+
+[출력 요구사항]
+1) 원인 후보 Top3 (확률 포함)
+2) 각 원인 검증 명령
+3) 바로 적용 가능한 수정안
+4) 재발 방지 체크리스트
+5) PR 설명 템플릿`;
+
+const checklist = [
+  { id: 'reproduce', label: '로컬 재현 확인', description: 'npm ci && npm run build 실행' },
+  { id: 'node', label: 'Node 버전 비교', description: '로컬/CI 버전 일치 여부 확인' },
+  { id: 'lockfile', label: '락파일 무결성 점검', description: '의존성 드리프트 여부 확인' },
+  { id: 'types', label: '타입/린트 오류 분리', description: '실패 지점 기준으로 분류' },
+  { id: 'fix', label: '수정 후 재빌드', description: '동일 커밋 기준 성공 검증' },
+];
+---
+
+<DocsLayout
+  title="레시피: 빌드 실패 진단"
+  description="AI 에이전트로 빌드 실패 로그를 구조적으로 분석하는 프롬프트 레시피"
+  currentPath="/recipes/debug-build-fail"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">빌드 실패 진단</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Debug
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">빌드 실패 진단 레시피</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        긴 빌드 로그를 그대로 붙여도, 원인 우선순위와 검증 명령을 빠르게 정리하는 프롬프트입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="실무 팁">
+        <p class="mt-2">
+          로그는 생략하지 말고 전체를 넣는 편이 정확도가 높습니다. 특히 첫 에러 발생 라인을 반드시 포함하세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="빌드 실패 분석 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">진단 명령 기본 세트</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`node -v
+npm -v
+
+npm ci
+npm run build
+
+# 필요 시 타입 체크 분리
+npm run typecheck`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="recipe-debug-build-fail"
+        title="실행 체크리스트"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">빌드 실패</h4>
+          <p class="text-text-secondary text-sm">일반 빌드 오류 해결</p>
+        </a>
+        <a href="/fix/build-oom" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Build OOM</h4>
+          <p class="text-text-secondary text-sm">메모리 부족 케이스</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

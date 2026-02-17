@@ -1,0 +1,120 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `React/Vite 프로젝트를 Cloudflare Pages에 배포하려고 해.
+아래 정보를 기준으로 실제 실행 가능한 배포 런북을 작성해줘.
+
+[입력 정보]
+- 저장소 URL: [REPO_URL]
+- 배포 브랜치: [BRANCH]
+- Build command: [BUILD_COMMAND]
+- Output directory: [OUTPUT_DIR]
+- API URL 환경변수: [API_ENV_KEY]=[API_ENV_VALUE]
+- 커스텀 도메인: [CUSTOM_DOMAIN 또는 없음]
+
+[출력 요구사항]
+1) 사전 점검표
+2) Cloudflare Pages 설정 순서
+3) SPA 라우팅(_redirects) 설정
+4) 배포 검증 체크리스트
+5) 장애 발생 시 롤백 절차`;
+
+const checklist = [
+  { id: 'repo', label: 'GitHub 저장소/브랜치 확인', description: '배포 대상 브랜치가 최신인지 확인' },
+  { id: 'build', label: '로컬 빌드 성공 확인', description: 'npm run build 결과 확인' },
+  { id: 'redirects', label: '_redirects 파일 적용', description: 'SPA 라우팅 리라이트 확인' },
+  { id: 'env', label: 'Pages 환경변수 설정', description: 'VITE_ 접두사 및 값 검증' },
+  { id: 'verify', label: '배포 URL/도메인 검증', description: '새로고침 404 및 API 연결 확인' },
+];
+---
+
+<DocsLayout
+  title="레시피: Cloudflare Pages 배포"
+  description="AI 에이전트로 Cloudflare Pages 배포를 빠르게 진행하는 프롬프트 레시피"
+  currentPath="/recipes/deploy-cloudflare-pages"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Cloudflare Pages 배포</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Deploy
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Cloudflare Pages 배포 레시피</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        배포 설정, SPA 리라이트, 환경변수, 도메인 연결까지 한 번에 요청하는 프롬프트입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="사용 방법">
+        <p class="mt-2">
+          아래 프롬프트를 복사한 뒤 <code class="bg-surface px-1 rounded">[대괄호]</code> 값을 실제 프로젝트 정보로 교체해 실행하세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="Cloudflare Pages 배포 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">입력값 예시</h2>
+      <CodeBlock
+        client:load
+        filename="prompt-input.json"
+        code={`{
+  "REPO_URL": "https://github.com/org/my-app",
+  "BRANCH": "main",
+  "BUILD_COMMAND": "npm run build",
+  "OUTPUT_DIR": "dist",
+  "API_ENV_KEY": "VITE_API_URL",
+  "API_ENV_VALUE": "https://api.example.com",
+  "CUSTOM_DOMAIN": "app.example.com"
+}`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">필수 파일</h2>
+      <CodeBlock
+        client:load
+        filename="public/_redirects"
+        code="/* /index.html 200"
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="recipe-deploy-cloudflare-pages"
+        title="실행 체크리스트"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/deploy/cloudflare-pages" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Cloudflare Pages 배포 가이드</h4>
+          <p class="text-text-secondary text-sm">수동 단계별 문서</p>
+        </a>
+        <a href="/fix/spa-404" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SPA 404 에러 해결</h4>
+          <p class="text-text-secondary text-sm">리프레시 404 이슈 점검</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

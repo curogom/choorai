@@ -1,0 +1,146 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ErrorCard from '../../components/ErrorCard';
+import CodeBlock from '../../components/CodeBlock';
+import Callout from '../../components/Callout';
+import TroubleshootingTemplate from '../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'DNS_PROBE_FINISHED_NXDOMAIN은 왜 발생하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '도메인에 대한 DNS 레코드가 없거나 오타가 있어 브라우저가 해당 호스트를 찾지 못할 때 발생합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '가장 먼저 무엇을 확인해야 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '도메인 오탈자 여부와 DNS 콘솔의 A/CNAME 레코드 존재 여부를 먼저 확인하고, 공용 DNS에서 dig 조회로 반영 상태를 검증합니다.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  title="DNS NXDOMAIN 에러 해결하기"
+  description="DNS_PROBE_FINISHED_NXDOMAIN 에러 해결 방법"
+  currentPath="/fix/dns-nxdomain"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/fix" class="hover:text-white transition-colors">트러블슈팅</a>
+      <span>/</span>
+      <span class="text-primary font-medium">DNS NXDOMAIN</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        도메인/배포 초기 자주 발생
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        DNS NXDOMAIN 에러 해결하기
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        브라우저에 <code class="bg-surface px-1 rounded">DNS_PROBE_FINISHED_NXDOMAIN</code>이 뜨나요?
+        도메인 레코드가 누락됐거나 아직 전파되지 않았을 가능성이 큽니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="TL;DR (핵심 요약)">
+        <p class="mt-2">
+          1) 도메인 오타 확인
+          2) DNS 콘솔에서 A/CNAME 레코드 확인
+          3) <code class="bg-surface px-1 rounded">dig</code>로 공용 DNS 반영 상태 확인
+          4) TTL 시간 동안 대기 후 재확인
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="DNS_PROBE_FINISHED_NXDOMAIN"
+        severity="critical"
+        cause="요청한 도메인을 DNS에서 찾을 수 없습니다. 주로 레코드 누락, 도메인 오타, 잘못된 nameserver 설정으로 발생합니다."
+        solution={[
+          "도메인 철자와 서브도메인(host) 재확인",
+          "DNS 공급자에서 A/CNAME 레코드 생성 여부 확인",
+          "등록기관의 nameserver가 올바른 DNS 제공자를 가리키는지 확인",
+          "전파 시간이 필요한 경우 TTL 만큼 대기"
+        ]}
+        aiPrompt="도메인 접속 시 DNS_PROBE_FINISHED_NXDOMAIN이 발생해. Cloudflare DNS를 쓰고 있고, 어떤 레코드를 확인해야 할지 단계별로 알려줘."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">점검 순서</h2>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">1) 도메인 조회 테스트</h3>
+        <CodeBlock
+          client:load
+          filename="terminal"
+          code={`# 권한 DNS/공용 DNS 조회
+
+dig your-domain.com
+
+dig @1.1.1.1 your-domain.com
+
+dig @8.8.8.8 your-domain.com`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">2) Cloudflare 레코드 예시</h3>
+        <CodeBlock
+          client:load
+          filename="DNS records"
+          code={`Type    Name    Content             Proxy
+A       @       203.0.113.10        DNS only
+CNAME   www     your-domain.com      Proxied`}
+        />
+        <Callout client:load variant="warning" title="주의">
+          <p class="mt-2">
+            같은 호스트에 A와 CNAME을 동시에 중복 구성하면 예상치 못한 해석 오류가 날 수 있습니다.
+          </p>
+        </Callout>
+      </section>
+
+      <section class="mb-8">
+        <h3 class="text-xl font-bold text-white mb-3">3) nameserver 확인</h3>
+        <p class="text-text-secondary mb-3">
+          등록기관(가비아, 후이즈 등)에서 설정한 nameserver가 DNS 제공자 값과 일치해야 합니다.
+          nameserver가 다른 서비스로 향하면 DNS 레코드를 올바르게 만들어도 반영되지 않습니다.
+        </p>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="dns-nxdomain" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/dns" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">도메인 & DNS</h4>
+          <p class="text-text-secondary text-sm">도메인 연결 기본 개념</p>
+        </a>
+        <a href="/fix/ssl-cert" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SSL 인증서 오류</h4>
+          <p class="text-text-secondary text-sm">HTTPS 인증서 관련 문제</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

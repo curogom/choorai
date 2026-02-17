@@ -1,0 +1,139 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import ErrorCard from '../../../components/ErrorCard';
+import CodeBlock from '../../../components/CodeBlock';
+import Callout from '../../../components/Callout';
+import TroubleshootingTemplate from '../../../components/TroubleshootingTemplate.astro';
+
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Why does Mixed Content happen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Browsers block insecure HTTP resources when your page is loaded over HTTPS.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What should I check first?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Ensure API URLs, static asset URLs, and redirect paths are all using https:// in production.',
+      },
+    },
+  ],
+};
+---
+
+<DocsLayout
+  lang="en"
+  title="Fixing Mixed Content Errors"
+  description="How to fix Mixed Content errors caused by HTTP resources on HTTPS pages"
+  currentPath="/fix/mixed-content"
+  structuredData={[faqStructuredData]}
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/fix" class="hover:text-white transition-colors">Troubleshooting</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Mixed Content</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 text-error text-xs font-bold mb-4">
+        HTTPS security block
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
+        Fixing Mixed Content Errors
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        If an HTTPS page requests HTTP APIs/assets/scripts, browsers block those requests.
+        Align all production URLs to <code class="bg-surface px-1 rounded">https://</code>.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <p class="mt-2">
+          1) Remove http:// URLs
+          2) Verify env vars and redirects
+          3) Confirm Mixed Content warnings disappear
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-8 space-y-6">
+      <ErrorCard
+        client:load
+        errorMessage="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource"
+        severity="warning"
+        cause="A secure HTTPS page requested insecure HTTP resources, so the browser blocked the request."
+        solution={[
+          'Use HTTPS for frontend and backend endpoints',
+          'Check env vars like VITE_API_URL for leftover http:// values',
+          'Update CDN image/script links to HTTPS',
+          'Clear cache and re-test after deployment'
+        ]}
+        aiPrompt="I have a Mixed Content error in production. Give me a practical checklist to find HTTP links and migrate everything to HTTPS safely."
+      />
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <h2 class="text-2xl font-bold text-white mb-4">Practical checks</h2>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename=".env.production"
+          code={`# Wrong
+VITE_API_URL=http://api.example.com
+
+# Correct
+VITE_API_URL=https://api.example.com`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <CodeBlock
+          client:load
+          filename="api.ts"
+          code={`// Wrong
+fetch('http://api.example.com/users')
+
+// Correct
+fetch(import.meta.env.VITE_API_URL + '/users')`}
+        />
+      </section>
+
+      <section class="mb-8">
+        <Callout client:load locale="en" variant="warning" title="Important">
+          <p class="mt-2">
+            Even with a proxy platform, HTTP origin URLs are blocked by browsers before requests reach your backend.
+          </p>
+        </Callout>
+      </section>
+    </article>
+
+    <TroubleshootingTemplate topic="mixed-content" lang="en" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">Network root-cause isolation</p>
+        </a>
+        <a href="/en/fix/ssl-cert" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">SSL Certificate Error</h4>
+          <p class="text-text-secondary text-sm">HTTPS certificate issues</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

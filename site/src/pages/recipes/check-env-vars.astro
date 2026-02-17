@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `프로젝트 환경변수를 전수 점검하고 싶어.
+아래 입력을 기준으로 누락/오탈자/보안 리스크를 찾아줘.
+
+[입력 정보]
+- 로컬 파일 목록: [.env, .env.local, .env.production 등]
+- CI/CD 변수 목록: [CI_ENV_LIST]
+- 배포 플랫폼 변수 목록: [HOSTING_ENV_LIST]
+- 프레임워크: [Vite/Next.js/FastAPI/기타]
+
+[출력 요구사항]
+1) 환경별 변수 매트릭스 표 (local/staging/prod)
+2) 누락/오탈자 항목
+3) 노출 위험 변수(클라이언트 번들 노출 위험)
+4) .env.example 초안
+5) 반영 우선순위 (P0/P1/P2)`;
+
+const checklist = [
+  { id: 'inventory', label: '환경변수 목록 수집', description: '로컬/CI/호스팅 값 정리' },
+  { id: 'prefix', label: '프레임워크 접두사 확인', description: 'VITE_, NEXT_PUBLIC_ 등 확인' },
+  { id: 'secrets', label: '민감정보 노출 점검', description: '클라이언트 번들 노출 여부' },
+  { id: 'example', label: '.env.example 갱신', description: '필수 키/설명 반영' },
+  { id: 'verify', label: '재빌드/재배포 검증', description: '런타임 값 정상 확인' },
+];
+---
+
+<DocsLayout
+  title="레시피: 환경변수 일괄 점검"
+  description="AI 에이전트로 환경변수를 체계적으로 점검하는 프롬프트 레시피"
+  currentPath="/recipes/check-env-vars"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">환경변수 일괄 점검</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Ops
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">환경변수 일괄 점검 레시피</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        로컬/CI/배포 플랫폼 변수를 한 번에 비교해 누락과 보안 리스크를 빠르게 찾는 프롬프트입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="실무 팁">
+        <p class="mt-2">
+          값 자체를 공유하기 어렵다면 키 이름만 전달해도 됩니다. 민감값은 마스킹하고 전달하세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="환경변수 감사 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">.env.example 예시</h2>
+      <CodeBlock
+        client:load
+        filename=".env.example"
+        code={`# Frontend
+VITE_API_URL=
+
+# Backend
+DATABASE_URL=
+JWT_SECRET=
+
+# Optional
+SENTRY_DSN=`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="recipe-check-env-vars"
+        title="실행 체크리스트"
+        items={checklist}
+      />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/fix/env" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">환경변수 문제</h4>
+          <p class="text-text-secondary text-sm">런타임 undefined 이슈 해결</p>
+        </a>
+        <a href="/fix/failed-to-fetch" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Failed to fetch</h4>
+          <p class="text-text-secondary text-sm">잘못된 API URL 점검</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
