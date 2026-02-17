@@ -1,0 +1,97 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `PR 품질 점검을 자동화하고 싶어.
+아래 입력을 바탕으로 회귀 위험 중심 리뷰 체크리스트를 만들어줘.
+
+[입력 정보]
+- PR 요약: [PR_SUMMARY]
+- 변경 파일 목록: [FILES]
+- 테스트 결과: [TEST_RESULTS]
+- 영향 범위: [AUTH/DEPLOY/API/UI]
+
+[출력 요구사항]
+1) 심각도 기준(P0~P3) 리뷰 코멘트
+2) 기능 회귀 위험 Top 5
+3) 누락 테스트 제안
+4) 배포 전 확인 항목
+5) 머지 가능 여부 결론(Go/No-Go)`;
+
+const checklist = [
+  { id: 'scope', label: '변경 범위 파악', description: '핵심 영향 영역 정리' },
+  { id: 'risk', label: '회귀 위험 점검', description: '기능/데이터/성능 리스크 확인' },
+  { id: 'tests', label: '테스트 커버리지 검토', description: '누락 테스트 식별' },
+  { id: 'release', label: '배포 영향 검토', description: '롤백 가능성/운영 영향 점검' },
+  { id: 'decision', label: '최종 판단 기록', description: 'Go/No-Go 근거 명확화' },
+];
+---
+
+<DocsLayout
+  title="레시피: PR 품질 점검"
+  description="회귀 위험 중심으로 PR 품질을 점검하는 프롬프트 레시피"
+  currentPath="/recipes/review-pr-quality"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">PR 품질 점검</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · QA
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">PR 품질 점검</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        기능 회귀/운영 리스크 중심으로 PR을 구조적으로 검토하는 레시피입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="리뷰 기준 추천">
+        <p class="mt-2">코드 스타일보다 사용자 영향, 장애 가능성, 테스트 누락을 우선순위로 평가하세요.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="PR 품질 리뷰 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">리뷰 코멘트 포맷 예시</h2>
+      <CodeBlock
+        client:load
+        filename="markdown"
+        code={`[P1] 인증 미들웨어 우회 가능성
+- 영향: 보호 라우트 접근 통제 실패 위험
+- 근거: /api/admin 라우트에서 auth guard 누락
+- 제안: 공통 라우터 레벨에서 guard 강제`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-review-pr-quality" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/testing/unit" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">단위 테스트</h4>
+          <p class="text-text-secondary text-sm">회귀 방지 테스트 전략</p>
+        </a>
+        <a href="/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">빌드 실패 진단</h4>
+          <p class="text-text-secondary text-sm">CI 실패 원인 빠른 정리</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

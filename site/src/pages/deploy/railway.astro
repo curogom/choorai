@@ -1,0 +1,79 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import SectionHeader from '../../components/SectionHeader';
+import PageNavigation from '../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  title="Railway 배포 가이드"
+  description="API 서버를 Railway에 배포하고 환경변수/헬스체크를 구성하는 방법"
+  currentPath="/deploy/railway"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/deploy" class="hover:text-white transition-colors">배포</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Railway</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-xs font-bold mb-4">
+        Backend Hosting
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Railway 배포 가이드</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Git 기반으로 API 서비스를 배포하고 환경변수/헬스체크/롤백 포인트를 관리합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="TL;DR">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Railway 프로젝트 생성 후 저장소 연결</li>
+          <li>빌드/실행 명령 자동 감지 또는 수동 설정</li>
+          <li>환경변수/헬스체크 경로 지정 후 배포 검증</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <SectionHeader number={1} title="프로젝트 연결" />
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Railway 대시보드에서 <strong class="text-white">New Project</strong> 생성</li>
+          <li>GitHub 저장소 연결 후 서비스 생성</li>
+          <li>빌드 로그에서 의존성 설치/실행 명령 확인</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={2} title="환경변수와 헬스체크" />
+        <CodeBlock
+          client:load
+          filename="Variables"
+          code={`DATABASE_URL=...
+JWT_SECRET=...
+APP_ENV=production`}
+        />
+        <Callout client:load variant="info" title="헬스체크 권장">
+          <p class="text-sm">헬스체크 경로를 <code>/health</code>로 고정하면 배포 안정성을 높일 수 있습니다.</p>
+        </Callout>
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={3} title="문제 발생 시 대응" />
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>최근 배포 빌드 로그 확인</li>
+          <li>환경변수 누락/오탈자 재검토</li>
+          <li>이전 정상 배포로 롤백</li>
+        </ul>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/deploy/railway" />
+  </div>
+</DocsLayout>

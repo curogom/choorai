@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to systematize PR quality checks.
+Build a regression-focused review checklist using the inputs below.
+
+[Inputs]
+- PR summary: [PR_SUMMARY]
+- Changed files: [FILES]
+- Test results: [TEST_RESULTS]
+- Impact area: [AUTH/DEPLOY/API/UI]
+
+[Output requirements]
+1) Severity-based comments (P0-P3)
+2) Top 5 regression risks
+3) Missing test proposals
+4) Pre-release verification list
+5) Merge recommendation (Go/No-Go)`;
+
+const checklist = [
+  { id: 'scope', label: 'Map change scope', description: 'Summarize key impact areas' },
+  { id: 'risk', label: 'Review regression risks', description: 'Check functional/data/perf risks' },
+  { id: 'tests', label: 'Review test coverage', description: 'Identify missing tests' },
+  { id: 'release', label: 'Review release impact', description: 'Check rollback and ops impact' },
+  { id: 'decision', label: 'Record decision', description: 'State Go/No-Go with rationale' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Review PR Quality"
+  description="Prompt recipe to review PR quality with regression focus"
+  currentPath="/recipes/review-pr-quality"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Review PR Quality</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · QA
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Review PR Quality</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Use this recipe to review PRs with priority on user impact and regression risks.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="Recommended review order">
+        <p class="mt-2">Prioritize user impact, outage risk, and missing tests before style-only feedback.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="PR Quality Review Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Review Comment Format Example</h2>
+      <CodeBlock
+        client:load
+        filename="markdown"
+        code={`[P1] Potential auth middleware bypass
+- Impact: protected route access control may fail
+- Evidence: auth guard missing on /api/admin route
+- Suggestion: enforce guard at router layer`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-review-pr-quality" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/testing/unit" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Unit Testing</h4>
+          <p class="text-text-secondary text-sm">Regression prevention patterns</p>
+        </a>
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Debug Build Failures</h4>
+          <p class="text-text-secondary text-sm">Fast triage for CI failures</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

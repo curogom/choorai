@@ -1,0 +1,80 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import SectionHeader from '../../../components/SectionHeader';
+import PageNavigation from '../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Railway Deployment Guide"
+  description="Deploy backend APIs to Railway with env and health-check setup"
+  currentPath="/deploy/railway"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/deploy" class="hover:text-white transition-colors">Deploy</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Railway</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-xs font-bold mb-4">
+        Backend Hosting
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Railway Deployment Guide</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Deploy backend services from Git and manage env variables, health checks, and rollback points.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="TL;DR">
+        <ul class="list-disc list-inside space-y-1 mt-2">
+          <li>Create a Railway project and connect your repository</li>
+          <li>Use auto-detected or custom build/start commands</li>
+          <li>Set env variables and health-check path before verification</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <SectionHeader number={1} title="Connect project" />
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Create <strong class="text-white">New Project</strong> in Railway dashboard</li>
+          <li>Connect GitHub repository and create a service</li>
+          <li>Validate dependency install/start commands in build logs</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={2} title="Environment variables and health checks" />
+        <CodeBlock
+          client:load
+          filename="Variables"
+          code={`DATABASE_URL=...
+JWT_SECRET=...
+APP_ENV=production`}
+        />
+        <Callout client:load locale="en" variant="info" title="Health check recommendation">
+          <p class="text-sm">Use a fixed endpoint like <code>/health</code> for stable deployment verification.</p>
+        </Callout>
+      </section>
+
+      <section class="mb-10">
+        <SectionHeader number={3} title="Incident response" />
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Inspect logs from latest deployment</li>
+          <li>Re-check missing or mistyped environment keys</li>
+          <li>Rollback to the last known good deployment</li>
+        </ul>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/deploy/railway" lang="en" />
+  </div>
+</DocsLayout>

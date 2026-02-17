@@ -1,0 +1,79 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Runtime Deep Dive: Multi-Environment Operations"
+  description="Separate development/staging/production for safer operations"
+  currentPath="/map/runtime/environments"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <a href="/en/map/runtime" class="hover:text-white transition-colors">Runtime</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Multi-Environment Ops</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Runtime Deep Dive
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Multi-Environment Operations</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Separate development, staging, and production to reduce release incidents and standardize validation flow.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Core principles">
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <li>Keep code identical, separate configuration by environment</li>
+          <li>Never store production secrets directly in source code</li>
+          <li>Promote to production only after staging validation</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Environment file strategy</h2>
+        <CodeBlock
+          client:load
+          filename="env"
+          code={`.env.development
+.env.staging
+.env.production
+.env.example`}
+        />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Pipeline separation</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">development</strong>: feature implementation and local validation</li>
+          <li><strong class="text-white">staging</strong>: integration and QA checks</li>
+          <li><strong class="text-white">production</strong>: live user traffic</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Validation checkpoints</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Ensure API/DB URLs are not cross-contaminated</li>
+          <li>Confirm server-only secrets are not exposed to frontend bundles</li>
+          <li>Confirm staging and production data are isolated</li>
+        </ul>
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/runtime/environments" lang="en" />
+  </div>
+</DocsLayout>

@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `세션/쿠키 기반 인증을 서비스에 추가하려고 해.
+아래 조건을 반영해 구현 절차와 주의사항을 정리해줘.
+
+[입력 정보]
+- 프론트 도메인: [FRONTEND_ORIGIN]
+- 백엔드 도메인: [BACKEND_ORIGIN]
+- HTTPS 여부: [true/false]
+- 쿠키 전략: [httpOnly/session/refresh]
+- 백엔드 스택: [FastAPI/Hono/Nest]
+
+[출력 요구사항]
+1) 로그인/로그아웃/세션검증 API 설계
+2) CORS + 쿠키 속성(SameSite/Secure) 권장값
+3) 클라이언트 요청 설정(credentials)
+4) 테스트 시나리오
+5) 흔한 실패 케이스 및 대응`;
+
+const checklist = [
+  { id: 'api', label: '인증 API 설계', description: 'login/logout/session-check 정의' },
+  { id: 'cookie', label: '쿠키 속성 설정', description: 'SameSite/Secure/httpOnly 확정' },
+  { id: 'cors', label: 'CORS 정책 반영', description: 'origin/credentials 조합 점검' },
+  { id: 'client', label: '클라이언트 설정', description: 'fetch/axios credentials 포함' },
+  { id: 'verify', label: '통합 검증', description: '브라우저/배포 환경 재현 테스트' },
+];
+---
+
+<DocsLayout
+  title="레시피: 인증 추가(세션/쿠키)"
+  description="세션/쿠키 기반 인증을 안전하게 도입하는 프롬프트 레시피"
+  currentPath="/recipes/add-auth-cookie"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">인증 추가(쿠키)</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Auth
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">인증 추가(세션/쿠키)</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        쿠키 속성, CORS, 클라이언트 credentials 설정을 함께 점검하는 인증 도입 레시피입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="warning" title="중요">
+        <p class="mt-2">교차 도메인 환경에서는 `SameSite=None`와 `Secure=true` 조건을 반드시 함께 검토하세요.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="쿠키 인증 도입 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">클라이언트 요청 예시</h2>
+      <CodeBlock
+        client:load
+        filename="typescript"
+        code={`await fetch('https://api.example.com/session', {
+  method: 'GET',
+  credentials: 'include',
+});`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-add-auth-cookie" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/auth" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">인증 개요</h4>
+          <p class="text-text-secondary text-sm">인증 방식/구조 비교</p>
+        </a>
+        <a href="/fix/auth-cookie" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Auth Cookie 오류</h4>
+          <p class="text-text-secondary text-sm">쿠키 미전송 이슈 점검</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

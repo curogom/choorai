@@ -1,0 +1,100 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+
+const prompt = `I want to bootstrap a React project quickly.
+Create an execution-ready setup plan based on the inputs below.
+
+[Inputs]
+- Package manager: [npm/pnpm/yarn]
+- Use TypeScript: [true/false]
+- Styling: [Tailwind/CSS Modules]
+- State management: [zustand/redux/none]
+- Deployment target: [Cloudflare Pages/Vercel]
+
+[Output requirements]
+1) Project init commands
+2) Feature-based folder structure
+3) ESLint/Prettier setup
+4) Routing/state starter template
+5) Pre-deploy checklist`;
+
+const checklist = [
+  { id: 'create', label: 'Create project', description: 'Initialize Vite + React + TS' },
+  { id: 'lint', label: 'Set quality tools', description: 'Apply ESLint/Prettier' },
+  { id: 'structure', label: 'Finalize structure', description: 'Adopt feature-based folders' },
+  { id: 'runtime', label: 'Run and build', description: 'Validate npm run dev/build' },
+  { id: 'deploy-ready', label: 'Check deploy readiness', description: 'Verify env and SPA routing' },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: React Bootstrap"
+  description="Prompt recipe to bootstrap a Vite-based React project"
+  currentPath="/recipes/react-bootstrap"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">React Bootstrap</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Frontend
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">React Project Bootstrap</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Use this recipe to spin up a new React project with baseline tooling and structure.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="When to use">
+        <p class="mt-2">Use during project kickoff, repository reset, or team template standardization.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="React Bootstrap Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Command Example</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install
+npm install -D eslint prettier
+npm run dev`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-react-bootstrap" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/frontend/react" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">React Learning Path</h4>
+          <p class="text-text-secondary text-sm">Core components and state basics</p>
+        </a>
+        <a href="/en/fix/build-fail" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Fix Build Failures</h4>
+          <p class="text-text-secondary text-sm">Fast checks for setup errors</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

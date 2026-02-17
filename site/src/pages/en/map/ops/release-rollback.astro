@@ -1,0 +1,83 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+---
+
+<DocsLayout
+  lang="en"
+  title="Ops Deep Dive: Release and Rollback Runbook"
+  description="Standard operating runbook from release gates to rollback execution"
+  currentPath="/map/ops/release-rollback"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <a href="/en/map/ops" class="hover:text-white transition-colors">Ops</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Release/Rollback Runbook</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Ops Deep Dive
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Release and Rollback Runbook</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Standardize release gates, post-deploy checks, and rollback triggers to reduce operational risk.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="warning" title="Example rollback triggers">
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <li>5xx error rate spikes above 1%</li>
+          <li>Core API p95 latency doubles</li>
+          <li>Critical feature outage lasts more than 5 minutes</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Pre-release checks</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Build/test/link checks completed</li>
+          <li>Owners assigned (release/verification/monitoring)</li>
+          <li>Hotfix path and communication channel confirmed</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">15-minute post-release validation</h2>
+        <CodeBlock
+          client:load
+          filename="runbook"
+          code={`1) Sample 3 critical URLs
+2) Check 5xx/4xx ratios
+3) Execute one key user flow
+4) Decide immediate rollback if abnormal`}
+        />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Rollback log template</h2>
+        <CodeBlock
+          client:load
+          filename="markdown"
+          code={`- Trigger: [what happened]
+- Decision Time (KST): [YYYY-MM-DD HH:mm]
+- Rollback Target: [deploy or revision]
+- Owner: [name]
+- Follow-up: [next action]`}
+        />
+      </section>
+    </article>
+
+    <PageNavigation currentPath="/map/ops/release-rollback" lang="en" />
+  </div>
+</DocsLayout>

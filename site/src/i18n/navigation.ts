@@ -87,7 +87,9 @@ export function getNavigation(lang: Lang): NavSection[] {
             { label: 'Vector DB', href: lp('/map/database/vector'), badge: 'Lv.4', indent: 2 },
             { label: t('nav.envVars'), href: lp('/map/runtime'), indent: 1 },
             { label: lang === 'en' ? 'Env Basics' : '환경변수 기초', href: lp('/map/env-basics'), indent: 2 },
+            { label: lang === 'en' ? 'Multi-Environment Ops' : '멀티 환경 운영', href: lp('/map/runtime/environments'), indent: 2 },
             { label: t('nav.monitoring'), href: lp('/map/ops'), indent: 1 },
+            { label: lang === 'en' ? 'Release/Rollback Runbook' : '릴리즈/롤백 런북', href: lp('/map/ops/release-rollback'), indent: 2 },
           ],
         },
         {
@@ -146,6 +148,12 @@ export function getNavigation(lang: Lang): NavSection[] {
       href: lp('/recipes'),
       items: [
         { label: 'Agent Recipes', href: lp('/recipes') },
+        { label: lang === 'en' ? 'React Bootstrap' : 'React 부트스트랩', href: lp('/recipes/react-bootstrap'), indent: 1 },
+        { label: lang === 'en' ? 'FastAPI Bootstrap' : 'FastAPI 부트스트랩', href: lp('/recipes/fastapi-bootstrap'), indent: 1 },
+        { label: lang === 'en' ? 'Hono Bootstrap' : 'Hono 부트스트랩', href: lp('/recipes/hono-bootstrap'), indent: 1 },
+        { label: lang === 'en' ? 'Add CRUD Endpoints' : 'CRUD 엔드포인트 추가', href: lp('/recipes/add-crud-endpoint'), indent: 1 },
+        { label: lang === 'en' ? 'Add Auth (Cookie)' : '인증 추가(쿠키)', href: lp('/recipes/add-auth-cookie'), indent: 1 },
+        { label: lang === 'en' ? 'Review PR Quality' : 'PR 품질 점검', href: lp('/recipes/review-pr-quality'), indent: 1 },
       ],
     },
     {
@@ -160,6 +168,8 @@ export function getNavigation(lang: Lang): NavSection[] {
       items: [
         { label: 'Cloudflare Pages', href: lp('/deploy/cloudflare-pages') },
         { label: 'Vercel', href: lp('/deploy/vercel') },
+        { label: 'Netlify', href: lp('/deploy/netlify') },
+        { label: 'Railway', href: lp('/deploy/railway') },
         { label: 'Cloud Run', href: lp('/deploy/cloud-run') },
       ],
     },

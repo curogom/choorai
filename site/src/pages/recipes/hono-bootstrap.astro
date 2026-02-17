@@ -1,0 +1,97 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+
+const prompt = `Hono API를 최소 구성으로 빠르게 시작하고 싶어.
+아래 조건으로 실행 가능한 스타터를 설계해줘.
+
+[입력 정보]
+- 런타임: [Node/Bun/Cloudflare Workers]
+- 타입 검증: [zod/none]
+- 저장소: [in-memory/postgres]
+- 테스트 도구: [vitest/jest]
+
+[출력 요구사항]
+1) 최소 폴더 구조
+2) /health + CRUD 기본 라우트
+3) 에러 핸들러/로깅 미들웨어
+4) 테스트 1~2개 샘플
+5) 로컬 실행/배포 체크리스트`;
+
+const checklist = [
+  { id: 'init', label: '프로젝트 생성', description: 'Hono + TypeScript 초기화' },
+  { id: 'routes', label: '핵심 라우트 구성', description: '/health 및 기본 CRUD 추가' },
+  { id: 'middleware', label: '미들웨어 추가', description: '로깅/에러 처리 구성' },
+  { id: 'tests', label: '기본 테스트 작성', description: '헬스/CRUD 스모크 테스트' },
+  { id: 'verify', label: '실행 검증', description: '로컬 런타임 동작 확인' },
+];
+---
+
+<DocsLayout
+  title="레시피: Hono 부트스트랩"
+  description="Hono API 서버 초기 구성을 빠르게 만드는 프롬프트 레시피"
+  currentPath="/recipes/hono-bootstrap"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Hono 부트스트랩</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold mb-4">
+        Recipes Core Pack · Backend
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Hono 부트스트랩</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        경량 API 서버를 빠르게 시작하고 테스트 가능한 구조로 잡기 위한 레시피입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="추천 사용 시점">
+        <p class="mt-2">POC API, 서버리스 엔드포인트, 경량 백엔드 MVP를 시작할 때 적합합니다.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="Hono 부트스트랩 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">명령어 예시</h2>
+      <CodeBlock
+        client:load
+        filename="terminal"
+        code={`npm create hono@latest my-hono-api
+cd my-hono-api
+npm install
+npm run dev`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-hono-bootstrap" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/backend/hono" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Hono 백엔드 가이드</h4>
+          <p class="text-text-secondary text-sm">기본 라우팅/실행 구조</p>
+        </a>
+        <a href="/fix/preflight-405" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">CORS Preflight 405</h4>
+          <p class="text-text-secondary text-sm">초기 CORS 설정 오류 점검</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
