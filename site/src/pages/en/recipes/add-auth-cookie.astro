@@ -4,6 +4,7 @@ import Callout from '../../../components/Callout';
 import CodeBlock from '../../../components/CodeBlock';
 import PromptBox from '../../../components/PromptBox';
 import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
 
 const prompt = `I need to add session/cookie-based authentication.
 Create an implementation runbook with the constraints below.
@@ -82,6 +83,8 @@ const checklist = [
     <section class="mb-10">
       <Checklist client:load locale="en" storageKey="recipe-add-auth-cookie" title="Execution Checklist" items={checklist} />
     </section>
+
+    <TemplateSections locale="en" topic="add-auth-cookie" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
