@@ -1,12 +1,19 @@
-# Choorai 추가 콘텐츠 백로그 (2026-02-16)
+# Choorai 추가 콘텐츠 백로그 (2026-02-17)
 
 ## 목적
 - 현재 공개된 문서 범위를 기준으로, 다음 배포 사이클에서 실제로 추가해야 할 콘텐츠를 우선순위로 정리한다.
 - 각 항목은 바로 페이지 생성이 가능하도록 `ko/en 경로`를 함께 정의한다.
 
 ## 현재 기준
-- 완료: `Path(60분)`, `Map`, `Fix Top5`, `Deploy 3종`, `BaaS`, `Auth`, `Testing`, `Reference`, `Recipes`.
-- 미완료 성격: 심화 코스(미니 SaaS/B2B Admin), 트러블슈팅 확장, 실전 운영 콘텐츠, Agent Recipes 확장.
+- 완료: `Path(60분)`, `Map`, `Fix Top10`, `Deploy 3종`, `BaaS`, `Auth`, `Testing`, `Reference`, `Recipes(4종)`.
+- 미완료 성격: Recipes 확장, Deploy 레퍼런스 확장, 실전 운영 콘텐츠, 심화 코스(미니 SaaS/B2B Admin).
+
+## Release 2 즉시 반영 후보 (목표: 2026-03-09)
+- 기준 문서: `docs/planning/13_RELEASE_2_SCOPE_DRAFT.md`
+- 후보 묶음 (10개 주제 / ko-en 동시):
+  - Recipes 6개: `react-bootstrap`, `fastapi-bootstrap`, `hono-bootstrap`, `add-crud-endpoint`, `add-auth-cookie`, `review-pr-quality`
+  - Deploy 2개: `netlify`, `railway`
+  - Ops/Runtime 2개: `release-rollback`, `environments`
 
 ---
 
@@ -98,10 +105,10 @@
 ---
 
 ## 실행 순서 제안
-1. `Fix Top10` 중 5개 먼저 공개 (`dns-nxdomain`, `ssl-cert`, `failed-to-fetch`, `node-version`, `rate-limit`)
-2. Recipes 10개 중 배포/디버깅 관련 4개 우선 공개
+1. Release 2 묶음 10개 주제(Recipes 6 + Deploy 2 + Ops/Runtime 2) 우선 반영
+2. Release 2 모니터링 결과 기준으로 Render/Fly.io/AWS Amplify를 후순위 반영
 3. Mini SaaS 코스 공개 후 B2B Admin 코스 착수
-4. Deploy 레퍼런스 2개(Netlify, Railway) 먼저 추가
+4. Ops 심화(`logging`, `alerts`, `backup-restore`)를 Release 3 후보로 이관
 
 ## 품질 기준 (모든 신규 페이지 공통)
 - 템플릿 고정: `TL;DR`, `Prerequisites`, `Steps`, `Validation`, `Troubleshooting`, `References`.
