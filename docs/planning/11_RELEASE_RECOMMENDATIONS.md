@@ -1,8 +1,14 @@
-# Choorai 출시 권장 포인트 (기준일: 2026-02-16)
+# Choorai 출시 권장 포인트 (기준일: 2026-02-17)
 
 ## 목적
 - 콘텐츠 확장을 “한 번에 대량 공개”하지 않고, 검색 유입/오류율/완주율을 기준으로 단계적으로 출시한다.
 - 각 단계는 명확한 Go/No-Go 기준을 가진다.
+
+## 상태 업데이트 (2026-02-17)
+- Release 1 후보 반영 PR: [#16](https://github.com/curogom/choorai/pull/16) (merged)
+- Release 1 모니터링 이슈: [#13](https://github.com/curogom/choorai/issues/13) (2026-02-23 10:00 ~ 2026-02-26 10:00 KST)
+- Release 2 준비 이슈: [#14](https://github.com/curogom/choorai/issues/14)
+- Release 2 범위 초안: `docs/planning/13_RELEASE_2_SCOPE_DRAFT.md`
 
 ---
 
@@ -29,20 +35,24 @@
 
 ---
 
-## Release 2 - Fix 확장 2차 + Recipes 선공개
+## Release 2 - Recipes 확장 + Deploy/운영 보강
 - 권장 출시일: **2026-03-09 (월)**
 - 범위:
-  - 트러블슈팅 추가 5개 (`gateway-timeout`, `mixed-content`, `build-oom`, `preflight-405`, `webhook-signature`)
-  - Recipes 4개 선공개 (`deploy-cloudflare-pages`, `deploy-cloud-run`, `debug-build-fail`, `check-env-vars`)
+  - Recipes 6개 (`react-bootstrap`, `fastapi-bootstrap`, `hono-bootstrap`, `add-crud-endpoint`, `add-auth-cookie`, `review-pr-quality`)
+  - Deploy 2개 (`netlify`, `railway`)
+  - 운영/런타임 2개 (`map/runtime/environments`, `map/ops/release-rollback`)
 - 기대효과:
-  - 트러블슈팅 → Recipes 전환 동선 강화
-  - “문제 해결 + 재발 방지” 흐름 구축
+  - “문제 해결(Fix) → 실행 레시피(Recipes)” 전환 동선 강화
+  - 배포/운영 실전 문서 보강으로 재발 방지 루프 구축
 
 ### Go 기준
-- Release 1 이후 2주 동안:
-  - 신규 Fix 페이지 평균 체류시간 40초 이상
-  - 신규 Fix 페이지 이탈률 급증 없음(기존 대비 +15% 이내)
+- Release 1 모니터링(#13)에서:
   - 치명적 사용자 피드백 0건
+  - 치명 오류 핫픽스 미발생
+- Release 2 준비에서:
+  - 신규 페이지(ko/en) 쌍 누락 0건
+  - `npm -C site run build` 성공
+  - 배포/검증/모니터링 담당 지정 완료
 
 ---
 
@@ -98,6 +108,6 @@
 ---
 
 ## 최종 권장
-1. 2026-02-23에 Release 1 즉시 배포
-2. 2주 지표 확인 후 2026-03-09에 Release 2 배포
+1. 2026-02-23 10:00 KST에 Release 1 배포 후 `#13` 72시간 모니터링 수행
+2. 2026-02-27 Scope Freeze 이후 2026-03-09 10:00 KST에 Release 2 배포
 3. 코스 확장은 2026-03-30 Alpha, 2026-04-20 정식으로 단계 분리
