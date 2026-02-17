@@ -1,0 +1,90 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+
+const guides = [
+  {
+    title: 'Cloudflare Pages',
+    description: '프론트엔드 정적 사이트 배포와 SPA 리라이트 설정',
+    href: '/deploy/cloudflare-pages',
+    tags: ['Frontend', 'Static', 'SPA'],
+  },
+  {
+    title: 'Vercel',
+    description: 'Next.js/React 프로젝트 배포 및 환경변수 운영',
+    href: '/deploy/vercel',
+    tags: ['Frontend', 'Next.js', 'Serverless'],
+  },
+  {
+    title: 'Netlify',
+    description: 'React/Vite 앱 배포와 `_redirects` 기반 라우팅 보호',
+    href: '/deploy/netlify',
+    tags: ['Frontend', 'Vite', 'Routing'],
+  },
+  {
+    title: 'Railway',
+    description: 'FastAPI/Hono API를 간단하게 배포하는 백엔드 시작점',
+    href: '/deploy/railway',
+    tags: ['Backend', 'API', 'Beginner'],
+  },
+  {
+    title: 'Cloud Run',
+    description: '컨테이너 기반 배포와 최소 운영 설정 가이드',
+    href: '/deploy/cloud-run',
+    tags: ['Container', 'GCP', 'Ops'],
+  },
+];
+---
+
+<DocsLayout
+  title="배포 가이드"
+  description="플랫폼별 배포 가이드를 한 곳에서 빠르게 찾는 인덱스"
+  currentPath="/deploy"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <span class="text-primary font-medium">배포</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        Deploy Index
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">배포 가이드 모음</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        프론트엔드/백엔드 배포 가이드를 플랫폼별로 정리했습니다. 현재 스택에 맞는 항목부터 시작하세요.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="선택 가이드">
+        <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+          <li>프론트엔드 SPA: Cloudflare Pages / Netlify / Vercel</li>
+          <li>백엔드 API: Railway / Cloud Run</li>
+          <li>처음 배포라면 Railway 또는 Cloudflare Pages부터 시작</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-4">
+      {guides.map((guide) => (
+        <a
+          href={guide.href}
+          class="group p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all no-underline"
+        >
+          <h2 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
+            {guide.title}
+          </h2>
+          <p class="text-text-secondary text-sm mb-3">{guide.description}</p>
+          <div class="flex flex-wrap gap-1.5">
+            {guide.tags.map((tag) => (
+              <span class="px-2 py-0.5 bg-background rounded text-xs text-text-secondary">{tag}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </section>
+  </div>
+</DocsLayout>

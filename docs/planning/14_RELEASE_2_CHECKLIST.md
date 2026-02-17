@@ -21,14 +21,14 @@
 ## 2) Go/No-Go 게이트
 
 ### Gate A: 기술 검증
-- [ ] `npm -C site run build` 성공
-- [ ] 신규 페이지 내부 링크 404 0건
-- [ ] ko/en 라우트 렌더링 오류 0건
-- [ ] 구조화 데이터(Article + Breadcrumb) 누락 0건
+- [x] `npm -C site run build` 성공
+- [x] 신규 페이지 내부 링크 404 0건
+- [x] ko/en 라우트 렌더링 오류 0건
+- [x] 구조화 데이터(Article + Breadcrumb) 누락 0건
 
 ### Gate B: 콘텐츠 품질
 - [ ] 모든 신규 문서에 `TL;DR`, `Prerequisites`, `Steps`, `Validation`, `Troubleshooting`, `References` 포함
-- [ ] ko/en 문서 쌍 누락 0건
+- [x] ko/en 문서 쌍 누락 0건
 - [ ] 코드/명령어 오탈자 재현 불가
 - [ ] References는 공식 문서 우선
 
@@ -48,6 +48,17 @@
 2. 샘플 페이지 점검(ko/en 각 5페이지 이상)
 3. Search Console 색인 제출
 4. 72시간 모니터링 이슈 오픈 및 담당자 확인
+
+## 4.1) QA 실행 로그 (2026-02-17 KST)
+- 기준 이슈: #18
+- 실행 브랜치: `codex/release2-qa-gate`
+- 실행 명령:
+  - `npm -C site run build`
+  - `node site/scripts/release2-qa-audit.mjs`
+- 결과 요약:
+  - Gate A: 통과
+  - Gate B: 미통과 (신규 20페이지 모두 템플릿 섹션 누락)
+- 상세 리포트: `docs/planning/16_RELEASE_2_QA_GATE_REPORT.md`
 
 ## 5) 72시간 모니터링 기준
 
