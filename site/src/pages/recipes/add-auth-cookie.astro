@@ -4,6 +4,7 @@ import Callout from '../../components/Callout';
 import CodeBlock from '../../components/CodeBlock';
 import PromptBox from '../../components/PromptBox';
 import Checklist from '../../components/Checklist';
+import TemplateSections from '../../components/TemplateSections.astro';
 
 const prompt = `세션/쿠키 기반 인증을 서비스에 추가하려고 해.
 아래 조건을 반영해 구현 절차와 주의사항을 정리해줘.
@@ -80,6 +81,8 @@ const checklist = [
     <section class="mb-10">
       <Checklist client:load storageKey="recipe-add-auth-cookie" title="실행 체크리스트" items={checklist} />
     </section>
+
+    <TemplateSections topic="add-auth-cookie" />
 
     <section class="mt-12 pt-8 border-t border-border">
       <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>

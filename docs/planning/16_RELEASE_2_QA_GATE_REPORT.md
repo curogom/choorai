@@ -45,3 +45,19 @@ node site/scripts/release2-qa-audit.mjs
 2. References를 공식 문서 우선으로 보강 (플랫폼/프레임워크 공식 링크)
 3. 표준화 반영 후 `node site/scripts/release2-qa-audit.mjs` 재실행으로 Gate B 재검증
 
+## 7) 재검증 결과 (Issue #22)
+- 재검증 시각: 2026-02-17 (KST)
+- 실행 브랜치: `codex/release2-gateb-template-standardization`
+- 실행 명령:
+  - `npm -C site run build`
+  - `node site/scripts/release2-qa-audit.mjs`
+- 결과:
+  - `routeRenderFailures = 0`
+  - `linkFailures = 0`
+  - `jsonLdFailures = 0`
+  - `templateFailures = 0`
+  - `pairFailures = 0`
+- 조치 요약:
+  - `site/src/components/TemplateSections.astro` 공통 템플릿 섹션 컴포넌트 추가
+  - Release 2 대상 20페이지에 템플릿 섹션 + 공식 문서 References 연결
+  - `site/scripts/release2-qa-audit.mjs`를 렌더 결과 기반 점검으로 개선
