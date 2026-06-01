@@ -1,0 +1,515 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import MetaBadge from '../../../components/MetaBadge';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+interface MissionItem {
+  id: string;
+  week: 1 | 2;
+  day: string;
+  title: string;
+  duration: string;
+  goal: string;
+  starterPrompt: string;
+  steps: string[];
+  output: string;
+  done: string[];
+  validation: string;
+  links: { label: string; href: string }[];
+}
+
+const missions: MissionItem[] = [
+  {
+    id: 'scope',
+    week: 1,
+    day: 'Day 1',
+    title: 'Choose one idea and done criteria',
+    duration: '30 min',
+    goal: 'Narrow the service to one sentence and define how you will know today is done.',
+    starterPrompt: 'I want to narrow my 14-day web service idea to one small version. Please define one target user, one core feature, five done criteria, and one validation method.',
+    steps: [
+      'Write one target user and one problem.',
+      'Pick only one feature for the first version.',
+      'Add five done criteria and one validation method to README.',
+    ],
+    output: 'Write one feature scope, 5-line DoD, and one validation method in README',
+    done: ['Feature scope is limited to one core action', '5 DoD lines are written', 'Validation command or URL rule is defined'],
+    validation: 'Open README and confirm that scope, done criteria, and validation are all visible.',
+    links: [
+      { label: 'Start 60-min Challenge', href: '/en/path/60min' },
+      { label: 'HTTP/API Basics', href: '/en/map/http-api' },
+    ],
+  },
+  {
+    id: 'screen-plan',
+    week: 1,
+    day: 'Day 2',
+    title: 'Define screens and data shape',
+    duration: '45 min',
+    goal: 'Decide two screens and three to five data fields before writing UI code.',
+    starterPrompt: 'Please define two screens and three to five data fields for the first version of my service. Include screen names, field names, and sample data in a table.',
+    steps: [
+      'Pick two screens from list, form, and detail.',
+      'Write the visible text and buttons for each screen.',
+      'Create three sample records in JSON shape.',
+    ],
+    output: 'Two screen descriptions and three sample records',
+    done: ['Two screen names are defined', '3-5 fields and sample data exist', 'Expected button behavior is written'],
+    validation: 'Check README or notes for screen names, field names, and sample data.',
+    links: [
+      { label: 'React Track', href: '/en/start/60min/frontend/react' },
+      { label: 'Vue Track', href: '/en/start/60min/frontend/vue' },
+    ],
+  },
+  {
+    id: 'frontend-shell',
+    week: 1,
+    day: 'Day 3',
+    title: 'Build the first frontend screen',
+    duration: '90 min',
+    goal: 'Render one list or form screen locally using sample data.',
+    starterPrompt: 'I want to build one list screen with sample data in a Vite frontend. Please give me component structure, run commands, and done criteria for a beginner.',
+    steps: [
+      'Create or open the frontend project.',
+      'Add sample data in code and render one list or form screen.',
+      'Run the local server and verify the page in the browser.',
+    ],
+    output: 'One visible frontend screen running locally',
+    done: ['`npm run dev` works', 'Sample data is visible on screen', 'One screenshot of the key UI is saved'],
+    validation: 'Run `npm run dev` and confirm the local URL shows sample data.',
+    links: [
+      { label: 'React Track', href: '/en/start/60min/frontend/react' },
+      { label: 'Vue Track', href: '/en/start/60min/frontend/vue' },
+    ],
+  },
+  {
+    id: 'frontend-action',
+    week: 1,
+    day: 'Day 4',
+    title: 'Connect form input to the list',
+    duration: '90 min',
+    goal: 'Make the smallest interaction where user input changes the visible list.',
+    starterPrompt: 'Please help me add a form to my frontend so submitting it shows a new item in the list. Focus on simple state management, code, and done criteria.',
+    steps: [
+      'Keep only one to three fields in the form.',
+      'Add submitted values to the list.',
+      'Handle one failure case such as empty input.',
+    ],
+    output: 'A screen where input changes the list',
+    done: ['The form is visible', 'A submitted item appears in the list', 'Empty input is blocked or explained'],
+    validation: 'Type a value in the browser and confirm it appears in the list immediately.',
+    links: [
+      { label: 'React Track', href: '/en/start/60min/frontend/react' },
+      { label: 'Vue Track', href: '/en/start/60min/frontend/vue' },
+    ],
+  },
+  {
+    id: 'backend',
+    week: 1,
+    day: 'Day 5',
+    title: 'Finish backend API skeleton',
+    duration: '90 min',
+    goal: 'Create `/health` plus list/create APIs that the frontend can call.',
+    starterPrompt: 'Please help me create a minimal backend API for my service. Include /health, list, create endpoints, and curl validation commands for FastAPI or Hono.',
+    steps: [
+      'Create the `/health` route first.',
+      'Add list and create endpoints for the core resource.',
+      'Use one simple error response shape.',
+    ],
+    output: '`/health` + one CRUD resource set',
+    done: ['`GET /health` returns 200', 'At least list/create endpoints work', 'Error response format is consistent'],
+    validation: 'Run `curl http://localhost:8000/health` or the matching local port and confirm a successful response.',
+    links: [
+      { label: 'FastAPI Track', href: '/en/start/60min/backend/fastapi' },
+      { label: 'Hono Track', href: '/en/start/60min/backend/hono' },
+    ],
+  },
+  {
+    id: 'connect',
+    week: 1,
+    day: 'Day 6',
+    title: 'Connect frontend and API',
+    duration: '120 min',
+    goal: 'Replace sample data with the backend API response.',
+    starterPrompt: 'I want to connect my frontend screen to my backend API. Please explain where to put fetch, how to check CORS, how to show success/failure UI, and how to validate it.',
+    steps: [
+      'Move the API URL to an environment variable or constant.',
+      'Change the list screen to load the API response.',
+      'Add basic loading and failure messages.',
+    ],
+    output: 'Local app showing real API data in the browser',
+    done: ['Real data is shown in browser', 'An API failure message is visible when it fails', 'CORS is solved or narrowed down with Fix docs'],
+    validation: 'Open browser DevTools Network tab and confirm the API request succeeds.',
+    links: [
+      { label: 'Connect Guide', href: '/en/start/60min/connect' },
+      { label: 'CORS Fix', href: '/en/fix/cors' },
+      { label: 'Troubleshooting', href: '/en/fix' },
+    ],
+  },
+  {
+    id: 'first-deploy',
+    week: 1,
+    day: 'Day 7',
+    title: 'Create the first deploy URL',
+    duration: '120 min',
+    goal: 'Deploy the frontend and get a public URL someone else can open.',
+    starterPrompt: 'I am deploying my frontend app for the first time. Please give me build commands, env var checks, and post-deploy validation steps for Cloudflare Pages or Vercel.',
+    steps: [
+      'Run the frontend build locally first.',
+      'Connect the project to a deploy platform.',
+      'Open the deploy URL and verify the key screen.',
+    ],
+    output: 'One reachable frontend deploy URL',
+    done: ['Local build succeeds', 'Deploy URL is reachable', 'Deploy URL is written in README'],
+    validation: 'Open the deploy URL in a fresh browser tab and check the first screen plus API status.',
+    links: [
+      { label: 'Deploy Guide', href: '/en/start/60min/deploy' },
+      { label: 'Cloudflare Pages', href: '/en/deploy/cloudflare-pages' },
+      { label: 'Vercel', href: '/en/deploy/vercel' },
+    ],
+  },
+  {
+    id: 'auth',
+    week: 2,
+    day: 'Day 8',
+    title: 'Decide the auth scope',
+    duration: '45 min',
+    goal: 'Choose only the auth behavior required for the first version.',
+    starterPrompt: 'Please help me define the minimum auth scope for my service. Compare no-login, cookie, and token options, then pick one protected screen for the first version.',
+    steps: [
+      'Pick only one screen that must require login.',
+      'Choose cookie or token storage.',
+      'Define where users go after login success or failure.',
+    ],
+    output: 'Auth method and one protected screen',
+    done: ['One protected screen is chosen', 'Cookie or token strategy is selected', 'Success/failure auth flow is written'],
+    validation: 'Check README for auth method, protected screen, and success/failure flow.',
+    links: [
+      { label: 'Auth Overview', href: '/en/map/auth' },
+      { label: 'Auth Cookie Recipe', href: '/en/recipes/add-auth-cookie' },
+    ],
+  },
+  {
+    id: 'auth-flow',
+    week: 2,
+    day: 'Day 9',
+    title: 'Build the smallest login flow',
+    duration: '120 min',
+    output: 'Implement login/logout or cookie-based session once',
+    goal: 'Separate login success/failure and apply it to one protected screen.',
+    starterPrompt: 'I want to add the smallest login flow to my app. Please guide success/failure responses, cookie or token storage, and one protected route step by step.',
+    steps: [
+      'Create a login API or temporary login function.',
+      'Show different UI for success and failure.',
+      'Protect one screen that requires login.',
+    ],
+    done: ['Success/failure auth paths are separated', 'Cookie or token storage strategy is applied', 'One protected route is applied'],
+    validation: 'Confirm the protected screen is blocked before login and accessible after login.',
+    links: [
+      { label: 'Auth Overview', href: '/en/map/auth' },
+      { label: 'Auth Cookie Recipe', href: '/en/recipes/add-auth-cookie' },
+    ],
+  },
+  {
+    id: 'quality',
+    week: 2,
+    day: 'Day 10',
+    title: 'Run one quality gate',
+    duration: '60 min',
+    goal: 'Add minimum testing and self-review so the core user flow does not regress silently.',
+    starterPrompt: 'Please create a minimum test and PR self-review checklist for my app’s core flow. Include one success case, one failure case, and one regression risk.',
+    steps: [
+      'Pick one core success scenario.',
+      'Test one success case and one failure case.',
+      'Write a PR self-review checklist.',
+    ],
+    output: 'At least one core test scenario and one PR self-review',
+    done: ['Success/failure test case exists', 'At least one regression risk is recorded', 'PR checklist is passed'],
+    validation: 'Confirm the test command or manual validation note is recorded in README or PR notes.',
+    links: [
+      { label: 'Testing Basics', href: '/en/map/testing-basics' },
+      { label: 'PR Review Recipe', href: '/en/recipes/review-pr-quality' },
+    ],
+  },
+  {
+    id: 'env-split',
+    week: 2,
+    day: 'Day 11',
+    title: 'Separate environment variables',
+    duration: '90 min',
+    goal: 'Move values that differ by environment out of code.',
+    starterPrompt: 'Please help me organize my app environment variables. List what differs between local, staging, and production, show a .env.example, and flag values that must not be committed.',
+    steps: [
+      'Separate API URLs, public keys, and secret keys.',
+      'Create `.env.example` without real secrets.',
+      'Register matching env vars in the deploy platform.',
+    ],
+    output: 'Environment variable list and `.env.example`',
+    done: ['Environment-specific values are listed', '`.env.example` is written', 'Real secrets are not committed'],
+    validation: 'Check `git status` and `.gitignore` to confirm real `.env` files are not tracked.',
+    links: [
+      { label: 'Env Basics', href: '/en/map/env-basics' },
+      { label: 'Check Env Vars', href: '/en/recipes/check-env-vars' },
+      { label: 'Env Fix', href: '/en/fix/env' },
+    ],
+  },
+  {
+    id: 'recovery-routine',
+    week: 2,
+    day: 'Day 12',
+    title: 'Define incident check and rollback',
+    duration: '90 min',
+    goal: 'Write the first response checklist before production problems happen.',
+    starterPrompt: 'Please create an incident check and rollback checklist for my deployed service. Cover logs, env vars, deploy history, previous version restore, and cost guardrails.',
+    steps: [
+      'Write a 3-step order for checking incidents.',
+      'Find how to restore a previous deploy in the platform.',
+      'Choose one cost guardrail or shutoff action.',
+    ],
+    output: '3-step incident check order and one rollback method',
+    done: ['3-step incident check order is written', 'At least one rollback method is documented', 'One cost guardrail is defined'],
+    validation: 'Confirm the doc is enough to find the rollback button or command without extra searching.',
+    links: [
+      { label: 'Monitoring', href: '/en/map/ops' },
+      { label: 'Release/Rollback', href: '/en/map/ops/release-rollback' },
+      { label: 'Gateway Timeout', href: '/en/fix/gateway-timeout' },
+    ],
+  },
+  {
+    id: 'demo-package',
+    week: 2,
+    day: 'Day 13',
+    title: 'Package the demo page',
+    duration: '60 min',
+    goal: 'Make the service shareable with URLs, usage steps, and known issues on one page.',
+    starterPrompt: 'Please help me write a one-page demo note for my service. Include web URL, API URL, usage scenario, known issues, and validation method.',
+    steps: [
+      'Put web URL and API URL at the top.',
+      'Write the usage scenario in three lines.',
+      'List known issues and validation method.',
+    ],
+    output: 'One-page summary with web URL, API URL, usage, known issues',
+    done: ['Two URLs (web/API) are shareable', 'Usage scenario is written in 3 lines', 'Known issues and validation method are written'],
+    validation: 'Open the demo note URLs in another browser or private window.',
+    links: [
+      { label: 'Complete Step', href: '/en/start/60min/complete' },
+      { label: 'Reference Projects', href: '/en/reference' },
+    ],
+  },
+  {
+    id: 'retro',
+    week: 2,
+    day: 'Day 14',
+    title: 'Retrospective and next three improvements',
+    duration: '60 min',
+    goal: 'Close the 2-week cycle by choosing only three next improvements.',
+    starterPrompt: 'Please help me write a retrospective for my 2-week build. Summarize what worked, what blocked me, three next improvements, and one feature I should keep.',
+    steps: [
+      'Write three lines each for what worked and what blocked you.',
+      'Choose only three next improvements.',
+      'Pick one core feature to keep in the next version.',
+    ],
+    output: 'One retrospective page and three next improvements',
+    done: ['Wins and blockers are written', 'Three next improvements are selected', 'Deploy URL and retrospective are stored together'],
+    validation: 'Confirm README or the retrospective note includes the deploy URL and three next improvements.',
+    links: [
+      { label: 'Complete Step', href: '/en/start/60min/complete' },
+      { label: 'Reference Projects', href: '/en/reference' },
+    ],
+  },
+];
+
+const checklistItems = missions.map((mission) => ({
+  id: mission.id,
+  label: `${mission.day} · ${mission.title}`,
+  description: mission.output,
+}));
+
+const week1 = missions.filter((mission) => mission.week === 1);
+const week2 = missions.filter((mission) => mission.week === 2);
+---
+
+<DocsLayout
+  lang="en"
+  title="2-Week Build-to-Deploy Mission (Beta)"
+  description="Execution-first roadmap for beginners: finish one deployed URL in 14 days"
+  currentPath="/path/mission"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Current location">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/path" class="hover:text-white transition-colors">Path</a>
+      <span>/</span>
+      <span class="text-primary font-medium">2-Week Mission</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <MetaBadge icon="clock" text="14 days total · 30-120 min/day" />
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">2-Week Build-to-Deploy Mission</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        This beta track is designed so beginners move by "completable missions" instead of browsing topic lists.
+        Single goal: ship one working service with a public deploy URL within 14 days.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="info" title="How to use this page">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>Do one mission per day.</li>
+          <li>Each mission ends only when output and done criteria are met.</li>
+          <li>If blocked, jump to the linked Fix/Recipe pages immediately.</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox
+        client:load
+        locale="en"
+        title="Daily mission starter prompt"
+        description="Use the same starter prompt every day to keep output quality consistent."
+        prompt={`You are a senior engineer mentoring a beginner.
+My current goal is to complete one mission from Choorai's 2-week roadmap.
+Reply only in this structure:
+1) Top 3 tasks for today
+2) Copy-paste commands/code
+3) Done criteria checklist
+4) Max 3-step debugging order if it fails
+
+Do not give abstract theory. Give only executable steps.`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="mission-2week-v2-en"
+        title="2-week mission progress"
+        locale="en"
+        items={checklistItems}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Week 1: Reach first deploy</h2>
+      <div class="space-y-4">
+        {week1.map((mission) => (
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 bg-primary/15 text-primary text-xs font-bold rounded">{mission.day}</span>
+              <h3 class="text-white font-bold">{mission.title}</h3>
+              <span class="text-xs text-text-secondary">({mission.duration})</span>
+            </div>
+
+            <p class="text-text-secondary text-sm mb-4"><strong class="text-white">Goal:</strong> {mission.goal}</p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Execution Steps</h4>
+                <ol class="list-decimal list-inside text-sm text-text-secondary space-y-1">
+                  {mission.steps.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ol>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Done Criteria</h4>
+                <ul class="list-disc list-inside text-sm text-text-secondary space-y-1">
+                  {mission.done.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-4">
+              <p class="text-text-secondary text-sm"><strong class="text-white">Output:</strong> {mission.output}</p>
+              <p class="text-text-secondary text-sm"><strong class="text-white">Validation:</strong> {mission.validation}</p>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">AI Starter Prompt</h4>
+                <pre class="whitespace-pre-wrap break-words rounded-lg bg-background border border-border p-3 text-xs text-text-secondary leading-relaxed">{mission.starterPrompt}</pre>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              {mission.links.map((link) => (
+                <a href={link.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Week 2: Stabilize and demo</h2>
+      <div class="space-y-4">
+        {week2.map((mission) => (
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 bg-accent-purple/20 text-accent-purple text-xs font-bold rounded">{mission.day}</span>
+              <h3 class="text-white font-bold">{mission.title}</h3>
+              <span class="text-xs text-text-secondary">({mission.duration})</span>
+            </div>
+
+            <p class="text-text-secondary text-sm mb-4"><strong class="text-white">Goal:</strong> {mission.goal}</p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Execution Steps</h4>
+                <ol class="list-decimal list-inside text-sm text-text-secondary space-y-1">
+                  {mission.steps.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ol>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Done Criteria</h4>
+                <ul class="list-disc list-inside text-sm text-text-secondary space-y-1">
+                  {mission.done.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-4">
+              <p class="text-text-secondary text-sm"><strong class="text-white">Output:</strong> {mission.output}</p>
+              <p class="text-text-secondary text-sm"><strong class="text-white">Validation:</strong> {mission.validation}</p>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">AI Starter Prompt</h4>
+                <pre class="whitespace-pre-wrap break-words rounded-lg bg-background border border-border p-3 text-xs text-text-secondary leading-relaxed">{mission.starterPrompt}</pre>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              {mission.links.map((link) => (
+                <a href={link.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="How this differs from Map">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>Order is fixed by deliverables, not by topic exploration.</li>
+          <li>Each step has explicit stop criteria, so momentum is retained.</li>
+          <li>Recovery links are embedded for fast unblock.</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <PageNavigation currentPath="/path/mission" lang="en" />
+  </div>
+</DocsLayout>

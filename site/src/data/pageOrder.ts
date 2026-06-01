@@ -7,6 +7,7 @@ export interface PageInfo {
 
 // 한국어 타이틀 (기본)
 const PAGE_TITLES_KO: Record<string, string> = {
+  '/path/mission': '2주 완주 미션',
   '/path/60min': '60분 완주',
   '/start/60min/frontend/react': 'React 프론트엔드',
   '/start/60min/frontend/vue': 'Vue 프론트엔드',
@@ -67,6 +68,7 @@ const PAGE_TITLES_KO: Record<string, string> = {
 
 // 영어 타이틀
 const PAGE_TITLES_EN: Record<string, string> = {
+  '/path/mission': '2-Week Mission Roadmap',
   '/path/60min': '60-min Challenge',
   '/start/60min/frontend/react': 'React Frontend',
   '/start/60min/frontend/vue': 'Vue Frontend',
@@ -132,6 +134,7 @@ const PAGE_TITLES: Record<Lang, Record<string, string>> = {
 
 // 정규 경로 순서 (로케일 prefix 없이)
 const PAGE_PATHS = [
+  '/path/mission',
   '/path/60min',
   '/start/60min/frontend/react',
   '/start/60min/frontend/vue',
