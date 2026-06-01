@@ -1,0 +1,275 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import MetaBadge from '../../../components/MetaBadge';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+interface MissionItem {
+  id: string;
+  week: 1 | 2;
+  day: string;
+  title: string;
+  duration: string;
+  output: string;
+  done: string[];
+  links: { label: string; href: string }[];
+}
+
+const missions: MissionItem[] = [
+  {
+    id: 'scope',
+    week: 1,
+    day: 'Day 1',
+    title: 'Lock one feature + DoD',
+    duration: '30 min',
+    output: 'Write one feature scope, 5-line DoD, and one validation method in README',
+    done: ['Feature scope is limited to one core action', '5 DoD lines are written', 'Validation command or URL rule is defined'],
+    links: [
+      { label: 'Start 60-min Challenge', href: '/en/path/60min' },
+      { label: 'HTTP/API Basics', href: '/en/map/http-api' },
+    ],
+  },
+  {
+    id: 'frontend',
+    week: 1,
+    day: 'Day 2-3',
+    title: 'Finish frontend skeleton',
+    duration: '90 min',
+    output: 'At least two screens work locally (list/form/detail)',
+    done: ['`npm run dev` works', 'Input and list rendering are visible', 'One screenshot of key UI is saved'],
+    links: [
+      { label: 'React Track', href: '/en/start/60min/frontend/react' },
+      { label: 'Vue Track', href: '/en/start/60min/frontend/vue' },
+    ],
+  },
+  {
+    id: 'backend',
+    week: 1,
+    day: 'Day 4',
+    title: 'Finish backend API skeleton',
+    duration: '90 min',
+    output: '`/health` + one CRUD resource set',
+    done: ['`GET /health` returns 200', 'At least list/create endpoints work', 'Error response format is consistent'],
+    links: [
+      { label: 'FastAPI Track', href: '/en/start/60min/backend/fastapi' },
+      { label: 'Hono Track', href: '/en/start/60min/backend/hono' },
+    ],
+  },
+  {
+    id: 'connect',
+    week: 1,
+    day: 'Day 5',
+    title: 'Connect front-back + first deploy',
+    duration: '120 min',
+    output: 'Frontend calls real API and one deploy URL is live',
+    done: ['Real data is shown in browser', 'Deploy URL is reachable', 'If broken, recover via Fix docs'],
+    links: [
+      { label: 'Connect Guide', href: '/en/start/60min/connect' },
+      { label: 'Deploy Guide', href: '/en/start/60min/deploy' },
+      { label: 'Troubleshooting', href: '/en/fix' },
+    ],
+  },
+  {
+    id: 'auth',
+    week: 2,
+    day: 'Day 8-9',
+    title: 'Add minimum auth flow',
+    duration: '120 min',
+    output: 'Implement login/logout or cookie-based session once',
+    done: ['Success/failure auth paths are separated', 'Cookie or token storage strategy is defined', 'One protected route is applied'],
+    links: [
+      { label: 'Auth Overview', href: '/en/map/auth' },
+      { label: 'Auth Cookie Recipe', href: '/en/recipes/add-auth-cookie' },
+    ],
+  },
+  {
+    id: 'quality',
+    week: 2,
+    day: 'Day 10',
+    title: 'Run one quality gate',
+    duration: '60 min',
+    output: 'At least one core test scenario and one PR self-review',
+    done: ['Success/failure test case exists', 'At least one regression risk is recorded', 'PR checklist is passed'],
+    links: [
+      { label: 'Testing Basics', href: '/en/map/testing-basics' },
+      { label: 'PR Review Recipe', href: '/en/recipes/review-pr-quality' },
+    ],
+  },
+  {
+    id: 'ops',
+    week: 2,
+    day: 'Day 11-12',
+    title: 'Minimum ops set (env/monitoring)',
+    duration: '90 min',
+    output: 'Separate env vars + incident check routine + rollback note',
+    done: ['staging/prod env vars are separated', '3-step incident check order is written', 'At least one rollback method is documented'],
+    links: [
+      { label: 'Env Basics', href: '/en/map/env-basics' },
+      { label: 'Monitoring', href: '/en/map/ops' },
+      { label: 'Release/Rollback', href: '/en/map/ops/release-rollback' },
+    ],
+  },
+  {
+    id: 'demo',
+    week: 2,
+    day: 'Day 13-14',
+    title: 'Package demo + retrospective',
+    duration: '60 min',
+    output: 'One-page summary with web URL, API URL, usage, known issues',
+    done: ['Two URLs (web/API) are shareable', 'Usage scenario in 3 lines', 'Three next improvements are listed'],
+    links: [
+      { label: 'Complete Step', href: '/en/start/60min/complete' },
+      { label: 'Reference Projects', href: '/en/reference' },
+    ],
+  },
+];
+
+const checklistItems = missions.map((mission) => ({
+  id: mission.id,
+  label: `${mission.day} · ${mission.title}`,
+  description: mission.output,
+}));
+
+const week1 = missions.filter((mission) => mission.week === 1);
+const week2 = missions.filter((mission) => mission.week === 2);
+---
+
+<DocsLayout
+  lang="en"
+  title="2-Week Build-to-Deploy Mission (Beta)"
+  description="Execution-first roadmap for beginners: finish one deployed URL in 14 days"
+  currentPath="/path/mission"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Current location">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/path" class="hover:text-white transition-colors">Path</a>
+      <span>/</span>
+      <span class="text-primary font-medium">2-Week Mission</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <MetaBadge icon="clock" text="14 days total · 30-120 min/day" />
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">2-Week Build-to-Deploy Mission</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        This beta track is designed so beginners move by "completable missions" instead of browsing topic lists.
+        Single goal: ship one working service with a public deploy URL within 14 days.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="info" title="How to use this page">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>Do one mission per day.</li>
+          <li>Each mission ends only when output and done criteria are met.</li>
+          <li>If blocked, jump to the linked Fix/Recipe pages immediately.</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox
+        client:load
+        locale="en"
+        title="Daily mission starter prompt"
+        description="Use the same starter prompt every day to keep output quality consistent."
+        prompt={`You are a senior engineer mentoring a beginner.
+My current goal is to complete one mission from Choorai's 2-week roadmap.
+Reply only in this structure:
+1) Top 3 tasks for today
+2) Copy-paste commands/code
+3) Done criteria checklist
+4) Max 3-step debugging order if it fails
+
+Do not give abstract theory. Give only executable steps.`}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="mission-2week-v1-en"
+        title="2-week mission progress"
+        locale="en"
+        items={checklistItems}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Week 1: Reach first deploy</h2>
+      <div class="space-y-4">
+        {week1.map((mission) => (
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 bg-primary/15 text-primary text-xs font-bold rounded">{mission.day}</span>
+              <h3 class="text-white font-bold">{mission.title}</h3>
+              <span class="text-xs text-text-secondary">({mission.duration})</span>
+            </div>
+
+            <p class="text-text-secondary text-sm mb-3"><strong class="text-white">Output:</strong> {mission.output}</p>
+
+            <ul class="list-disc list-inside text-sm text-text-secondary space-y-1 mb-4">
+              {mission.done.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+
+            <div class="flex flex-wrap gap-2">
+              {mission.links.map((link) => (
+                <a href={link.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Week 2: Stabilize and demo</h2>
+      <div class="space-y-4">
+        {week2.map((mission) => (
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 bg-accent-purple/20 text-accent-purple text-xs font-bold rounded">{mission.day}</span>
+              <h3 class="text-white font-bold">{mission.title}</h3>
+              <span class="text-xs text-text-secondary">({mission.duration})</span>
+            </div>
+
+            <p class="text-text-secondary text-sm mb-3"><strong class="text-white">Output:</strong> {mission.output}</p>
+
+            <ul class="list-disc list-inside text-sm text-text-secondary space-y-1 mb-4">
+              {mission.done.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+
+            <div class="flex flex-wrap gap-2">
+              {mission.links.map((link) => (
+                <a href={link.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="How this differs from Map">
+        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+          <li>Order is fixed by deliverables, not by topic exploration.</li>
+          <li>Each step has explicit stop criteria, so momentum is retained.</li>
+          <li>Recovery links are embedded for fast unblock.</li>
+        </ul>
+      </Callout>
+    </section>
+
+    <PageNavigation currentPath="/path/mission" lang="en" />
+  </div>
+</DocsLayout>

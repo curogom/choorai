@@ -15,13 +15,24 @@ interface PathCourse {
 
 const courses: PathCourse[] = [
   {
+    id: 'mission-2week',
+    title: '2-Week Mission Roadmap (Beta)',
+    description: 'Replace topic browsing with daily execution missions and ship one deploy URL in 14 days.',
+    icon: '🧭',
+    duration: '14 days',
+    difficulty: 'beginner',
+    href: '/en/path/mission',
+    status: 'available',
+    features: ['1 mission/day', 'Done criteria', 'Deploy URL output', 'Fast recovery links'],
+  },
+  {
     id: '60min',
     title: '60-Minute Challenge',
     description: 'Deploy your first web service in 60 minutes with AI. No prior programming experience needed.',
     icon: '🚀',
     duration: '60 min',
     difficulty: 'beginner',
-    href: '/path/60min',
+    href: '/en/path/60min',
     status: 'available',
     features: ['React Frontend', 'FastAPI Backend', 'Cloudflare Deploy', 'AI Guide'],
   },
@@ -32,7 +43,7 @@ const courses: PathCourse[] = [
     icon: '💼',
     duration: '2-3 hours',
     difficulty: 'intermediate',
-    href: '/path/mini-saas',
+    href: '/en/path/mini-saas',
     status: 'coming-soon',
     features: ['User Auth', 'Database Integration', 'API Design', 'Payment System'],
   },
@@ -43,7 +54,7 @@ const courses: PathCourse[] = [
     icon: '🏢',
     duration: '4-6 hours',
     difficulty: 'advanced',
-    href: '/path/b2b-admin',
+    href: '/en/path/b2b-admin',
     status: 'coming-soon',
     features: ['Dashboard UI', 'Permission Management', 'Data Visualization', 'Production Patterns'],
   },
@@ -144,18 +155,23 @@ const difficultyLabels = {
         Not sure which course to take?
       </h3>
       <p class="text-text-secondary mb-4">
-        If you're new, start with the <strong class="text-white">60-Minute Challenge</strong>.
-        You'll quickly learn the fundamentals.
+        If you are completely new, start with <strong class="text-white">60-Minute Challenge</strong>.
+        If you want a structured ship-focused flow, choose <strong class="text-white">2-Week Mission</strong>.
       </p>
-      <a
-        href="/en/path/60min"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
-      >
-        Start the 60-Minute Challenge
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a
+          href="/en/path/60min"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+        >
+          Start 60-Min Challenge
+        </a>
+        <a
+          href="/en/path/mission"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-elevated border border-border hover:border-primary/50 text-white font-bold rounded-xl transition-colors"
+        >
+          View 2-Week Mission
+        </a>
+      </div>
     </div>
 
     <!-- Map Link -->

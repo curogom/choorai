@@ -36,6 +36,7 @@ export function getNavigation(lang: Lang): NavSection[] {
           storageKey: 'path-courses',
           items: [
             { label: t('nav.60min'), href: lp('/path/60min'), tags: ['🌱'], indent: 1 },
+            { label: lang === 'ko' ? '2주 완주 미션 (베타)' : '2-Week Mission (Beta)', href: lp('/path/mission'), tags: ['🧭'], indent: 1 },
             { label: lang === 'ko' ? '프론트엔드' : 'Frontend', indent: 1 },
             { label: 'React', href: lp('/start/60min/frontend/react'), indent: 2 },
             { label: 'Vue', href: lp('/start/60min/frontend/vue'), indent: 2 },

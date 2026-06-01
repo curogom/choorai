@@ -15,6 +15,17 @@ interface PathCourse {
 
 const courses: PathCourse[] = [
   {
+    id: 'mission-2week',
+    title: '2주 완주 미션 (베타)',
+    description: '무엇을 배울지 고르는 대신, 14일 동안 따라 하며 배포 URL 1개를 완성합니다.',
+    icon: '🧭',
+    duration: '14일',
+    difficulty: 'beginner',
+    href: '/path/mission',
+    status: 'available',
+    features: ['하루 1개 과제', '명확한 완료 기준', '배포 URL 만들기', '막힐 때 보는 링크'],
+  },
+  {
     id: '60min',
     title: '60분 완주',
     description: 'AI와 함께 60분 만에 첫 웹서비스를 배포해보세요. 프로그래밍을 전혀 몰라도 괜찮습니다.',
@@ -143,18 +154,23 @@ const difficultyLabels = {
         어떤 코스가 좋을지 모르겠다면?
       </h3>
       <p class="text-text-secondary mb-4">
-        처음이라면 <strong class="text-white">60분 완주</strong>부터 시작하세요.
-        기본 개념을 빠르게 익힐 수 있습니다.
+        완전 처음이면 <strong class="text-white">60분 완주</strong>,
+        차근차근 결과물을 만들고 싶다면 <strong class="text-white">2주 완주 미션</strong>을 선택하세요.
       </p>
-      <a
-        href="/path/60min"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
-      >
-        60분 완주 시작하기
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a
+          href="/path/60min"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
+        >
+          60분 완주 시작
+        </a>
+        <a
+          href="/path/mission"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-elevated border border-border hover:border-primary/50 text-white font-bold rounded-xl transition-colors"
+        >
+          2주 완주 미션 보기
+        </a>
+      </div>
     </div>
 
     <!-- Map 연결 -->
