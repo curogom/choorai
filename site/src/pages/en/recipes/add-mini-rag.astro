@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
+
+const prompt = `I want to add a mini RAG feature to an existing web service.
+Create an implementation plan and file-change outline from the project information below.
+
+[Project]
+- Frontend: [React/Vue/other]
+- Backend: [FastAPI/Hono/other]
+- Database: [Postgres/Supabase/other]
+- Document type: [Markdown/PDF/Notion/other]
+- Answer policy: [citations required/permission filter/answer unknown when missing evidence]
+
+[Output requirements]
+1) document intake/chunking/embedding/storage flow
+2) /ai/ask API contract
+3) retrieval quality eval cases
+4) UI pattern for citations
+5) security/permission/cost checklist`;
+
+const checklist = [
+  { id: 'docs', label: 'Pick document source', description: 'Start with a small source set' },
+  { id: 'chunks', label: 'Choose chunking strategy', description: 'Start from headings and paragraphs' },
+  { id: 'store', label: 'Pick vector storage', description: 'Local, pgvector, or managed SaaS' },
+  { id: 'api', label: 'Connect search API', description: 'Return answer and sources together' },
+  { id: 'eval', label: 'Write retrieval evals', description: 'Measure evidence recall, not just final answer' },
+];
+
+const contract = `POST /ai/ask
+{
+  "question": "How do I deploy this?",
+  "filters": { "project": "choorai" }
+}`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Add Mini RAG"
+  description="Prompt recipe to add a document-grounded RAG feature to an existing service"
+  currentPath="/recipes/add-mini-rag"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Add Mini RAG</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Retrieval
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Add Mini RAG</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Start small with document-grounded answers. The goal is not a plausible answer, but an answer with evidence and citations.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="warning" title="Start small">
+        <p class="mt-2">Do not ingest every document first. Start with the documents needed to answer 20 frequent questions.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Mini RAG Implementation Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">API Contract Starting Point</h2>
+      <CodeBlock client:load locale="en" filename="api-contract.txt" code={contract} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-add-mini-rag" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <TemplateSections locale="en" topic="add-mini-rag" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/ai/rag-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">RAG Basics</h4>
+          <p class="text-text-secondary text-sm">Retrieval augmented generation flow</p>
+        </a>
+        <a href="/en/map/database/vector" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Vector DB</h4>
+          <p class="text-text-secondary text-sm">Embedding storage and search</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

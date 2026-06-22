@@ -1,0 +1,113 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const skillTemplate = `# Project Release Skill
+
+## When to use
+- 사용자가 "릴리즈 준비해줘"라고 요청할 때
+
+## Inputs
+- branch name
+- target environment
+- release notes draft
+
+## Procedure
+1. git status로 변경 범위를 확인한다
+2. build/test 명령을 실행한다
+3. migration/env 변경을 점검한다
+4. release notes를 업데이트한다
+5. Go/No-Go 판단을 기록한다
+
+## Validation
+- npm run build
+- npm test`;
+---
+
+<DocsLayout
+  title="AI Skills"
+  description="반복 업무를 재사용 가능한 AI 작업 절차로 만드는 방법"
+  currentPath="/map/ai/skills"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/ai" class="hover:text-white transition-colors">AI 빌더</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI Skills</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.3 · Workflow
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI Skills</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Skill은 매번 설명하기 귀찮은 작업 절차를 AI가 재사용할 수 있게 정리한 운영 문서입니다.
+        프롬프트보다 오래가고, 자동화보다 유연한 중간 지점입니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="Skill로 만들기 좋은 작업">
+        <p class="mt-2 text-sm">
+          릴리즈 준비, PR 리뷰, 장애 초동 대응, 문서 동기화, 데이터 정리처럼 순서와 검증 기준이 반복되는 작업이 좋습니다.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Prompt, Skill, Tool의 차이</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Prompt</h3>
+            <p class="text-text-secondary text-sm">한 번의 요청을 잘 쓰는 방식입니다.</p>
+          </div>
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">Skill</h3>
+            <p class="text-text-secondary text-sm">반복 절차, 입력, 검증 기준을 고정합니다.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Tool/MCP</h3>
+            <p class="text-text-secondary text-sm">외부 시스템에 실제로 읽기/쓰기 액션을 수행합니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">SKILL.md 예시</h2>
+        <CodeBlock client:load filename="SKILL.md" code={skillTemplate} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">설계 체크</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>언제 발동해야 하는지 트리거가 명확한가?</li>
+          <li>AI가 읽어야 할 파일/시스템 범위가 좁혀져 있는가?</li>
+          <li>성공 기준과 실패 시 복구 절차가 있는가?</li>
+          <li>도구 호출이 필요하다면 권한과 승인 경계가 있는가?</li>
+        </ul>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">다음 액션</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/recipes/write-project-skill" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">프로젝트 Skill 작성</h4>
+          <p class="text-text-secondary text-sm">반복 업무를 SKILL.md 초안으로 변환</p>
+        </a>
+        <a href="/map/ops/release-rollback" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">릴리즈/롤백 런북</h4>
+          <p class="text-text-secondary text-sm">운영 절차를 Skill 후보로 바꾸기</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/skills" />
+  </div>
+</DocsLayout>

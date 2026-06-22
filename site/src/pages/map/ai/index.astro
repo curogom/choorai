@@ -1,0 +1,125 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const coreTopics = [
+  { title: 'AI 하네스', href: '/map/ai/harness', level: 'Lv.2', description: 'golden set, 채점 기준, 실패 리포트로 LLM 기능을 반복 검증합니다.' },
+  { title: 'RAG 기초', href: '/map/ai/rag-basics', level: 'Lv.3', description: '문서 수집, 청킹, 임베딩, 검색, 출처 답변 흐름을 만듭니다.' },
+  { title: 'AI Skills', href: '/map/ai/skills', level: 'Lv.3', description: '반복 업무를 재사용 가능한 절차와 도구 경계로 고정합니다.' },
+  { title: 'Local LLM', href: '/map/ai/local-llm', level: 'Lv.4', description: 'Ollama와 vLLM을 OpenAI 호환 API 관점에서 비교합니다.' },
+];
+
+const keywordGroups = [
+  {
+    title: '제품 표면',
+    keywords: ['문서 QA', '고객지원 봇', '티켓 분류', '코드 리뷰 보조', '콘텐츠 QA', '사내 검색'],
+  },
+  {
+    title: '검색/데이터',
+    keywords: ['임베딩', '청킹', '메타데이터 필터', '하이브리드 검색', 'reranking', 'vector store', '지식 갱신'],
+  },
+  {
+    title: '에이전트/워크플로',
+    keywords: ['tool calling', 'MCP', 'human-in-the-loop', 'memory', 'background jobs', '승인 단계', 'sandbox'],
+  },
+  {
+    title: '평가/품질',
+    keywords: ['golden set', 'prompt regression', 'synthetic tests', 'judge model', 'trace', 'error taxonomy', 'release gate'],
+  },
+  {
+    title: '추론/인프라',
+    keywords: ['Ollama', 'vLLM', 'llama.cpp', 'GGUF', 'quantization', 'GPU/VRAM', 'model routing', 'prompt cache'],
+  },
+  {
+    title: '보안/운영',
+    keywords: ['PII redaction', 'audit log', 'access control', 'data retention', 'prompt injection', 'fallback model', 'cost guardrail'],
+  },
+];
+---
+
+<DocsLayout
+  title="AI 빌더 개요"
+  description="RAG, 하네스, Skill, Local LLM을 서비스 확장 주제로 연결합니다"
+  currentPath="/map/ai"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map" class="hover:text-white transition-colors">학습 사이클</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI 빌더</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension Map
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI 빌더 개요</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        모든 사람이 영원히 초보는 아닙니다. 첫 배포 이후에는 “AI를 붙였다”가 아니라
+        검색 근거, 평가 기준, 반복 절차, 모델 선택권까지 갖춘 기능으로 확장해야 합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="추천 순서">
+        <p class="mt-2 text-sm">
+          먼저 하네스로 품질 기준을 만들고, 그 다음 RAG를 붙인 뒤, 반복 업무를 Skill로 고정하고, 마지막에 Local LLM 선택지를 비교하세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">핵심 축</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {coreTopics.map((topic) => (
+          <a href={topic.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <h3 class="text-white font-bold">{topic.title}</h3>
+              <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-bold">{topic.level}</span>
+            </div>
+            <p class="text-text-secondary text-sm">{topic.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">확장 키워드 레이더</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {keywordGroups.map((group) => (
+          <div class="p-5 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3">{group.title}</h3>
+            <div class="flex flex-wrap gap-2">
+              {group.keywords.map((keyword) => (
+                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{keyword}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">무엇을 먼저 만들까?</h2>
+      <div class="space-y-4">
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">문서나 내부 지식이 많다</h3>
+          <p class="text-text-secondary text-sm">RAG와 출처 표시부터 시작합니다. 단, 검색 품질을 볼 하네스도 같이 둡니다.</p>
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">반복 작업이 많다</h3>
+          <p class="text-text-secondary text-sm">Skill과 tool calling으로 입력/출력/검증을 고정합니다. MCP는 외부 시스템 연결이 많아질 때 봅니다.</p>
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">비용/보안/오프라인 제약이 크다</h3>
+          <p class="text-text-secondary text-sm">Ollama로 로컬 실험을 시작하고, GPU 서버 운영이 필요해지면 vLLM 경로를 비교합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai" />
+  </div>
+</DocsLayout>

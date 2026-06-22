@@ -1,0 +1,100 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+import TemplateSections from '../../components/TemplateSections.astro';
+
+const prompt = `기존 웹서비스에 미니 RAG 기능을 추가하고 싶어.
+아래 프로젝트 정보를 바탕으로 구현 계획과 파일 변경안을 만들어줘.
+
+[프로젝트 정보]
+- 프론트엔드: [React/Vue/기타]
+- 백엔드: [FastAPI/Hono/기타]
+- 데이터베이스: [Postgres/Supabase/기타]
+- 문서 종류: [Markdown/PDF/Notion/기타]
+- 답변 정책: [출처 필수/권한 필터/모르면 모른다고 답하기]
+
+[출력 요구사항]
+1) 문서 수집/청킹/임베딩/저장 흐름
+2) /ai/ask API 계약
+3) 검색 품질 평가 케이스
+4) UI에 출처를 표시하는 방식
+5) 보안/권한/비용 체크리스트`;
+
+const checklist = [
+  { id: 'docs', label: '문서 소스 확정', description: '처음에는 작은 문서 세트로 제한' },
+  { id: 'chunks', label: '청킹 전략 결정', description: '문서 단락/제목 기준부터 시작' },
+  { id: 'store', label: '벡터 저장소 선택', description: '로컬/pgvector/SaaS 중 하나' },
+  { id: 'api', label: '검색 API 연결', description: '질문과 출처를 함께 반환' },
+  { id: 'eval', label: '검색 평가 작성', description: '정답보다 근거 회수율 확인' },
+];
+
+const contract = `POST /ai/ask
+{
+  "question": "배포 절차 알려줘",
+  "filters": { "project": "choorai" }
+}`;
+---
+
+<DocsLayout
+  title="레시피: 미니 RAG 추가"
+  description="기존 서비스에 문서 기반 RAG 기능을 추가하는 프롬프트"
+  currentPath="/recipes/add-mini-rag"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">미니 RAG 추가</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Retrieval
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">미니 RAG 추가</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        문서 기반 답변 기능을 작게 시작합니다. 목표는 “그럴듯한 답변”이 아니라 검색 근거와 출처가 있는 답변입니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="warning" title="작게 시작하세요">
+        <p class="mt-2">처음부터 모든 문서를 넣지 말고, 자주 묻는 질문 20개를 답할 수 있는 문서만 넣어 검증하세요.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="미니 RAG 구현 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">API 계약 시작점</h2>
+      <CodeBlock client:load filename="api-contract.txt" code={contract} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-add-mini-rag" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <TemplateSections topic="add-mini-rag" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/ai/rag-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">RAG 기초</h4>
+          <p class="text-text-secondary text-sm">검색 증강 생성 흐름</p>
+        </a>
+        <a href="/map/database/vector" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Vector DB</h4>
+          <p class="text-text-secondary text-sm">임베딩 저장과 검색</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

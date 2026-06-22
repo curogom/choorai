@@ -37,6 +37,17 @@ const courses: PathCourse[] = [
     features: ['React Frontend', 'FastAPI Backend', 'Cloudflare Deploy', 'AI Guide'],
   },
   {
+    id: 'ai-builder',
+    title: 'AI Service Builder',
+    description: 'Extend a deployed app with RAG, eval harnesses, skills, and local LLM options.',
+    icon: '🤖',
+    duration: '2-4 hours',
+    difficulty: 'advanced',
+    href: '/en/path/ai-builder',
+    status: 'available',
+    features: ['AI Harness', 'Mini RAG', 'Skill Design', 'Ollama/vLLM'],
+  },
+  {
     id: 'mini-saas',
     title: 'Build a Mini SaaS',
     description: 'Build a real SaaS service with login and database. From user auth to payments.',
@@ -157,6 +168,7 @@ const difficultyLabels = {
       <p class="text-text-secondary mb-4">
         If you are completely new, start with <strong class="text-white">60-Minute Challenge</strong>.
         If you want a structured ship-focused flow, choose <strong class="text-white">2-Week Mission</strong>.
+        If you have shipped before, choose <strong class="text-white">AI Service Builder</strong>.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
@@ -164,6 +176,12 @@ const difficultyLabels = {
           class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
         >
           Start 60-Min Challenge
+        </a>
+        <a
+          href="/en/path/ai-builder"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-elevated border border-border hover:border-primary/50 text-white font-bold rounded-xl transition-colors"
+        >
+          View AI Service Builder
         </a>
         <a
           href="/en/path/mission"

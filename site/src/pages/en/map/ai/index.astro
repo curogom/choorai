@@ -1,0 +1,126 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const coreTopics = [
+  { title: 'AI Harness', href: '/en/map/ai/harness', level: 'Lv.2', description: 'Repeatedly validate LLM features with golden sets, rubrics, and failure reports.' },
+  { title: 'RAG Basics', href: '/en/map/ai/rag-basics', level: 'Lv.3', description: 'Build document ingestion, chunking, embeddings, retrieval, and cited answers.' },
+  { title: 'AI Skills', href: '/en/map/ai/skills', level: 'Lv.3', description: 'Freeze repeated work into reusable procedures and tool boundaries.' },
+  { title: 'Local LLM', href: '/en/map/ai/local-llm', level: 'Lv.4', description: 'Compare Ollama and vLLM through OpenAI-compatible API patterns.' },
+];
+
+const keywordGroups = [
+  {
+    title: 'Product Surfaces',
+    keywords: ['document QA', 'support bot', 'ticket triage', 'code review assistant', 'content QA', 'internal search'],
+  },
+  {
+    title: 'Retrieval/Data',
+    keywords: ['embeddings', 'chunking', 'metadata filters', 'hybrid search', 'reranking', 'vector store', 'knowledge refresh'],
+  },
+  {
+    title: 'Agents/Workflow',
+    keywords: ['tool calling', 'MCP', 'human-in-the-loop', 'memory', 'background jobs', 'approval steps', 'sandboxing'],
+  },
+  {
+    title: 'Evaluation/Quality',
+    keywords: ['golden set', 'prompt regression', 'synthetic tests', 'judge model', 'traces', 'error taxonomy', 'release gate'],
+  },
+  {
+    title: 'Inference/Infra',
+    keywords: ['Ollama', 'vLLM', 'llama.cpp', 'GGUF', 'quantization', 'GPU/VRAM', 'model routing', 'prompt cache'],
+  },
+  {
+    title: 'Security/Ops',
+    keywords: ['PII redaction', 'audit logs', 'access control', 'data retention', 'prompt injection', 'fallback model', 'cost guardrail'],
+  },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="AI Builder Overview"
+  description="Connect RAG, harnesses, skills, and local LLMs as service expansion topics"
+  currentPath="/map/ai"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map" class="hover:text-white transition-colors">Learning Cycles</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI Builder</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension Map
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI Builder Overview</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Nobody stays a beginner forever. After the first deploy, AI features need retrieval evidence,
+        evaluation criteria, repeatable procedures, and model optionality.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Recommended order">
+        <p class="mt-2 text-sm">
+          Start with a harness, add RAG, turn repeated work into skills, then compare local LLM options.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Core Tracks</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {coreTopics.map((topic) => (
+          <a href={topic.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <h3 class="text-white font-bold">{topic.title}</h3>
+              <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-bold">{topic.level}</span>
+            </div>
+            <p class="text-text-secondary text-sm">{topic.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Expansion Keyword Radar</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {keywordGroups.map((group) => (
+          <div class="p-5 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-3">{group.title}</h3>
+            <div class="flex flex-wrap gap-2">
+              {group.keywords.map((keyword) => (
+                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{keyword}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">What should you build first?</h2>
+      <div class="space-y-4">
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">You have many documents or internal knowledge</h3>
+          <p class="text-text-secondary text-sm">Start with RAG and citations, but keep a harness to measure retrieval quality.</p>
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">You repeat the same operational work</h3>
+          <p class="text-text-secondary text-sm">Use skills and tool calling to lock inputs, outputs, and validation. Add MCP when external systems grow.</p>
+        </div>
+        <div class="p-4 bg-surface border border-border rounded-xl">
+          <h3 class="text-white font-bold mb-1">Cost, privacy, or offline use matters</h3>
+          <p class="text-text-secondary text-sm">Use Ollama for quick local tests, then compare vLLM when you need GPU-server inference.</p>
+        </div>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai" lang="en" />
+  </div>
+</DocsLayout>

@@ -1,16 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Button from '../../components/Button';
 import NextActionCard from '../../components/NextActionCard';
-import MiniMap from '../../components/MiniMap';
-import ModeToggle from '../../components/ModeToggle';
 import LanguagePicker from '../../components/LanguagePicker.astro';
 import testCounts from '../../data/test-counts.json';
 
 const currentYear = new Date().getFullYear();
 ---
 
-<BaseLayout title="No Coding Experience? No Problem" lang="en">
+<BaseLayout title="Build one deployable service URL in 14 days" lang="en">
   <div class="relative min-h-screen flex flex-col">
     <!-- Background grid pattern -->
     <div class="absolute inset-0 z-0 bg-grid-pattern opacity-[0.07] pointer-events-none h-[800px]"></div>
@@ -25,8 +22,8 @@ const currentYear = new Date().getFullYear();
           </div>
           <!-- Navigation -->
           <nav class="hidden md:flex items-center gap-6">
+            <a href="/en/path" class="text-sm font-medium text-primary hover:text-primary/80 transition-colors">Path</a>
             <a href="/en/map" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Map</a>
-            <a href="/en/path/60min" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Path</a>
             <a href="/en/fix" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Fix</a>
             <a href="/en/recipes" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Recipes</a>
             <a href="/en/reference" class="text-sm font-medium text-text-secondary hover:text-white transition-colors">Reference</a>
@@ -61,70 +58,104 @@ const currentYear = new Date().getFullYear();
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
-            <span>Level 1: Beginners Welcome</span>
+            <span>14-Day Mission Beta</span>
           </div>
 
           <!-- Headline -->
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight max-w-3xl mx-auto">
-            <span class="text-gradient" style="white-space: pre-line; line-height: 1.3">No Coding Experience?
-No Problem</span>
+            <span class="text-gradient" style="white-space: pre-line; line-height: 1.3">Build one deployable
+service URL in 14 days</span>
           </h1>
 
           <p class="text-base sm:text-lg text-text-secondary max-w-xl mx-auto leading-relaxed">
-            Deploy your own web service in 60 minutes with AI
+            Finish one mission per day with AI, from idea and screens to API, deployment, and review.
           </p>
+
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="/en/path/mission"
+              class="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-background hover:bg-primary-hover transition-colors"
+            >
+              Start Today's Mission
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a
+              href="/en/path/60min"
+              class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-surface px-5 py-3 text-sm font-bold text-white hover:border-primary/50 hover:bg-surface-elevated transition-colors"
+            >
+              60-Min Quick Start
+            </a>
+          </div>
         </div>
       </section>
 
-      <!-- Main 2-column layout: Next Action + MiniMap -->
+      <!-- Main 2-column layout: Today's Mission + 60-min quick start -->
       <section class="py-8 sm:py-12">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid md:grid-cols-2 gap-6">
-            <!-- Left: 60-Minute Completion Challenge -->
+            <!-- Left: 2-week mission -->
             <div>
               <div class="mb-3">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                  <span class="text-xl">⚡</span> 60-Minute Completion Challenge
+                  <span class="text-xl">🎯</span> Today's Mission
                 </h2>
                 <p class="text-sm text-text-secondary mt-1">
-                  From start to deployment, follow along step by step with AI
+                  Start with the first concrete action in the 14-day path
                 </p>
               </div>
-              <NextActionCard client:load locale="en" />
-            </div>
-
-            <!-- Right: Learning Roadmap -->
-            <div>
-              <div class="mb-3">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                  <span class="text-xl">🗺️</span> Learning Roadmap
-                </h2>
-                <p class="text-sm text-text-secondary mt-1">
-                  See the entire learning cycle at a glance
-                </p>
-              </div>
-              <div class="space-y-4">
-                <MiniMap client:load showModeToggle={true} locale="en" />
-
-                <!-- Learning Mode Description -->
-                <div class="p-4 bg-surface/50 rounded-lg border border-border">
-                  <div class="flex items-start gap-3">
-                    <div class="p-2 rounded-lg bg-primary/10">
-                      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div class="p-6 bg-gradient-to-br from-primary/15 to-accent-purple/10 rounded-xl border border-primary/25">
+                <div class="flex items-start gap-4">
+                  <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="mb-2 flex flex-wrap items-center gap-2">
+                      <span class="rounded bg-primary/20 px-2 py-0.5 text-xs font-bold text-primary">Day 1</span>
+                      <span class="text-xs text-text-secondary">Est. 30 min</span>
+                    </div>
+                    <h3 class="mb-2 text-lg font-bold text-white">Choose one idea and done criteria</h3>
+                    <p class="mb-4 text-sm leading-relaxed text-text-secondary">
+                      Narrow the service to one sentence and write five criteria that tell you today's work is done.
+                    </p>
+                    <div class="mb-4 grid gap-2 text-sm text-text-secondary">
+                      <div class="flex items-center gap-2">
+                        <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                        <span>Pick one target user and one core feature</span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                        <span>Write done criteria and validation in README</span>
+                      </div>
+                    </div>
+                    <a
+                      href="/en/path/mission"
+                      class="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-background hover:bg-primary-hover transition-colors"
+                    >
+                      Open Mission
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                       </svg>
-                    </div>
-                    <div class="text-sm">
-                      <p class="text-text-secondary">
-                        <strong class="text-white">Guided</strong>: Follow the recommended order (for beginners)
-                      </p>
-                      <p class="text-text-secondary mt-1">
-                        <strong class="text-white">Explore</strong>: Pick what you want (for experienced users)
-                      </p>
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Right: 60-min quick start -->
+            <div>
+              <div class="mb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                  <span class="text-xl">⚡</span> 60-Min Quick Start
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  Use this path first if you want to feel the deploy loop immediately
+                </p>
+              </div>
+              <NextActionCard client:load locale="en" />
             </div>
           </div>
         </div>
@@ -136,17 +167,17 @@ No Problem</span>
           <h2 class="text-lg font-bold text-white mb-6 text-center">Quick Actions</h2>
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <!-- Map -->
-            <a href="/en/map" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
+            <!-- Mission -->
+            <a href="/en/path/mission" class="group p-4 bg-surface border border-border rounded-xl hover:border-primary/50 transition-all hover:-translate-y-1">
               <div class="flex flex-col items-center text-center gap-3">
                 <div class="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 class="font-bold text-white text-sm">Map</h3>
-                  <p class="text-xs text-text-secondary mt-1">Full Roadmap</p>
+                  <h3 class="font-bold text-white text-sm">Mission</h3>
+                  <p class="text-xs text-text-secondary mt-1">Today's action</p>
                 </div>
               </div>
             </a>
@@ -355,7 +386,7 @@ No Problem</span>
           </div>
           <div class="flex items-center gap-4 sm:gap-6 text-sm">
             <a href="/en/map" class="text-text-secondary hover:text-white transition-colors">Map</a>
-            <a href="/en/path/60min" class="text-text-secondary hover:text-white transition-colors">Path</a>
+            <a href="/en/path" class="text-text-secondary hover:text-white transition-colors">Path</a>
             <a href="/en/fix" class="text-text-secondary hover:text-white transition-colors">Fix</a>
             <a href="/en/recipes" class="text-text-secondary hover:text-white transition-colors">Recipes</a>
             <a href="https://github.com/curogom/choorai" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-white transition-colors">GitHub</a>

@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const evalCase = `{
+  "id": "refund-policy-001",
+  "input": "What is the refund policy?",
+  "expected": ["mentions the refund window", "includes a source document"],
+  "forbidden": ["states policy without evidence", "creates a fake link"],
+  "tags": ["policy", "rag", "customer-support"]
+}`;
+
+const report = `# AI Eval Report
+- total: 20
+- passed: 17
+- failed: 3
+
+## Failed cases
+1. refund-policy-001
+   - missing citation
+   - answer used stale policy wording`;
+---
+
+<DocsLayout
+  lang="en"
+  title="AI Harness"
+  description="An eval harness to repeatedly validate LLM features before release"
+  currentPath="/map/ai/harness"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/ai" class="hover:text-white transition-colors">AI Builder</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI Harness</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.2 · Quality Gate
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI Harness</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        An AI harness is the execution layer for testing LLM features. It combines input samples,
+        expected conditions, forbidden behavior, grading rules, and reports to detect regressions.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Why build this first?">
+        <p class="mt-2 text-sm">
+          RAG, skills, and local LLMs can all change behavior. A harness lets you separate real improvement from vibes.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Minimum Parts</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">golden set</strong>: real user questions and expected conditions</li>
+          <li><strong class="text-white">rubric</strong>: pass, partial pass, and fail criteria</li>
+          <li><strong class="text-white">runner</strong>: script that calls the model and stores output</li>
+          <li><strong class="text-white">report</strong>: reproducible failed cases and failure reasons</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Eval Case Example</h2>
+        <CodeBlock client:load locale="en" filename="evals/refund-policy.json" code={evalCase} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Failure Report Example</h2>
+        <CodeBlock client:load locale="en" filename="eval-report.md" code={report} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Release Criteria</h2>
+        <div class="p-5 bg-surface border border-border rounded-xl">
+          <ul class="list-disc list-inside text-text-secondary space-y-2">
+            <li>Critical cases must pass 100% before release</li>
+            <li>Answers requiring evidence fail when citations are missing</li>
+            <li>Compare model changes with the same table</li>
+            <li>Classify failures as RAG, prompt, model, or data issues</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Next Actions</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/recipes/make-eval-harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Eval Harness Recipe</h4>
+          <p class="text-text-secondary text-sm">Generate a harness draft from project inputs</p>
+        </a>
+        <a href="/en/map/ai/rag-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">RAG Basics</h4>
+          <p class="text-text-secondary text-sm">Connect retrieval quality to evals</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/harness" lang="en" />
+  </div>
+</DocsLayout>

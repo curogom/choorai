@@ -1,0 +1,113 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const ollamaCommands = `ollama pull llama3.1
+ollama run llama3.1
+
+curl http://localhost:11434/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "llama3.1",
+    "messages": [{ "role": "user", "content": "hello" }]
+  }'`;
+
+const vllmCommands = `vllm serve meta-llama/Llama-3.1-8B-Instruct \\
+  --host 0.0.0.0 \\
+  --port 8000
+
+curl http://localhost:8000/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "messages": [{ "role": "user", "content": "hello" }]
+  }'`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Local LLM"
+  description="Experiment with local and self-hosted LLM inference using Ollama and vLLM"
+  currentPath="/map/ai/local-llm"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/ai" class="hover:text-white transition-colors">AI Builder</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Local LLM</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.4 · Inference
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Local LLM</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Local LLMs are useful for cost, privacy, offline workflows, and faster experiments.
+        Start with Ollama for local tests and compare vLLM when GPU-server throughput matters.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="warning" title="Decide this first">
+        <p class="mt-2 text-sm">
+          Before running a model, define which feature and quality criteria it must pass. Without a harness, model switching becomes subjective.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Ollama Quick Experiment</h2>
+        <CodeBlock client:load locale="en" filename="terminal" code={ollamaCommands} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">vLLM Server Experiment</h2>
+        <CodeBlock client:load locale="en" filename="terminal" code={vllmCommands} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Selection Criteria</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Ollama</h3>
+            <p class="text-text-secondary text-sm">Good for personal development, quick model swaps, and local Mac/Linux tests.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">vLLM</h3>
+            <p class="text-text-secondary text-sm">Good for GPU servers, OpenAI-compatible serving, and throughput comparison.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Hosted API</h3>
+            <p class="text-text-secondary text-sm">Good for current model quality, operational reliability, and fast product validation.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Gateway</h3>
+            <p class="text-text-secondary text-sm">Useful when you need base URL switching and routing policies across models.</p>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Next Actions</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/recipes/run-local-llm" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Local LLM Recipe</h4>
+          <p class="text-text-secondary text-sm">Generate an Ollama/vLLM experiment prompt</p>
+        </a>
+        <a href="/en/map/ai/harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">AI Harness</h4>
+          <p class="text-text-secondary text-sm">Compare quality before and after model changes</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/local-llm" lang="en" />
+  </div>
+</DocsLayout>

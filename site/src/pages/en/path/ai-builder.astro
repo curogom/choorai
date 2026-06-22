@@ -1,0 +1,117 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const stages = [
+  {
+    title: '1. AI Harness',
+    href: '/en/map/ai/harness',
+    badge: 'Quality baseline',
+    description: 'Validate repeatable behavior before arguing about whether a prompt feels good.',
+    outputs: ['20 golden cases', 'grading rules', 'failure report'],
+  },
+  {
+    title: '2. Mini RAG',
+    href: '/en/map/ai/rag-basics',
+    badge: 'Knowledge link',
+    description: 'Ingest documents, retrieve relevant chunks, and return cited answers.',
+    outputs: ['document intake', 'chunking/embeddings', 'search API'],
+  },
+  {
+    title: '3. Skill / Tool',
+    href: '/en/map/ai/skills',
+    badge: 'Repeated work',
+    description: 'Turn repeated operating procedures into reusable skills with clear tool boundaries.',
+    outputs: ['SKILL.md', 'I/O contract', 'validation command'],
+  },
+  {
+    title: '4. Local LLM',
+    href: '/en/map/ai/local-llm',
+    badge: 'Model optionality',
+    description: 'Use Ollama for quick local experiments and vLLM for server-style inference.',
+    outputs: ['base URL switch', 'quality/cost table', 'rollback rule'],
+  },
+];
+---
+
+<DocsLayout
+  lang="en"
+  title="AI Service Builder"
+  description="Extend a real service with RAG, eval harnesses, skills, and local LLM options"
+  currentPath="/path/ai-builder"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/path" class="hover:text-white transition-colors">Path</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI Service Builder</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        Advanced Path
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI Service Builder</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Once you have shipped a deploy URL, the next step is putting AI features inside the product.
+        This course connects RAG, eval harnesses, skills, and local LLMs into one operable feature path.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Done criteria">
+        <p class="mt-2 text-sm">
+          You are done when you can explain input data, retrieval evidence, model response, eval result, and fallback path.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Track Order</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {stages.map((stage) => (
+          <a href={stage.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <h3 class="text-white font-bold">{stage.title}</h3>
+              <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-bold">{stage.badge}</span>
+            </div>
+            <p class="text-text-secondary text-sm mb-4">{stage.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {stage.outputs.map((output) => (
+                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Recommended Outputs</h2>
+      <div class="p-5 bg-surface border border-border rounded-xl">
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>A minimum API such as <strong class="text-white">/ai/ask</strong></li>
+          <li>An eval baseline such as <strong class="text-white">docs/ai-evals.md</strong> or <strong class="text-white">evals/*.json</strong></li>
+          <li>A RAG failure policy: answer unknown when evidence is missing</li>
+          <li>A model routing table: Hosted API, Ollama, or vLLM by scenario</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="info" title="Runnable Recipes">
+        <div class="grid sm:grid-cols-2 gap-3 mt-3 text-sm">
+          <a href="/en/recipes/make-eval-harness" class="text-primary hover:underline">Make an Eval Harness</a>
+          <a href="/en/recipes/add-mini-rag" class="text-primary hover:underline">Add Mini RAG</a>
+          <a href="/en/recipes/write-project-skill" class="text-primary hover:underline">Write a Project Skill</a>
+          <a href="/en/recipes/run-local-llm" class="text-primary hover:underline">Run a Local LLM</a>
+        </div>
+      </Callout>
+    </section>
+
+    <PageNavigation currentPath="/path/ai-builder" lang="en" />
+  </div>
+</DocsLayout>

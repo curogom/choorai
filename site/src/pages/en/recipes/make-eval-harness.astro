@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
+
+const prompt = `I want to build an eval harness for an AI feature.
+Design a golden set, grading criteria, run command, and failure report format using the information below.
+
+[Feature]
+- Feature: [e.g. document-grounded support answers]
+- Input shape: [e.g. user question + user tier]
+- Output shape: [e.g. answer + source array]
+- Required policy: [e.g. do not answer without sources]
+
+[Output requirements]
+1) eval case JSON schema
+2) criteria for at least 20 golden cases
+3) pass/partial/fail rubric
+4) command to run in CI
+5) Markdown failure report template`;
+
+const checklist = [
+  { id: 'scope', label: 'Lock feature scope', description: 'Limit to one API or one user flow' },
+  { id: 'golden', label: 'Write golden set', description: 'Include normal, edge, and failure cases' },
+  { id: 'rubric', label: 'Write rubric', description: 'Define expected conditions, not just ideal answers' },
+  { id: 'runner', label: 'Connect run command', description: 'Use the same command locally and in CI' },
+  { id: 'report', label: 'Save failure report', description: 'Record reproducible input and failure reason' },
+];
+
+const example = `{
+  "id": "source-required-001",
+  "input": "What is the refund policy?",
+  "expected": ["includes refund window", "includes citation"],
+  "forbidden": ["states policy without source", "adds content not in policy docs"]
+}`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Make an Eval Harness"
+  description="Prompt recipe to create an eval harness for LLM features"
+  currentPath="/recipes/make-eval-harness"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Make an Eval Harness</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Quality
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Make an Eval Harness</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Build a harness that validates AI features against the same inputs and criteria before release.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="When to use">
+        <p class="mt-2">Create this before changing prompts, models, RAG data, or chunking strategy.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Eval Harness Design Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Case Format Example</h2>
+      <CodeBlock client:load locale="en" filename="eval-case.json" code={example} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-make-eval-harness" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <TemplateSections locale="en" topic="make-eval-harness" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/ai/harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">AI Harness</h4>
+          <p class="text-text-secondary text-sm">Harness concepts and pass criteria</p>
+        </a>
+        <a href="/en/map/testing-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Testing Basics</h4>
+          <p class="text-text-secondary text-sm">Connect with unit, integration, and E2E tests</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

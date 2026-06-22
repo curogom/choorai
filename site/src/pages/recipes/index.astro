@@ -142,9 +142,45 @@ const recipes = [
     tags: ['PR Review', 'QA', 'Regression'],
     href: '/recipes/review-pr-quality',
   },
+  {
+    id: 17,
+    category: 'AI 확장',
+    title: '평가 하네스 만들기',
+    description: 'LLM 기능을 배포 전 반복 검증하는 golden set과 리포트 구성',
+    prompt: '이 AI 기능의 평가 하네스를 설계해줘. 입력 샘플, 기대 답변, 금지 답변, 채점 기준, CI 실행 명령, 실패 리포트 포맷을 포함해줘.',
+    tags: ['AI Harness', 'Evals', 'QA'],
+    href: '/recipes/make-eval-harness',
+  },
+  {
+    id: 18,
+    category: 'AI 확장',
+    title: '미니 RAG 추가',
+    description: '문서 업로드, 청킹, 검색, 답변 출처 표시까지 최소 RAG 흐름 구성',
+    prompt: '기존 웹서비스에 미니 RAG를 추가하고 싶어. 문서 수집, 청킹, 임베딩, 벡터 저장소, 검색 API, 답변 출처 표시, 실패 케이스를 단계별로 설계해줘.',
+    tags: ['RAG', 'Vector DB', 'Retrieval'],
+    href: '/recipes/add-mini-rag',
+  },
+  {
+    id: 19,
+    category: 'AI 확장',
+    title: '프로젝트 Skill 작성',
+    description: '반복 업무를 재사용 가능한 AI 작업 절차로 정리',
+    prompt: '이 프로젝트의 반복 업무를 Skill로 만들고 싶어. 목적, 트리거, 입력값, 실행 절차, 검증 명령, 실패 시 복구 절차, 예시 프롬프트를 SKILL.md 형식으로 작성해줘.',
+    tags: ['Skill', 'Agent', 'Workflow'],
+    href: '/recipes/write-project-skill',
+  },
+  {
+    id: 20,
+    category: 'AI 확장',
+    title: 'Local LLM 실행',
+    description: 'Ollama와 vLLM을 OpenAI 호환 API로 붙이는 로컬 모델 실험',
+    prompt: '이 프로젝트에서 Local LLM을 실험하고 싶어. Ollama 빠른 실험, vLLM 서버 실험, OpenAI 호환 base URL 전환, 성능/품질 비교표, 롤백 기준을 포함해줘.',
+    tags: ['Ollama', 'vLLM', 'Local LLM'],
+    href: '/recipes/run-local-llm',
+  },
 ];
 
-const categories = ['프로젝트 시작', '개발', '배포'];
+const categories = ['프로젝트 시작', '개발', '배포', 'AI 확장'];
 ---
 
 <DocsLayout
@@ -203,6 +239,13 @@ const categories = ['프로젝트 시작', '개발', '배포'];
             <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </span>
+          )}
+          {category === 'AI 확장' && (
+            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-300">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.75L8.25 6.75 5.25 8.25l3 1.5 1.5 3 1.5-3 3-1.5-3-1.5-1.5-3zM17.25 12.75l-.9 1.8-1.8.9 1.8.9.9 1.8.9-1.8 1.8-.9-1.8-.9-.9-1.8z" />
               </svg>
             </span>
           )}

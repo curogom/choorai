@@ -1,0 +1,111 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
+
+const prompt = `I want to turn repeated project work into an AI Skill.
+Write a SKILL.md draft from the information below.
+
+[Repeated work]
+- Workflow name: [e.g. release prep]
+- When it runs: [e.g. before deployment]
+- Inputs: [e.g. branch, environment, change summary]
+- Files/docs to read: [e.g. package.json, README, docs/deploy.md]
+- Commands to run: [e.g. npm run build, npm test]
+- Recovery rule: [e.g. stop and analyze logs if build fails]
+
+[Output requirements]
+1) Skill purpose
+2) Trigger conditions
+3) Procedure
+4) Validation commands
+5) Forbidden actions and approval-required actions
+6) Example user requests`;
+
+const checklist = [
+  { id: 'repeat', label: 'Confirm repetition', description: 'Use this for workflows repeated three or more times' },
+  { id: 'trigger', label: 'Write trigger', description: 'Make when-to-use conditions explicit' },
+  { id: 'scope', label: 'Limit read/write scope', description: 'List only necessary files and systems' },
+  { id: 'validation', label: 'Write validation commands', description: 'Include commands that decide pass/fail' },
+  { id: 'approval', label: 'Write approval boundary', description: 'Deployment, deletion, and external sends need approval' },
+];
+
+const skeleton = `# Skill Name
+
+## Purpose
+
+## When to use
+
+## Inputs
+
+## Procedure
+
+## Validation
+
+## Safety`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Write a Project Skill"
+  description="Prompt recipe to turn repeated work into a reusable Skill document"
+  currentPath="/recipes/write-project-skill"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Write a Project Skill</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Workflow
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Write a Project Skill</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Avoid explaining the same process every time. Freeze procedure and validation criteria into a Skill document.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="tip" title="Skill candidates">
+        <p class="mt-2">Start with release prep, PR review, deployment checks, docs updates, or customer-request triage.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Project Skill Drafting Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">SKILL.md Skeleton</h2>
+      <CodeBlock client:load locale="en" filename="SKILL.md" code={skeleton} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-write-project-skill" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <TemplateSections locale="en" topic="write-project-skill" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/ai/skills" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">AI Skills</h4>
+          <p class="text-text-secondary text-sm">Skill vs Tool/MCP</p>
+        </a>
+        <a href="/en/map/ops/release-rollback" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Release/Rollback Runbook</h4>
+          <p class="text-text-secondary text-sm">Turn operations into skills</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

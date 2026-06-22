@@ -37,6 +37,17 @@ const courses: PathCourse[] = [
     features: ['React 프론트엔드', 'FastAPI 백엔드', 'Cloudflare 배포', 'AI 가이드'],
   },
   {
+    id: 'ai-builder',
+    title: 'AI 서비스 빌더',
+    description: 'RAG, 평가 하네스, Skill, Local LLM을 실제 서비스 기능으로 확장하는 실전 코스입니다.',
+    icon: '🤖',
+    duration: '2-4시간',
+    difficulty: 'advanced',
+    href: '/path/ai-builder',
+    status: 'available',
+    features: ['AI 하네스', '미니 RAG', 'Skill 설계', 'Ollama/vLLM'],
+  },
+  {
     id: 'mini-saas',
     title: '미니 SaaS 만들기',
     description: '로그인과 데이터베이스가 있는 실제 SaaS 서비스를 만들어봅니다. 유저 인증부터 결제까지.',
@@ -155,7 +166,8 @@ const difficultyLabels = {
       </h3>
       <p class="text-text-secondary mb-4">
         완전 처음이면 <strong class="text-white">60분 완주</strong>,
-        차근차근 결과물을 만들고 싶다면 <strong class="text-white">2주 완주 미션</strong>을 선택하세요.
+        차근차근 결과물을 만들고 싶다면 <strong class="text-white">2주 완주 미션</strong>,
+        이미 배포 경험이 있다면 <strong class="text-white">AI 서비스 빌더</strong>를 선택하세요.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
@@ -163,6 +175,12 @@ const difficultyLabels = {
           class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-background font-bold rounded-xl transition-colors"
         >
           60분 완주 시작
+        </a>
+        <a
+          href="/path/ai-builder"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-elevated border border-border hover:border-primary/50 text-white font-bold rounded-xl transition-colors"
+        >
+          AI 서비스 빌더 보기
         </a>
         <a
           href="/path/mission"

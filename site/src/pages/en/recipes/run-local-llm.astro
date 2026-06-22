@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
+import TemplateSections from '../../../components/TemplateSections.astro';
+
+const prompt = `I want to experiment with a Local LLM in this project.
+Create a comparison plan for Ollama and vLLM.
+
+[Project]
+- Current LLM call path: [OpenAI SDK/direct HTTP/other]
+- Feature to test: [e.g. document QA, summarization, classification]
+- Local machine/server: [Mac/GPU server/none]
+- Important criteria: [quality/cost/speed/privacy/offline]
+
+[Output requirements]
+1) Ollama quick experiment steps
+2) vLLM server experiment steps
+3) OpenAI-compatible base URL switching
+4) eval harness criteria
+5) rollback criteria to Hosted API`;
+
+const checklist = [
+  { id: 'feature', label: 'Lock test feature', description: 'Limit to one feature and eval set' },
+  { id: 'ollama', label: 'Run Ollama smoke test', description: 'Verify local OpenAI-compatible endpoint' },
+  { id: 'vllm', label: 'Run vLLM server test', description: 'Record GPU server, port, and model name' },
+  { id: 'switch', label: 'Switch base URL', description: 'Change model provider through environment variables' },
+  { id: 'rollback', label: 'Write rollback criteria', description: 'Fallback when quality, latency, or error rate misses target' },
+];
+
+const envExample = `OPENAI_BASE_URL=http://localhost:11434/v1
+OPENAI_API_KEY=ollama
+AI_MODEL=llama3.1`;
+---
+
+<DocsLayout
+  lang="en"
+  title="Recipe: Run a Local LLM"
+  description="Prompt recipe to experiment with Ollama and vLLM through OpenAI-compatible APIs"
+  currentPath="/recipes/run-local-llm"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">Run a Local LLM</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Inference
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">Run a Local LLM</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Use local models for cost control, privacy, offline workflows, and model optionality, not just because they feel free.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load locale="en" variant="warning" title="Run with a harness">
+        <p class="mt-2">Compare Hosted API, Ollama, and vLLM against the same eval cases before judging quality.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load locale="en" prompt={prompt} title="Local LLM Experiment Prompt" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">Environment Switch Example</h2>
+      <CodeBlock client:load locale="en" filename=".env.local" code={envExample} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load locale="en" storageKey="recipe-run-local-llm" title="Execution Checklist" items={checklist} />
+    </section>
+
+    <TemplateSections locale="en" topic="run-local-llm" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Related Articles</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/map/ai/local-llm" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Local LLM</h4>
+          <p class="text-text-secondary text-sm">Ollama/vLLM selection criteria</p>
+        </a>
+        <a href="/en/map/ai/harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">AI Harness</h4>
+          <p class="text-text-secondary text-sm">Evaluate model-switching quality</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

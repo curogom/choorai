@@ -37,6 +37,7 @@ export function getNavigation(lang: Lang): NavSection[] {
           items: [
             { label: t('nav.60min'), href: lp('/path/60min'), tags: ['🌱'], indent: 1 },
             { label: lang === 'ko' ? '2주 완주 미션 (베타)' : '2-Week Mission (Beta)', href: lp('/path/mission'), tags: ['🧭'], indent: 1 },
+            { label: lang === 'ko' ? 'AI 서비스 빌더' : 'AI Service Builder', href: lp('/path/ai-builder'), tags: ['🤖'], indent: 1 },
             { label: lang === 'ko' ? '프론트엔드' : 'Frontend', indent: 1 },
             { label: 'React', href: lp('/start/60min/frontend/react'), indent: 2 },
             { label: 'Vue', href: lp('/start/60min/frontend/vue'), indent: 2 },
@@ -91,6 +92,17 @@ export function getNavigation(lang: Lang): NavSection[] {
             { label: lang === 'en' ? 'Multi-Environment Ops' : '멀티 환경 운영', href: lp('/map/runtime/environments'), indent: 2 },
             { label: t('nav.monitoring'), href: lp('/map/ops'), indent: 1 },
             { label: lang === 'en' ? 'Release/Rollback Runbook' : '릴리즈/롤백 런북', href: lp('/map/ops/release-rollback'), indent: 2 },
+          ],
+        },
+        {
+          title: lang === 'en' ? 'AI Builder' : 'AI 빌더',
+          storageKey: 'map-ai',
+          items: [
+            { label: lang === 'en' ? 'AI Builder Overview' : 'AI 빌더 개요', href: lp('/map/ai'), indent: 1 },
+            { label: lang === 'en' ? 'AI Harness' : 'AI 하네스', href: lp('/map/ai/harness'), badge: 'Lv.2', indent: 2 },
+            { label: lang === 'en' ? 'RAG Basics' : 'RAG 기초', href: lp('/map/ai/rag-basics'), badge: 'Lv.3', indent: 2 },
+            { label: lang === 'en' ? 'AI Skills' : 'AI Skills', href: lp('/map/ai/skills'), badge: 'Lv.3', indent: 2 },
+            { label: lang === 'en' ? 'Local LLM' : 'Local LLM', href: lp('/map/ai/local-llm'), badge: 'Lv.4', indent: 2 },
           ],
         },
         {
@@ -155,6 +167,10 @@ export function getNavigation(lang: Lang): NavSection[] {
         { label: lang === 'en' ? 'Add CRUD Endpoints' : 'CRUD 엔드포인트 추가', href: lp('/recipes/add-crud-endpoint'), indent: 1 },
         { label: lang === 'en' ? 'Add Auth (Cookie)' : '인증 추가(쿠키)', href: lp('/recipes/add-auth-cookie'), indent: 1 },
         { label: lang === 'en' ? 'Review PR Quality' : 'PR 품질 점검', href: lp('/recipes/review-pr-quality'), indent: 1 },
+        { label: lang === 'en' ? 'Make Eval Harness' : '평가 하네스 만들기', href: lp('/recipes/make-eval-harness'), indent: 1 },
+        { label: lang === 'en' ? 'Add Mini RAG' : '미니 RAG 추가', href: lp('/recipes/add-mini-rag'), indent: 1 },
+        { label: lang === 'en' ? 'Write Project Skill' : '프로젝트 Skill 작성', href: lp('/recipes/write-project-skill'), indent: 1 },
+        { label: lang === 'en' ? 'Run Local LLM' : 'Local LLM 실행', href: lp('/recipes/run-local-llm'), indent: 1 },
       ],
     },
     {

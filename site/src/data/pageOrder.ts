@@ -9,6 +9,7 @@ export interface PageInfo {
 const PAGE_TITLES_KO: Record<string, string> = {
   '/path/mission': '2주 완주 미션',
   '/path/60min': '60분 완주',
+  '/path/ai-builder': 'AI 서비스 빌더',
   '/start/60min/frontend/react': 'React 프론트엔드',
   '/start/60min/frontend/vue': 'Vue 프론트엔드',
   '/start/60min/backend/fastapi': 'FastAPI 백엔드',
@@ -34,6 +35,11 @@ const PAGE_TITLES_KO: Record<string, string> = {
   '/map/database/nosql': 'NoSQL',
   '/map/database/cache': 'Cache',
   '/map/database/vector': 'Vector DB',
+  '/map/ai': 'AI 빌더 개요',
+  '/map/ai/harness': 'AI 하네스',
+  '/map/ai/rag-basics': 'RAG 기초',
+  '/map/ai/skills': 'AI Skills',
+  '/map/ai/local-llm': 'Local LLM',
   '/map/runtime': '환경변수 & Runtime',
   '/map/runtime/environments': '멀티 환경 운영',
   '/map/ops': '모니터링 & Ops',
@@ -63,6 +69,10 @@ const PAGE_TITLES_KO: Record<string, string> = {
   '/recipes/add-crud-endpoint': 'CRUD 엔드포인트 추가',
   '/recipes/add-auth-cookie': '인증 추가(쿠키)',
   '/recipes/review-pr-quality': 'PR 품질 점검',
+  '/recipes/make-eval-harness': '평가 하네스 만들기',
+  '/recipes/add-mini-rag': '미니 RAG 추가',
+  '/recipes/write-project-skill': '프로젝트 Skill 작성',
+  '/recipes/run-local-llm': 'Local LLM 실행',
   '/reference': '예제 프로젝트',
 };
 
@@ -70,6 +80,7 @@ const PAGE_TITLES_KO: Record<string, string> = {
 const PAGE_TITLES_EN: Record<string, string> = {
   '/path/mission': '2-Week Mission Roadmap',
   '/path/60min': '60-min Challenge',
+  '/path/ai-builder': 'AI Service Builder',
   '/start/60min/frontend/react': 'React Frontend',
   '/start/60min/frontend/vue': 'Vue Frontend',
   '/start/60min/backend/fastapi': 'FastAPI Backend',
@@ -95,6 +106,11 @@ const PAGE_TITLES_EN: Record<string, string> = {
   '/map/database/nosql': 'NoSQL',
   '/map/database/cache': 'Cache',
   '/map/database/vector': 'Vector DB',
+  '/map/ai': 'AI Builder Overview',
+  '/map/ai/harness': 'AI Harness',
+  '/map/ai/rag-basics': 'RAG Basics',
+  '/map/ai/skills': 'AI Skills',
+  '/map/ai/local-llm': 'Local LLM',
   '/map/runtime': 'Env Variables & Runtime',
   '/map/runtime/environments': 'Multi-Environment Ops',
   '/map/ops': 'Monitoring & Ops',
@@ -124,6 +140,10 @@ const PAGE_TITLES_EN: Record<string, string> = {
   '/recipes/add-crud-endpoint': 'Add CRUD Endpoints',
   '/recipes/add-auth-cookie': 'Add Auth (Cookie)',
   '/recipes/review-pr-quality': 'Review PR Quality',
+  '/recipes/make-eval-harness': 'Make Eval Harness',
+  '/recipes/add-mini-rag': 'Add Mini RAG',
+  '/recipes/write-project-skill': 'Write Project Skill',
+  '/recipes/run-local-llm': 'Run Local LLM',
   '/reference': 'Example Projects',
 };
 
@@ -136,6 +156,7 @@ const PAGE_TITLES: Record<Lang, Record<string, string>> = {
 const PAGE_PATHS = [
   '/path/mission',
   '/path/60min',
+  '/path/ai-builder',
   '/start/60min/frontend/react',
   '/start/60min/frontend/vue',
   '/start/60min/backend/fastapi',
@@ -161,6 +182,11 @@ const PAGE_PATHS = [
   '/map/database/nosql',
   '/map/database/cache',
   '/map/database/vector',
+  '/map/ai',
+  '/map/ai/harness',
+  '/map/ai/rag-basics',
+  '/map/ai/skills',
+  '/map/ai/local-llm',
   '/map/runtime',
   '/map/runtime/environments',
   '/map/ops',
@@ -190,6 +216,10 @@ const PAGE_PATHS = [
   '/recipes/add-crud-endpoint',
   '/recipes/add-auth-cookie',
   '/recipes/review-pr-quality',
+  '/recipes/make-eval-harness',
+  '/recipes/add-mini-rag',
+  '/recipes/write-project-skill',
+  '/recipes/run-local-llm',
   '/reference',
 ];
 

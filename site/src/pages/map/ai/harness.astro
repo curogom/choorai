@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const evalCase = `{
+  "id": "refund-policy-001",
+  "input": "환불 규정이 어떻게 돼?",
+  "expected": ["환불 가능 기간을 말한다", "출처 문서명을 포함한다"],
+  "forbidden": ["근거 없이 정책을 단정한다", "없는 링크를 만든다"],
+  "tags": ["policy", "rag", "customer-support"]
+}`;
+
+const report = `# AI Eval Report
+- total: 20
+- passed: 17
+- failed: 3
+
+## Failed cases
+1. refund-policy-001
+   - missing citation
+   - answer used stale policy wording`;
+---
+
+<DocsLayout
+  title="AI 하네스"
+  description="LLM 기능을 배포 전 반복 검증하는 평가 하네스"
+  currentPath="/map/ai/harness"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/ai" class="hover:text-white transition-colors">AI 빌더</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI 하네스</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.2 · Quality Gate
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI 하네스</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        AI 하네스는 LLM 기능을 테스트하는 실행 틀입니다. 입력 샘플, 기대 조건, 금지 조건,
+        채점 방식, 리포트를 묶어 프롬프트나 모델 변경 때마다 회귀를 확인합니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="가장 먼저 만드는 이유">
+        <p class="mt-2 text-sm">
+          RAG, Skill, Local LLM 모두 결과가 흔들릴 수 있습니다. 하네스가 먼저 있어야 “좋아졌다”와 “느낌상 좋아 보인다”를 구분할 수 있습니다.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">최소 구성</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">golden set</strong>: 실제 사용자 질문과 기대 조건</li>
+          <li><strong class="text-white">rubric</strong>: 정답/부분 정답/실패를 나누는 채점 기준</li>
+          <li><strong class="text-white">runner</strong>: 같은 입력을 모델에 넣고 결과를 저장하는 스크립트</li>
+          <li><strong class="text-white">report</strong>: 실패 케이스와 재현 입력을 남기는 문서</li>
+        </ul>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">평가 케이스 예시</h2>
+        <CodeBlock client:load filename="evals/refund-policy.json" code={evalCase} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">실패 리포트 예시</h2>
+        <CodeBlock client:load filename="eval-report.md" code={report} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">통과 기준</h2>
+        <div class="p-5 bg-surface border border-border rounded-xl">
+          <ul class="list-disc list-inside text-text-secondary space-y-2">
+            <li>핵심 케이스는 100% 통과해야 배포 가능</li>
+            <li>출처가 필요한 답변은 citation 누락 시 실패</li>
+            <li>모델 변경 전후 결과를 같은 표로 비교</li>
+            <li>실패 케이스는 RAG/프롬프트/모델/데이터 문제로 분류</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">다음 액션</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/recipes/make-eval-harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">평가 하네스 레시피</h4>
+          <p class="text-text-secondary text-sm">프로젝트 입력으로 하네스 초안 만들기</p>
+        </a>
+        <a href="/map/ai/rag-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">RAG 기초</h4>
+          <p class="text-text-secondary text-sm">검색 품질을 평가 대상으로 연결</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/harness" />
+  </div>
+</DocsLayout>

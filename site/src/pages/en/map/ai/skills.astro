@@ -1,0 +1,114 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const skillTemplate = `# Project Release Skill
+
+## When to use
+- When the user asks "prepare a release"
+
+## Inputs
+- branch name
+- target environment
+- release notes draft
+
+## Procedure
+1. Check change scope with git status
+2. Run build/test commands
+3. Check migrations and env changes
+4. Update release notes
+5. Record Go/No-Go decision
+
+## Validation
+- npm run build
+- npm test`;
+---
+
+<DocsLayout
+  lang="en"
+  title="AI Skills"
+  description="Turn repeated work into reusable AI operating procedures"
+  currentPath="/map/ai/skills"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/ai" class="hover:text-white transition-colors">AI Builder</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI Skills</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.3 · Workflow
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI Skills</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        A Skill is an operating document that lets AI reuse a workflow you would otherwise repeat every time.
+        It lasts longer than a prompt and stays more flexible than full automation.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="tip" title="Good skill candidates">
+        <p class="mt-2 text-sm">
+          Release prep, PR review, incident triage, docs sync, and data cleanup are strong candidates because order and validation repeat.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Prompt vs Skill vs Tool</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Prompt</h3>
+            <p class="text-text-secondary text-sm">A well-written one-off request.</p>
+          </div>
+          <div class="p-4 bg-surface border border-primary/50 rounded-xl">
+            <h3 class="text-white font-bold mb-1">Skill</h3>
+            <p class="text-text-secondary text-sm">A fixed repeatable procedure with inputs and validation.</p>
+          </div>
+          <div class="p-4 bg-surface border border-border rounded-xl">
+            <h3 class="text-white font-bold mb-1">Tool/MCP</h3>
+            <p class="text-text-secondary text-sm">A real read/write action against external systems.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">SKILL.md Example</h2>
+        <CodeBlock client:load locale="en" filename="SKILL.md" code={skillTemplate} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Design Checks</h2>
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li>Is the trigger condition clear?</li>
+          <li>Is the file/system scope narrow enough?</li>
+          <li>Are success criteria and recovery steps documented?</li>
+          <li>If tool calls are needed, are permissions and approvals clear?</li>
+        </ul>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Next Actions</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/recipes/write-project-skill" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Write a Project Skill</h4>
+          <p class="text-text-secondary text-sm">Turn repeated work into a SKILL.md draft</p>
+        </a>
+        <a href="/en/map/ops/release-rollback" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Release/Rollback Runbook</h4>
+          <p class="text-text-secondary text-sm">Turn operations into skill candidates</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/skills" lang="en" />
+  </div>
+</DocsLayout>

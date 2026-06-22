@@ -7,6 +7,10 @@ type Topic =
   | 'add-crud-endpoint'
   | 'add-auth-cookie'
   | 'review-pr-quality'
+  | 'make-eval-harness'
+  | 'add-mini-rag'
+  | 'write-project-skill'
+  | 'run-local-llm'
   | 'deploy-netlify'
   | 'deploy-railway'
   | 'runtime-environments'
@@ -32,6 +36,10 @@ const topicLabel: Record<Topic, { ko: string; en: string }> = {
   'add-crud-endpoint': { ko: 'CRUD 엔드포인트 추가', en: 'CRUD endpoint changes' },
   'add-auth-cookie': { ko: '인증(쿠키) 추가', en: 'cookie/session auth changes' },
   'review-pr-quality': { ko: 'PR 품질 점검', en: 'PR quality review' },
+  'make-eval-harness': { ko: '평가 하네스', en: 'eval harness' },
+  'add-mini-rag': { ko: '미니 RAG', en: 'mini RAG' },
+  'write-project-skill': { ko: '프로젝트 Skill', en: 'project skill' },
+  'run-local-llm': { ko: 'Local LLM', en: 'local LLM' },
   'deploy-netlify': { ko: 'Netlify 배포', en: 'Netlify deployment' },
   'deploy-railway': { ko: 'Railway 배포', en: 'Railway deployment' },
   'runtime-environments': { ko: '멀티 환경 운영', en: 'multi-environment runtime operation' },
@@ -68,6 +76,26 @@ const referencesByTopic: Record<Topic, ReferenceItem[]> = {
     { ko: 'GitHub PR 리뷰 문서', en: 'GitHub PR review docs', href: 'https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests' },
     { ko: 'GitHub 보호 브랜치', en: 'GitHub protected branches', href: 'https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches' },
     { ko: 'pytest 공식 문서', en: 'pytest official docs', href: 'https://docs.pytest.org/' },
+  ],
+  'make-eval-harness': [
+    { ko: 'OpenAI Evals 가이드', en: 'OpenAI Evals guide', href: 'https://developers.openai.com/api/docs/guides/evals' },
+    { ko: 'OpenAI 평가 모범 사례', en: 'OpenAI evaluation best practices', href: 'https://developers.openai.com/api/docs/guides/evaluation-best-practices' },
+    { ko: 'Vitest 공식 문서', en: 'Vitest official docs', href: 'https://vitest.dev/guide/' },
+  ],
+  'add-mini-rag': [
+    { ko: 'OpenAI Retrieval 가이드', en: 'OpenAI Retrieval guide', href: 'https://developers.openai.com/api/docs/guides/retrieval' },
+    { ko: 'LangChain RAG 문서', en: 'LangChain RAG docs', href: 'https://docs.langchain.com/oss/python/langchain/rag' },
+    { ko: 'LlamaIndex RAG 개요', en: 'LlamaIndex RAG overview', href: 'https://developers.llamaindex.ai/python/framework/understanding/rag/' },
+  ],
+  'write-project-skill': [
+    { ko: 'Model Context Protocol 소개', en: 'Model Context Protocol intro', href: 'https://modelcontextprotocol.io/docs/getting-started/intro' },
+    { ko: 'OpenAI Tools 가이드', en: 'OpenAI tools guide', href: 'https://developers.openai.com/api/docs/guides/tools' },
+    { ko: 'GitHub Actions 문서', en: 'GitHub Actions docs', href: 'https://docs.github.com/en/actions' },
+  ],
+  'run-local-llm': [
+    { ko: 'Ollama OpenAI 호환 문서', en: 'Ollama OpenAI compatibility docs', href: 'https://docs.ollama.com/api/openai-compatibility' },
+    { ko: 'vLLM OpenAI 호환 서버', en: 'vLLM OpenAI-compatible server', href: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server/' },
+    { ko: 'vLLM Quickstart', en: 'vLLM quickstart', href: 'https://docs.vllm.ai/en/stable/getting_started/quickstart/' },
   ],
   'deploy-netlify': [
     { ko: 'Netlify 공식 문서', en: 'Netlify official docs', href: 'https://docs.netlify.com/' },

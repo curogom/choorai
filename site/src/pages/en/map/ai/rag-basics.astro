@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout';
+import CodeBlock from '../../../../components/CodeBlock';
+import PageNavigation from '../../../../components/PageNavigation.astro';
+
+const ragFlow = `1. Collect documents
+2. Split documents into chunks
+3. Convert chunks into embeddings
+4. Store them in a vector store
+5. Retrieve chunks similar to the question
+6. Send the question plus evidence to the LLM
+7. Return the answer with citations`;
+
+const apiShape = `POST /ai/ask
+{
+  "question": "What is the refund policy?",
+  "filters": { "product": "starter" }
+}
+
+200 OK
+{
+  "answer": "Refunds are available within 7 days of payment.",
+  "sources": [
+    { "title": "refund-policy.md", "chunkId": "refund-003" }
+  ]
+}`;
+---
+
+<DocsLayout
+  lang="en"
+  title="RAG Basics"
+  description="A minimal retrieval augmented generation flow for product features"
+  currentPath="/map/ai/rag-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
+      <a href="/en" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/en/map/ai" class="hover:text-white transition-colors">AI Builder</a>
+      <span>/</span>
+      <span class="text-primary font-medium">RAG Basics</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.3 · Retrieval
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">RAG Basics</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        RAG retrieves external documents and gives them to the model as evidence instead of retraining the model.
+        The key questions are whether the answer used retrieved evidence and whether it returned sources.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load locale="en" variant="warning" title="RAG is not magic">
+        <p class="mt-2 text-sm">
+          Bad chunking or weak retrieval produces weak answers. RAG quality often depends more on data prep and retrieval evals than the model.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Minimum Flow</h2>
+        <CodeBlock client:load locale="en" filename="rag-flow.txt" code={ragFlow} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">API Shape Example</h2>
+        <CodeBlock client:load locale="en" filename="api-contract.txt" code={apiShape} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">Tuning Keywords</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          {[
+            ['chunk size', 'Small chunks lose context. Large chunks make retrieval less precise.'],
+            ['metadata filter', 'Limit search by product, permission, date, or document type.'],
+            ['hybrid search', 'Combine keyword search and vector search.'],
+            ['reranking', 'Reorder first-pass results to improve evidence quality.'],
+          ].map(([title, body]) => (
+            <div class="p-4 bg-surface border border-border rounded-xl">
+              <h3 class="text-white font-bold mb-1">{title}</h3>
+              <p class="text-text-secondary text-sm">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">Next Actions</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/en/recipes/add-mini-rag" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Mini RAG Recipe</h4>
+          <p class="text-text-secondary text-sm">Add a RAG API to an existing service</p>
+        </a>
+        <a href="/en/map/database/vector" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Vector DB</h4>
+          <p class="text-text-secondary text-sm">Understand embedding storage and search</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/rag-basics" lang="en" />
+  </div>
+</DocsLayout>

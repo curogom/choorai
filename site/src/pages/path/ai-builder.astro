@@ -1,0 +1,116 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import PageNavigation from '../../components/PageNavigation.astro';
+
+const stages = [
+  {
+    title: '1. AI 하네스',
+    href: '/map/ai/harness',
+    badge: '품질 기준',
+    description: '프롬프트가 좋아 보이는지보다 같은 입력에서 계속 통과하는지 먼저 확인합니다.',
+    outputs: ['golden set 20개', '채점 기준', '실패 리포트'],
+  },
+  {
+    title: '2. 미니 RAG',
+    href: '/map/ai/rag-basics',
+    badge: '지식 연결',
+    description: '문서를 넣고, 검색하고, 답변에 출처를 붙이는 최소 흐름을 만듭니다.',
+    outputs: ['문서 수집', '청킹/임베딩', '검색 API'],
+  },
+  {
+    title: '3. Skill / Tool',
+    href: '/map/ai/skills',
+    badge: '반복 업무',
+    description: '반복되는 작업 절차를 Skill로 고정하고 필요한 도구 호출 범위를 정합니다.',
+    outputs: ['SKILL.md', '입력/출력 계약', '검증 명령'],
+  },
+  {
+    title: '4. Local LLM',
+    href: '/map/ai/local-llm',
+    badge: '모델 선택권',
+    description: 'Ollama로 빠르게 실험하고 vLLM로 서버형 추론 경로를 비교합니다.',
+    outputs: ['base URL 전환', '품질/비용 비교', '롤백 기준'],
+  },
+];
+---
+
+<DocsLayout
+  title="AI 서비스 빌더"
+  description="RAG, 평가 하네스, Skill, Local LLM을 실제 서비스 기능으로 확장하는 코스"
+  currentPath="/path/ai-builder"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/path" class="hover:text-white transition-colors">Path</a>
+      <span>/</span>
+      <span class="text-primary font-medium">AI 서비스 빌더</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        Advanced Path
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">AI 서비스 빌더</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        이미 배포 URL을 만들어봤다면 다음 단계는 AI 기능을 서비스 안에 넣는 것입니다.
+        이 코스는 RAG, 평가 하네스, Skill, Local LLM을 하나의 운영 가능한 기능 흐름으로 묶습니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="tip" title="완료 기준">
+        <p class="mt-2 text-sm">
+          “챗봇이 답한다”가 아니라 입력 데이터, 검색 근거, 모델 응답, 평가 결과, 장애 시 우회 경로를 설명할 수 있으면 완료입니다.
+        </p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">진행 순서</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        {stages.map((stage) => (
+          <a href={stage.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <h3 class="text-white font-bold">{stage.title}</h3>
+              <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-bold">{stage.badge}</span>
+            </div>
+            <p class="text-text-secondary text-sm mb-4">{stage.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {stage.outputs.map((output) => (
+                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">추천 산출물</h2>
+      <div class="p-5 bg-surface border border-border rounded-xl">
+        <ul class="list-disc list-inside text-text-secondary space-y-2">
+          <li><strong class="text-white">/ai/ask</strong> 같은 최소 API 하나</li>
+          <li><strong class="text-white">docs/ai-evals.md</strong> 또는 <strong class="text-white">evals/*.json</strong> 같은 평가 기준</li>
+          <li><strong class="text-white">RAG 실패 답변 정책</strong>: 모르면 모른다고 답하기, 출처 없으면 답변 보류</li>
+          <li><strong class="text-white">모델 전환표</strong>: Hosted API, Ollama, vLLM 중 언제 무엇을 쓸지</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <Callout client:load variant="info" title="바로 실행할 레시피">
+        <div class="grid sm:grid-cols-2 gap-3 mt-3 text-sm">
+          <a href="/recipes/make-eval-harness" class="text-primary hover:underline">평가 하네스 만들기</a>
+          <a href="/recipes/add-mini-rag" class="text-primary hover:underline">미니 RAG 추가</a>
+          <a href="/recipes/write-project-skill" class="text-primary hover:underline">프로젝트 Skill 작성</a>
+          <a href="/recipes/run-local-llm" class="text-primary hover:underline">Local LLM 실행</a>
+        </div>
+      </Callout>
+    </section>
+
+    <PageNavigation currentPath="/path/ai-builder" />
+  </div>
+</DocsLayout>

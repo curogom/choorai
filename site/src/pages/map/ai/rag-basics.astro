@@ -1,0 +1,108 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Callout from '../../../components/Callout';
+import CodeBlock from '../../../components/CodeBlock';
+import PageNavigation from '../../../components/PageNavigation.astro';
+
+const ragFlow = `1. 문서를 수집한다
+2. 문서를 작은 chunk로 나눈다
+3. chunk를 embedding으로 변환한다
+4. vector store에 저장한다
+5. 질문과 비슷한 chunk를 검색한다
+6. 검색된 근거와 질문을 LLM에 함께 넣는다
+7. 답변과 출처를 같이 반환한다`;
+
+const apiShape = `POST /ai/ask
+{
+  "question": "환불 규정이 어떻게 돼?",
+  "filters": { "product": "starter" }
+}
+
+200 OK
+{
+  "answer": "환불은 결제 후 7일 이내 가능합니다.",
+  "sources": [
+    { "title": "refund-policy.md", "chunkId": "refund-003" }
+  ]
+}`;
+---
+
+<DocsLayout
+  title="RAG 기초"
+  description="문서 검색과 LLM 답변을 연결하는 최소 RAG 흐름"
+  currentPath="/map/ai/rag-basics"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/map/ai" class="hover:text-white transition-colors">AI 빌더</a>
+      <span>/</span>
+      <span class="text-primary font-medium">RAG 기초</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+        Lv.3 · Retrieval
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">RAG 기초</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        RAG는 모델을 다시 학습시키지 않고 외부 문서를 검색해 답변 근거로 넣는 방식입니다.
+        핵심은 “검색된 근거로 답했는가”와 “출처를 남겼는가”입니다.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <Callout client:load variant="warning" title="RAG는 마법이 아닙니다">
+        <p class="mt-2 text-sm">
+          청킹이 나쁘거나 검색 결과가 틀리면 답변도 틀립니다. RAG의 품질은 모델보다 데이터 준비와 검색 평가에서 갈리는 경우가 많습니다.
+        </p>
+      </Callout>
+    </section>
+
+    <article class="prose prose-invert max-w-none">
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">최소 흐름</h2>
+        <CodeBlock client:load filename="rag-flow.txt" code={ragFlow} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">API 모양 예시</h2>
+        <CodeBlock client:load filename="api-contract.txt" code={apiShape} />
+      </section>
+
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-white mb-4">튜닝 키워드</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          {[
+            ['chunk size', '문서를 너무 작게 자르면 맥락이 끊기고, 너무 크게 자르면 검색이 둔해집니다.'],
+            ['metadata filter', '상품, 권한, 날짜, 문서 종류로 검색 범위를 좁힙니다.'],
+            ['hybrid search', '키워드 검색과 벡터 검색을 함께 사용합니다.'],
+            ['reranking', '1차 검색 결과를 다시 정렬해 근거 품질을 높입니다.'],
+          ].map(([title, body]) => (
+            <div class="p-4 bg-surface border border-border rounded-xl">
+              <h3 class="text-white font-bold mb-1">{title}</h3>
+              <p class="text-text-secondary text-sm">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </article>
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">다음 액션</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/recipes/add-mini-rag" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">미니 RAG 레시피</h4>
+          <p class="text-text-secondary text-sm">기존 서비스에 RAG API 추가하기</p>
+        </a>
+        <a href="/map/database/vector" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">Vector DB</h4>
+          <p class="text-text-secondary text-sm">임베딩 저장소와 검색 흐름 이해</p>
+        </a>
+      </div>
+    </section>
+
+    <PageNavigation currentPath="/map/ai/rag-basics" />
+  </div>
+</DocsLayout>

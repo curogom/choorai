@@ -1,0 +1,100 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout';
+import CodeBlock from '../../components/CodeBlock';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
+import TemplateSections from '../../components/TemplateSections.astro';
+
+const prompt = `AI 기능의 평가 하네스를 만들고 싶어.
+아래 정보를 바탕으로 golden set, 채점 기준, 실행 명령, 실패 리포트 포맷을 설계해줘.
+
+[기능 설명]
+- 기능: [예: 문서 기반 고객지원 답변]
+- 입력 형태: [예: 사용자 질문 + 사용자 등급]
+- 출력 형태: [예: 답변 + 출처 배열]
+- 반드시 지켜야 할 정책: [예: 출처 없으면 답변 금지]
+
+[출력 요구사항]
+1) eval case JSON 스키마
+2) 최소 golden set 20개 구성 기준
+3) pass/partial/fail 채점 기준
+4) CI에서 실행할 명령
+5) 실패 리포트 Markdown 템플릿`;
+
+const checklist = [
+  { id: 'scope', label: '평가할 기능 범위 고정', description: '한 API 또는 한 사용자 플로우로 제한' },
+  { id: 'golden', label: 'golden set 작성', description: '정상/경계/실패 케이스 포함' },
+  { id: 'rubric', label: '채점 기준 작성', description: '정답보다 기대 조건 중심으로 정의' },
+  { id: 'runner', label: '실행 명령 연결', description: '로컬/CI에서 같은 명령으로 실행' },
+  { id: 'report', label: '실패 리포트 저장', description: '재현 입력과 실패 이유 기록' },
+];
+
+const example = `{
+  "id": "source-required-001",
+  "input": "환불 규정 알려줘",
+  "expected": ["환불 가능 기간 포함", "출처 포함"],
+  "forbidden": ["출처 없이 단정", "정책 문서에 없는 내용"]
+}`;
+---
+
+<DocsLayout
+  title="레시피: 평가 하네스 만들기"
+  description="LLM 기능을 배포 전 반복 검증하는 평가 하네스 프롬프트"
+  currentPath="/recipes/make-eval-harness"
+>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
+      <a href="/" class="hover:text-white transition-colors">홈</a>
+      <span>/</span>
+      <a href="/recipes" class="hover:text-white transition-colors">Recipes</a>
+      <span>/</span>
+      <span class="text-primary font-medium">평가 하네스 만들기</span>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4">
+        AI Extension · Quality
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-white mb-4">평가 하네스 만들기</h1>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        AI 기능을 배포하기 전에 같은 입력에서 같은 기준으로 검증할 수 있는 하네스를 만듭니다.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <Callout client:load variant="tip" title="사용 타이밍">
+        <p class="mt-2">프롬프트, 모델, RAG 데이터, chunk 전략을 바꾸기 전에 먼저 만드세요.</p>
+      </Callout>
+    </section>
+
+    <section class="mb-10">
+      <PromptBox client:load prompt={prompt} title="평가 하네스 설계 프롬프트" />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">케이스 포맷 예시</h2>
+      <CodeBlock client:load filename="eval-case.json" code={example} />
+    </section>
+
+    <section class="mb-10">
+      <Checklist client:load storageKey="recipe-make-eval-harness" title="실행 체크리스트" items={checklist} />
+    </section>
+
+    <TemplateSections topic="make-eval-harness" />
+
+    <section class="mt-12 pt-8 border-t border-border">
+      <h3 class="text-lg font-bold text-white mb-4">관련 문서</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <a href="/map/ai/harness" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">AI 하네스</h4>
+          <p class="text-text-secondary text-sm">하네스 개념과 통과 기준</p>
+        </a>
+        <a href="/map/testing-basics" class="p-4 bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors no-underline">
+          <h4 class="text-white font-medium mb-1">테스트 기초</h4>
+          <p class="text-text-secondary text-sm">Unit/Integration/E2E와 연결</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
