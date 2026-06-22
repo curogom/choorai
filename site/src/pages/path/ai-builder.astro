@@ -1,38 +1,83 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Callout from '../../components/Callout';
+import PromptBox from '../../components/PromptBox';
+import Checklist from '../../components/Checklist';
 import PageNavigation from '../../components/PageNavigation.astro';
 
 const stages = [
   {
+    id: 'harness',
+    day: '1일차',
+    duration: '60-90분',
     title: '1. AI 하네스',
     href: '/map/ai/harness',
+    recipeHref: '/recipes/make-eval-harness',
     badge: '품질 기준',
     description: '프롬프트가 좋아 보이는지보다 같은 입력에서 계속 통과하는지 먼저 확인합니다.',
     outputs: ['golden set 20개', '채점 기준', '실패 리포트'],
+    done: ['핵심 질문 20개를 골랐다', '통과/실패 기준을 문장으로 썼다', '실패 케이스를 리포트로 남겼다'],
+    validation: '같은 입력을 다시 실행했을 때 통과/실패 판단이 흔들리지 않는지 확인합니다.',
+    prompt: '내 서비스의 AI 기능을 배포하기 전에 평가 하네스를 만들고 싶어. 핵심 사용자 질문 20개, 통과 기준, 금지 행동, 실패 리포트 형식을 만들어줘.',
   },
   {
+    id: 'rag',
+    day: '2일차',
+    duration: '90-120분',
     title: '2. 미니 RAG',
     href: '/map/ai/rag-basics',
+    recipeHref: '/recipes/add-mini-rag',
     badge: '지식 연결',
     description: '문서를 넣고, 검색하고, 답변에 출처를 붙이는 최소 흐름을 만듭니다.',
     outputs: ['문서 수집', '청킹/임베딩', '검색 API'],
+    done: ['문서 3-10개를 수집했다', '검색 API가 근거 chunk를 반환한다', '답변에 출처가 포함된다'],
+    validation: '출처 없는 답변은 실패로 처리하고, 근거 문서 제목이 응답에 포함되는지 확인합니다.',
+    prompt: '기존 서비스에 미니 RAG를 붙이고 싶어. 문서 수집, chunk 설계, 검색 API, 출처 포함 응답, 실패 정책을 최소 구현 순서로 정리해줘.',
   },
   {
+    id: 'skill',
+    day: '3일차',
+    duration: '60-90분',
     title: '3. Skill / Tool',
     href: '/map/ai/skills',
+    recipeHref: '/recipes/write-project-skill',
     badge: '반복 업무',
     description: '반복되는 작업 절차를 Skill로 고정하고 필요한 도구 호출 범위를 정합니다.',
     outputs: ['SKILL.md', '입력/출력 계약', '검증 명령'],
+    done: ['반복 작업 1개를 골랐다', 'SKILL.md에 트리거/입력/절차/검증을 썼다', '도구 권한 경계를 정했다'],
+    validation: '새 대화에서 Skill만 읽고 같은 절차를 재현할 수 있는지 확인합니다.',
+    prompt: '내 프로젝트에서 반복되는 작업 1개를 Codex Skill로 만들고 싶어. 트리거, 입력, 절차, 읽어야 할 파일, 검증 명령, 실패 시 복구 순서를 SKILL.md 초안으로 써줘.',
   },
   {
+    id: 'local-llm',
+    day: '4일차',
+    duration: '60-120분',
     title: '4. Local LLM',
     href: '/map/ai/local-llm',
+    recipeHref: '/recipes/run-local-llm',
     badge: '모델 선택권',
     description: 'Ollama로 빠르게 실험하고 vLLM로 서버형 추론 경로를 비교합니다.',
     outputs: ['base URL 전환', '품질/비용 비교', '롤백 기준'],
+    done: ['Hosted API와 Local LLM 전환 지점을 정했다', 'Ollama 또는 vLLM 응답을 1회 검증했다', '품질/비용/운영 표를 작성했다'],
+    validation: '1일차 하네스를 같은 입력으로 돌려 모델 변경 전후 차이를 비교합니다.',
+    prompt: '내 AI 기능에서 Hosted API, Ollama, vLLM 중 무엇을 쓸지 비교하고 싶어. 품질, 비용, 보안, 운영 난이도, 롤백 기준 표와 검증 순서를 만들어줘.',
   },
 ];
+
+const checklistItems = stages.map((stage) => ({
+  id: stage.id,
+  label: `${stage.day} · ${stage.title}`,
+  description: stage.outputs.join(' / '),
+}));
+
+const builderPrompt = `너는 AI 기능을 제품에 붙이는 시니어 엔지니어다.
+내 목표는 4일 안에 평가 하네스, 미니 RAG, 프로젝트 Skill, Local LLM 선택 기준을 가진 최소 AI 기능을 완성하는 것이다.
+아래 형식으로만 답해줘:
+1) 오늘 끝낼 산출물
+2) 구현 순서 3-5단계
+3) 복붙 가능한 파일/명령어/체크리스트
+4) 실패했을 때 확인할 순서
+5) 완료 기준과 다음 단계`;
 ---
 
 <DocsLayout
@@ -69,21 +114,72 @@ const stages = [
     </section>
 
     <section class="mb-10">
-      <h2 class="text-2xl font-bold text-white mb-4">진행 순서</h2>
-      <div class="grid md:grid-cols-2 gap-4">
+      <PromptBox
+        client:load
+        title="AI Builder 공통 시작 프롬프트"
+        description="각 날짜의 세부 프롬프트와 함께 쓰면 산출물 범위가 흔들리지 않습니다."
+        prompt={builderPrompt}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="ai-builder-4day-v1"
+        title="AI Builder 4일 진행 현황"
+        items={checklistItems}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">4일 실행 미션</h2>
+      <div class="space-y-4">
         {stages.map((stage) => (
-          <a href={stage.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
-            <div class="flex items-center justify-between gap-3 mb-3">
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 rounded bg-primary/15 text-primary text-xs font-bold">{stage.day}</span>
               <h3 class="text-white font-bold">{stage.title}</h3>
+              <span class="text-xs text-text-secondary">({stage.duration})</span>
               <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-bold">{stage.badge}</span>
             </div>
             <p class="text-text-secondary text-sm mb-4">{stage.description}</p>
-            <div class="flex flex-wrap gap-2">
-              {stage.outputs.map((output) => (
-                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
-              ))}
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">산출물</h4>
+                <div class="flex flex-wrap gap-2">
+                  {stage.outputs.map((output) => (
+                    <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">완료 기준</h4>
+                <ul class="list-disc list-inside text-sm text-text-secondary space-y-1">
+                  {stage.done.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </a>
+
+            <div class="space-y-3 mb-4">
+              <p class="text-text-secondary text-sm"><strong class="text-white">검증 방법:</strong> {stage.validation}</p>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">AI 시작 프롬프트</h4>
+                <pre class="whitespace-pre-wrap break-words rounded-lg bg-background border border-border p-3 text-xs text-text-secondary leading-relaxed">{stage.prompt}</pre>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <a href={stage.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                개념 보기
+              </a>
+              <a href={stage.recipeHref} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary text-background hover:bg-primary-hover transition-colors">
+                레시피 실행
+              </a>
+            </div>
+          </article>
         ))}
       </div>
     </section>

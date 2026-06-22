@@ -1,38 +1,83 @@
 ---
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Callout from '../../../components/Callout';
+import PromptBox from '../../../components/PromptBox';
+import Checklist from '../../../components/Checklist';
 import PageNavigation from '../../../components/PageNavigation.astro';
 
 const stages = [
   {
+    id: 'harness',
+    day: 'Day 1',
+    duration: '60-90 min',
     title: '1. AI Harness',
     href: '/en/map/ai/harness',
+    recipeHref: '/en/recipes/make-eval-harness',
     badge: 'Quality baseline',
     description: 'Validate repeatable behavior before arguing about whether a prompt feels good.',
     outputs: ['20 golden cases', 'grading rules', 'failure report'],
+    done: ['20 core questions are selected', 'Pass/fail rules are written', 'Failed cases are captured in a report'],
+    validation: 'Run the same inputs again and confirm pass/fail judgment stays consistent.',
+    prompt: 'I want to create an eval harness before shipping my AI feature. Please draft 20 core user questions, pass criteria, forbidden behavior, and a failure report format.',
   },
   {
+    id: 'rag',
+    day: 'Day 2',
+    duration: '90-120 min',
     title: '2. Mini RAG',
     href: '/en/map/ai/rag-basics',
+    recipeHref: '/en/recipes/add-mini-rag',
     badge: 'Knowledge link',
     description: 'Ingest documents, retrieve relevant chunks, and return cited answers.',
     outputs: ['document intake', 'chunking/embeddings', 'search API'],
+    done: ['3-10 documents are collected', 'The search API returns evidence chunks', 'Answers include citations'],
+    validation: 'Treat uncited answers as failures and confirm the response includes source document titles.',
+    prompt: 'I want to add mini RAG to an existing service. Please outline document intake, chunking, search API, cited responses, and failure policy in the smallest implementation order.',
   },
   {
+    id: 'skill',
+    day: 'Day 3',
+    duration: '60-90 min',
     title: '3. Skill / Tool',
     href: '/en/map/ai/skills',
+    recipeHref: '/en/recipes/write-project-skill',
     badge: 'Repeated work',
     description: 'Turn repeated operating procedures into reusable skills with clear tool boundaries.',
     outputs: ['SKILL.md', 'I/O contract', 'validation command'],
+    done: ['One repeated task is selected', 'SKILL.md includes trigger, inputs, procedure, and validation', 'Tool permission boundaries are defined'],
+    validation: 'Start a new chat and confirm the procedure can be reproduced from the skill alone.',
+    prompt: 'I want to turn one repeated project workflow into a Codex Skill. Please draft SKILL.md with trigger, inputs, procedure, files to read, validation commands, and recovery steps.',
   },
   {
+    id: 'local-llm',
+    day: 'Day 4',
+    duration: '60-120 min',
     title: '4. Local LLM',
     href: '/en/map/ai/local-llm',
+    recipeHref: '/en/recipes/run-local-llm',
     badge: 'Model optionality',
     description: 'Use Ollama for quick local experiments and vLLM for server-style inference.',
     outputs: ['base URL switch', 'quality/cost table', 'rollback rule'],
+    done: ['Hosted API vs local switching criteria are defined', 'Ollama or vLLM response is verified once', 'Quality/cost/ops table is written'],
+    validation: 'Run the Day 1 harness with the same inputs and compare model behavior before and after the switch.',
+    prompt: 'I want to compare Hosted API, Ollama, and vLLM for my AI feature. Please create a quality, cost, privacy, ops difficulty, rollback criteria table and a validation sequence.',
   },
 ];
+
+const checklistItems = stages.map((stage) => ({
+  id: stage.id,
+  label: `${stage.day} · ${stage.title}`,
+  description: stage.outputs.join(' / '),
+}));
+
+const builderPrompt = `You are a senior engineer helping ship AI product features.
+My goal is to complete a minimal AI feature in 4 days with an eval harness, mini RAG, project Skill, and Local LLM decision criteria.
+Reply only in this structure:
+1) Output to finish today
+2) 3-5 implementation steps
+3) Copy-paste files/commands/checklist
+4) Debugging order if it fails
+5) Done criteria and next step`;
 ---
 
 <DocsLayout
@@ -70,21 +115,74 @@ const stages = [
     </section>
 
     <section class="mb-10">
-      <h2 class="text-2xl font-bold text-white mb-4">Track Order</h2>
-      <div class="grid md:grid-cols-2 gap-4">
+      <PromptBox
+        client:load
+        locale="en"
+        title="AI Builder Starter Prompt"
+        description="Use this with each day-specific prompt to keep scope stable."
+        prompt={builderPrompt}
+      />
+    </section>
+
+    <section class="mb-10">
+      <Checklist
+        client:load
+        storageKey="ai-builder-4day-v1-en"
+        title="AI Builder 4-day progress"
+        locale="en"
+        items={checklistItems}
+      />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-white mb-4">4-Day Execution Mission</h2>
+      <div class="space-y-4">
         {stages.map((stage) => (
-          <a href={stage.href} class="block p-5 bg-surface border border-border rounded-xl hover:border-primary/50 transition-colors no-underline">
-            <div class="flex items-center justify-between gap-3 mb-3">
+          <article class="p-5 bg-surface border border-border rounded-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 rounded bg-primary/15 text-primary text-xs font-bold">{stage.day}</span>
               <h3 class="text-white font-bold">{stage.title}</h3>
+              <span class="text-xs text-text-secondary">({stage.duration})</span>
               <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-bold">{stage.badge}</span>
             </div>
             <p class="text-text-secondary text-sm mb-4">{stage.description}</p>
-            <div class="flex flex-wrap gap-2">
-              {stage.outputs.map((output) => (
-                <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
-              ))}
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Outputs</h4>
+                <div class="flex flex-wrap gap-2">
+                  {stage.outputs.map((output) => (
+                    <span class="px-2 py-1 bg-background/60 text-text-secondary text-xs rounded">{output}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">Done Criteria</h4>
+                <ul class="list-disc list-inside text-sm text-text-secondary space-y-1">
+                  {stage.done.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </a>
+
+            <div class="space-y-3 mb-4">
+              <p class="text-text-secondary text-sm"><strong class="text-white">Validation:</strong> {stage.validation}</p>
+              <div>
+                <h4 class="text-sm font-bold text-white mb-2">AI Starter Prompt</h4>
+                <pre class="whitespace-pre-wrap break-words rounded-lg bg-background border border-border p-3 text-xs text-text-secondary leading-relaxed">{stage.prompt}</pre>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <a href={stage.href} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-background border border-border text-text-secondary hover:text-white hover:border-primary/40 transition-colors">
+                Read Concept
+              </a>
+              <a href={stage.recipeHref} class="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary text-background hover:bg-primary-hover transition-colors">
+                Run Recipe
+              </a>
+            </div>
+          </article>
         ))}
       </div>
     </section>
