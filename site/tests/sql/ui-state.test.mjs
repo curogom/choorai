@@ -9,7 +9,7 @@ const nativeRequire=createRequire(import.meta.url),cache=new Map();
 let slots=[],cursor=0,effectMounted=false,pendingEffects=[];
 const react={useState(initial){const i=cursor++;if(!(i in slots))slots[i]=typeof initial==='function'?initial():initial;return[slots[i],v=>{slots[i]=typeof v==='function'?v(slots[i]):v;}];},useRef(initial){const i=cursor++;return slots[i]??=( {current:initial});},useEffect(fn){if(!effectMounted)pendingEffects.push(fn);}};
 class SQLPracticeError extends Error{constructor(message){super(message);this.kind='syntax';}}
-class Engine{cancel(){} async run(){throw new SQLPracticeError('no such table: missing_table');}}
+class Engine{cancel(){} abortActive(){} async run(){throw new SQLPracticeError('no such table: missing_table');}}
 function load(file){file=resolve(file);if(file.endsWith('.json'))return JSON.parse(readFileSync(file,'utf8'));if(cache.has(file))return cache.get(file).exports;const mod={exports:{}};cache.set(file,mod);const output=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;new Function('require','module','exports',output)(id=>id==='react'?react:id.endsWith('/client')?{SQLPracticeEngine:Engine,SQLPracticeError}:id.startsWith('.')?load(resolve(dirname(file),id.endsWith('.json')?id:id+'.ts')):nativeRequire(id),mod,mod.exports);return mod.exports;}
 const component=load('src/components/SqlPractice.tsx').default;
 function render(){cursor=0;const tree=component();for(const fn of pendingEffects.splice(0))fn();effectMounted=true;return tree;}

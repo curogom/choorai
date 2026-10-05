@@ -16,7 +16,7 @@
   },
   "steps": [
     {
-      "id":"run-starter","kind":"run","time":"3분",
+      "id":"run-starter","kind":"run","time":{"ko":"3분","en":"3 min"},
       "title":{"ko":"시작 코드 실행하기","en":"Run the starter code"},
       "goal":{"ko":"메모 추가 이벤트와 조건 분기가 실행되는 순서를 관찰합니다.","en":"Observe how the add event and condition branch run."},
       "action":{"ko":"시작 코드를 실행해 글자가 있는 메모를 넣어 봅니다. 현재 코드는 잘못된 안내를 보여 주는 버그가 있습니다.","en":"Run the starter with a non-empty note. The current code has a bug and shows the wrong message."},
@@ -26,7 +26,7 @@
       "verification":{"type":"runtime-observation","rule":"the known starter bug is observed by running the interpreter"}
     },
     {
-      "id":"fix-guard","kind":"edit-run","time":"8분","requires":["run-starter"],
+      "id":"fix-guard","kind":"edit-run","time":{"ko":"8분","en":"8 min"},"requires":["run-starter"],
       "title":{"ko":"빈 메모 조건 고치기","en":"Fix the empty-note condition"},
       "goal":{"ko":"`if` 조건의 방향을 바꾸고 두 입력 사례를 실행해 동작을 확인합니다.","en":"Change the `if` condition and run two input cases to verify the behavior."},
       "action":{"ko":"코드에서 `note is not empty`를 `note is empty`로 고치고 ‘동작 검사 실행’을 누르세요. 빈 입력은 거절되고 일반 메모는 목록에 추가되어야 합니다.","en":"Change `note is not empty` to `note is empty`, then run the behavior checks. Empty input should be rejected and a normal note should be added."},
@@ -36,7 +36,7 @@
       "verification":{"type":"interpreter-tests","rule":"empty input displays a message; non-empty input appends one note and clears input"}
     },
     {
-      "id":"add-counter","kind":"feature","time":"7분","requires":["fix-guard"],
+      "id":"add-counter","kind":"feature","time":{"ko":"7분","en":"7 min"},"requires":["fix-guard"],
       "title":{"ko":"입력 글자 수 기능 추가하기","en":"Add a character-count feature"},
       "goal":{"ko":"새로운 `on input` 이벤트를 코드에 추가하고 미리보기의 남은 글자 수를 움직입니다.","en":"Add a new `on input` event in code and make the remaining-character count update in the preview."},
       "action":{"ko":"코드 끝에 빈 줄을 넣고 아래 두 줄을 직접 추가하세요. 그런 다음 ‘기능 검사 실행’을 누릅니다.\n\non input:\n  show remaining characters","en":"Add a blank line at the end, then type these two lines yourself. Select “Run feature checks” afterward.\n\non input:\n  show remaining characters"},

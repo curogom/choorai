@@ -56,6 +56,7 @@ const lp = (path: string) => getLocalePath(lang, path);
     <label>Frontend <select data-track="frontend" class="bg-surface"><option value="react">React</option><option value="vue">Vue</option></select></label>
     <label>Backend <select data-track="backend" class="bg-surface"><option value="fastapi">FastAPI</option><option value="hono">Hono</option></select></label>
   </fieldset>
+  <p data-track-save-status role="status" hidden class="mt-2 text-sm text-amber-200"></p>
 )}
 <script>
   import { getNavigation } from '../data/pageOrder';
@@ -84,7 +85,14 @@ const lp = (path: string) => getLocalePath(lang, path);
       const tracks = getChallengeTracks();
       if (select.dataset.track === 'frontend') tracks.frontend = select.value === 'vue' ? 'vue' : 'react';
       else tracks.backend = select.value === 'hono' ? 'hono' : 'fastapi';
-      selectChallengeTracks(tracks);
+      const saved = selectChallengeTracks(tracks);
+      const status = document.querySelector<HTMLElement>('[data-track-save-status]');
+      if (status) {
+        status.hidden = saved;
+        status.textContent = document.querySelector('[data-challenge-nav]')?.getAttribute('data-lang') === 'en'
+          ? 'This track choice stays in this tab, but could not be saved. Refreshing may restore the previous choice.'
+          : '선택한 트랙은 이 탭에 유지되지만 저장하지 못했습니다. 새로고침하면 이전 선택으로 돌아갈 수 있습니다.';
+      }
     });
   });
   window.addEventListener('60min-progress-change', update);

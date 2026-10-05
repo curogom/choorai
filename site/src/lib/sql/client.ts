@@ -55,6 +55,9 @@ export class SQLPracticeEngine {
       this.worker!.postMessage({ id, tables, query, answer, preview });
     });
   }
+  abortActive(): void {
+    if (this.pending || this.rejectLoading) this.cancel();
+  }
   cancel(error = new SQLPracticeError('cancelled', '실행을 중단했습니다.')): void {
     this.worker?.terminate(); this.worker = null;
     if (this.initTimer) clearTimeout(this.initTimer); this.initTimer = null;

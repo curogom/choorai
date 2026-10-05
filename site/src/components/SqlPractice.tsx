@@ -172,7 +172,7 @@ export default function SqlPractice() {
     }
   };
   const saveAnswer = (id: string, value: PracticeAnswer) => updateState({ ...stateRef.current, answers: { ...stateRef.current.answers, [id]: value } });
-  const stop = () => { generation.current++; engine.current?.cancel(); setBusy(false); };
+  const stop = () => { generation.current++; engine.current?.abortActive(); setBusy(false); };
   const navigate = (id: string) => {
     stop(); updateState({ ...stateRef.current, current: id });
     setFixture(0); setHints(0); setResult(null); setNotice(''); setEngineDetail('');

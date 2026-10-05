@@ -147,6 +147,28 @@ function byId(tree, id) {
   assert.equal(found.length, 1, `expected ${id}`);
   return found[0];
 }
+
+for (const keepLocal of [true, false]) test(`conflict choice ${keepLocal ? 'local' : 'saved'} persists merged historical progress across remount`, () => {
+  const original = seed(4);
+  let tree = render();
+  const localJavascript = original.javascript.replace('My preserved custom sentence', 'Local choice');
+  const remote = { ...original, stage: 1, check: null, repairRevision: null, javascript: original.javascript.replace('My preserved custom sentence', 'Remote choice'), revision: original.revision + 2 };
+  storage.set(lesson.BUTTON_LESSON_STORAGE_KEY, JSON.stringify(remote));
+  tree = edit(tree, 'javascript', localJavascript);
+  // A later remote write leaves lower saved progress while the open tab retains its historical stage.
+  storage.set(lesson.BUTTON_LESSON_STORAGE_KEY, JSON.stringify(remote));
+  window.dispatchEvent({ type: 'storage', key: lesson.BUTTON_LESSON_STORAGE_KEY });
+  tree = render();
+  assert.match(text(tree), /Earlier lesson progress: 4/);
+  tree = click(tree, keepLocal ? /^Save my file$/ : /^Use saved file$/);
+  const chosen = keepLocal ? localJavascript : remote.javascript;
+  assert.equal(saved().javascript, chosen);
+  assert.equal(saved().stage, 4, 'choosing a file must not discard merged historical progress');
+  assert.equal(saved().revision, remote.revision);
+  activeHooks = createHooks(); tree = render();
+  assert.equal(editor(tree, 'javascript').props.value, chosen);
+  assert.match(text(tree), /Earlier lesson progress: 4/);
+});
 function clickId(tree, id) { const target = byId(tree,id); assert.notEqual(target.props.disabled,true); target.props.onClick(); return render(); }
 
 test('reset request and cancel preserve exact draft and progress; confirmation resets and undo restores across remount', () => {

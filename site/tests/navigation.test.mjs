@@ -29,7 +29,7 @@ const nav = load('src/data/pageOrder.ts');
 const progress = load('src/lib/progressStore.ts');
 const checklist = load('src/components/Checklist.tsx').default;
 const stepper = load('src/components/Stepper.tsx').default;
-function reset() { store.clear(); writes = 0; denyWrite = false; states = []; effects = []; cursor = 0; listeners.clear(); }
+function reset() { store.clear(); tracks.clearUnsavedChallengeTracks?.(); writes = 0; denyWrite = false; states = []; effects = []; cursor = 0; listeners.clear(); }
 function render(props) { effects = []; cursor = 0; const tree = checklist(props); for (const effect of effects) effect(); return tree; }
 function renderWithoutEffects(props) { effects = []; cursor = 0; return checklist(props); }
 function nodes(tree, predicate) { if (!tree || typeof tree !== 'object') return []; const result = predicate(tree) ? [tree] : []; for (const child of [tree.props?.children].flat(Infinity)) result.push(...nodes(child, predicate)); return result; }
@@ -114,6 +114,19 @@ test('static route position never claims earlier checklist steps are completed',
 test('reset clears explicit selection and checklist progress', () => {
  reset(); tracks.selectChallengeTracks({ frontend: 'vue', backend: 'hono' }); store.set('checklist-60min-step1', '["a"]'); progress.resetProgress();
  assert.equal(store.size, 0);
+});
+
+test('track selection survives a failed save in this tab, emits an update, and reset clears it', () => {
+ reset(); tracks.selectChallengeTracks({ frontend: 'react', backend: 'fastapi' });
+ denyWrite = true;
+ let notifications = 0; window.addEventListener('60min-progress-change', () => notifications++);
+ assert.doesNotThrow(() => assert.equal(tracks.selectChallengeTracks({ frontend: 'vue', backend: 'hono' }), false));
+ assert.equal(notifications, 1);
+ assert.deepEqual(tracks.getChallengeTracks(), { frontend: 'vue', backend: 'hono' });
+ assert.equal(nav.getNavigation('/path/60min', 'ko', tracks.getChallengeTracks()).next.path, '/start/60min/frontend/vue');
+ assert.deepEqual(JSON.parse(store.get(tracks.TRACK_STORAGE_KEY)), { frontend: 'react', backend: 'fastapi' });
+ progress.resetProgress();
+ assert.deepEqual(tracks.getChallengeTracks(), { frontend: 'react', backend: 'fastapi' });
 });
 
 test('mounted checklist updates after reset and cannot restore stale checks on next click', () => {

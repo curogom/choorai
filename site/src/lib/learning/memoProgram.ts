@@ -104,14 +104,16 @@ export interface ProgramCheck {
   id: string;
   passed: boolean;
   observed: string;
+  status: 'empty-added' | 'empty-rejected' | 'valid-added' | 'valid-rejected' | 'not-run' | 'counter-visible' | 'counter-update' | 'counter-missing';
+  remaining?: number;
 }
 
 export function checkMemoGuard(source: string): { passed: boolean; checks: ProgramCheck[] } {
   const empty = executeMemoProgram(source, '', []);
   const valid = executeMemoProgram(source, '첫 메모', []);
   const checks: ProgramCheck[] = [
-    { id: 'empty', passed: empty.ok && empty.action === 'show-message' && empty.notes.length === 0 && !empty.inputCleared, observed: empty.action === 'add-note' ? 'An empty note was added.' : empty.action === 'show-message' ? 'Empty input was rejected.' : empty.message || 'The program did not run.' },
-    { id: 'valid', passed: valid.ok && valid.action === 'add-note' && valid.notes.length === 1 && valid.notes[0] === '첫 메모' && valid.inputCleared, observed: valid.action === 'add-note' ? 'A non-empty note was added and the input clears.' : valid.action === 'show-message' ? 'A non-empty note was rejected.' : valid.message || 'The program did not run.' },
+    { id: 'empty', passed: empty.ok && empty.action === 'show-message' && empty.notes.length === 0 && !empty.inputCleared, status: empty.action === 'add-note' ? 'empty-added' : empty.action === 'show-message' ? 'empty-rejected' : 'not-run', observed: empty.action === 'add-note' ? 'An empty note was added.' : empty.action === 'show-message' ? 'Empty input was rejected.' : empty.message || 'The program did not run.' },
+    { id: 'valid', passed: valid.ok && valid.action === 'add-note' && valid.notes.length === 1 && valid.notes[0] === '첫 메모' && valid.inputCleared, status: valid.action === 'add-note' ? 'valid-added' : valid.action === 'show-message' ? 'valid-rejected' : 'not-run', observed: valid.action === 'add-note' ? 'A non-empty note was added and the input clears.' : valid.action === 'show-message' ? 'A non-empty note was rejected.' : valid.message || 'The program did not run.' },
   ];
   return { passed: checks.every((check) => check.passed), checks };
 }
@@ -125,11 +127,13 @@ export function checkCounterVariation(source: string): { passed: boolean; checks
     {
       id: 'visible',
       passed: matchesLessonContract && blank.ok && blank.limit === MEMO_LESSON_NOTE_LIMIT && blank.remaining === MEMO_LESSON_NOTE_LIMIT,
+      status: blank.ok ? 'counter-visible' : 'counter-missing', remaining: blank.remaining,
       observed: blank.ok ? `Counter visible: ${blank.remaining} remaining.` : 'Counter handler is missing or invalid.',
     },
     {
       id: 'updates',
       passed: matchesLessonContract && oneCharacter.ok && oneCharacter.limit === MEMO_LESSON_NOTE_LIMIT && oneCharacter.remaining === MEMO_LESSON_NOTE_LIMIT - 1,
+      status: oneCharacter.ok ? 'counter-update' : 'counter-missing', remaining: oneCharacter.remaining,
       observed: oneCharacter.ok ? `After one character: ${oneCharacter.remaining} remaining.` : 'Counter handler is missing or invalid.',
     },
   ];

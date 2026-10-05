@@ -16,7 +16,7 @@ import {
 
 type Locale = 'ko' | 'en';
 type Localized = { ko: string; en: string };
-type Step = { id: string; time: string; requires?: string[]; title: Localized; goal: Localized; action: Localized; expected: Localized; hint: Localized; recovery: Localized };
+type Step = { id: string; time: Localized; requires?: string[]; title: Localized; goal: Localized; action: Localized; expected: Localized; hint: Localized; recovery: Localized };
 type MemoPath = { id: string; version: number; title: Localized; goal: Localized; estimatedMinutes: number; environment: { requirements: Record<Locale, string[]>; cost: Localized; scope: Localized }; startingFile: { name: string; starterTitle: string; contents: string }; steps: Step[]; completion: { required: string[] }; next: Localized };
 const course = pathData as unknown as MemoPath;
 const shape = course as unknown as LearningPathShape;
@@ -47,12 +47,38 @@ const strings = {
 };
 
 function loadOutput(): { output: SavedMemoApp | null; issue: 'invalid' | null } {
+  let raw: string | null;
   try {
-    const raw = window.localStorage.getItem(PROJECT_OUTPUT_KEY);
-    if (!raw) return { output: null, issue: null };
+    raw = window.localStorage.getItem(PROJECT_OUTPUT_KEY);
+  } catch { return { output: null, issue: null }; }
+  if (raw === null) return { output: null, issue: null };
+  try {
     const value: unknown = JSON.parse(raw);
     return validateMemoOutput(value, shape) ? { output: value, issue: null } : { output: null, issue: 'invalid' };
-  } catch { return { output: null, issue: null }; }
+  } catch { return { output: null, issue: 'invalid' }; }
+}
+
+function checkObservation(check: ProgramCheck, locale: Locale): string {
+  const labels = locale === 'ko' ? {
+    'empty-added': '빈 메모가 목록에 추가됐습니다.',
+    'empty-rejected': '빈 입력을 거절했습니다.',
+    'valid-added': '일반 메모를 추가하고 입력을 비웠습니다.',
+    'valid-rejected': '일반 메모를 거절했습니다.',
+    'not-run': '코드를 실행하지 못했습니다.',
+    'counter-visible': `빈 입력: ${check.remaining}자 남음.`,
+    'counter-update': `한 글자 입력 후: ${check.remaining}자 남음.`,
+    'counter-missing': '글자 수 처리기가 없거나 올바르지 않습니다.',
+  } : {
+    'empty-added': 'An empty note was added.',
+    'empty-rejected': 'Empty input was rejected.',
+    'valid-added': 'A normal note was added and the input cleared.',
+    'valid-rejected': 'A normal note was rejected.',
+    'not-run': 'The program did not run.',
+    'counter-visible': `Counter visible: ${check.remaining} remaining.`,
+    'counter-update': `After one character: ${check.remaining} remaining.`,
+    'counter-missing': 'Counter handler is missing or invalid.',
+  };
+  return labels[check.status];
 }
 
 function Preview({ program, notes, locale, canAdd, onAdd, onDelete }: { program: string; notes: string[]; locale: Locale; canAdd: boolean; onAdd: (note: string) => boolean; onDelete: (index: number) => void }) {
@@ -241,7 +267,7 @@ export default function ProjectStudio({ locale = 'ko' }: { locale?: Locale }) {
     const result = executeMemoProgram(course.startingFile.contents, 'A note', []);
     const passed = result.ok && result.action === 'show-message' && result.notes.length === 0;
     const next = mutate((current) => recordVerification(current, 'run-starter', passed, shape));
-    setChecks([{ id: 'starter-bug', passed, observed: result.action === 'show-message' ? 'A normal note is rejected by the starter.' : result.action === 'add-note' ? 'A normal note is added.' : result.message || 'The starter did not run.' }]);
+    setChecks([{ id: 'starter-bug', passed, status: result.action === 'show-message' ? 'valid-rejected' : result.action === 'add-note' ? 'valid-added' : 'not-run', observed: result.action === 'show-message' ? 'A normal note is rejected by the starter.' : result.action === 'add-note' ? 'A normal note is added.' : result.message || 'The starter did not run.' }]);
     setNotice(passed ? ui.starterSeen : ui.starterMissed);
     if (next) { programDraftRef.current = next.run.workspace.program; setProgramDraft(next.run.workspace.program); }
   };
@@ -348,7 +374,7 @@ export default function ProjectStudio({ locale = 'ko' }: { locale?: Locale }) {
     <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(17rem,0.75fr)_minmax(0,1.25fr)]">
       <aside className="min-w-0 space-y-4" aria-label={ui.prep}>
         <section className="rounded-xl border border-border bg-surface p-4"><h2 className="text-lg font-bold">{ui.prep}</h2><ul className="mt-3 list-inside list-disc space-y-2 text-sm text-text-secondary">{course.environment.requirements[locale].map((line) => <li key={line}>{line}</li>)}</ul><p className="mt-3 text-sm font-semibold text-green-300">{t(course.environment.cost, locale)}</p><p className="mt-2 text-sm text-text-secondary">{t(course.environment.scope, locale)}</p></section>
-        <section className="rounded-xl border border-border p-4"><h2 className="font-bold">{ui.step} {currentIndex + 1}/{course.steps.length}</h2><ol className="mt-3 space-y-2">{course.steps.map((step, index) => { const evidence = run?.evidence[step.id]; const status = evidence?.verifiedAt ? ui.verified : evidence?.visitedAt ? ui.read : ui.no; return <li key={step.id}><button className={`w-full rounded-lg border p-3 text-left transition ${step.id === selected.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'}`} aria-current={step.id === selected.id ? 'step' : undefined} onClick={() => goToStep(step.id)}><span className="flex items-center justify-between gap-2"><span className="text-xs text-text-secondary">{ui.step} {index + 1} · {step.time}</span><span className={`text-xs ${evidence?.verifiedAt ? 'text-green-300' : 'text-text-secondary'}`}>{status}</span></span><span className="mt-1 block text-sm font-semibold">{t(step.title, locale)}</span></button></li>; })}</ol></section>
+        <section className="rounded-xl border border-border p-4"><h2 className="font-bold">{ui.step} {currentIndex + 1}/{course.steps.length}</h2><ol className="mt-3 space-y-2">{course.steps.map((step, index) => { const evidence = run?.evidence[step.id]; const status = evidence?.verifiedAt ? ui.verified : evidence?.visitedAt ? ui.read : ui.no; return <li key={step.id}><button className={`w-full rounded-lg border p-3 text-left transition ${step.id === selected.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'}`} aria-current={step.id === selected.id ? 'step' : undefined} onClick={() => goToStep(step.id)}><span className="flex items-center justify-between gap-2"><span className="text-xs text-text-secondary">{ui.step} {index + 1} · {t(step.time, locale)}</span><span className={`text-xs ${evidence?.verifiedAt ? 'text-green-300' : 'text-text-secondary'}`}>{status}</span></span><span className="mt-1 block text-sm font-semibold">{t(step.title, locale)}</span></button></li>; })}</ol></section>
         <details className="rounded-xl border border-border p-4"><summary className="cursor-pointer font-semibold">{ui.source} · {course.startingFile.name}</summary><p className="mt-2 text-xs text-text-secondary">{ui.languageHelp}</p><pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-background p-3 text-xs text-text-secondary"><code>{course.startingFile.contents}</code></pre></details>
         <button className={`${button} w-full`} disabled={!loaded} onClick={() => setResetPrompt(true)}>{ui.reset}</button>
       </aside>
@@ -360,7 +386,7 @@ export default function ProjectStudio({ locale = 'ko' }: { locale?: Locale }) {
           {selected.id === 'run-starter' && <button disabled={!loaded} className={primary} onClick={runStarter}>{ui.runStarter}</button>}
           {selected.id === 'fix-guard' && <div className="flex flex-wrap gap-2"><button disabled={!canEditCode} className={primary} onClick={runGuardChecks}>{ui.runChecks}</button>{!prerequisitesPass(selected) && <p role="status" className="self-center text-sm text-amber-200">{ui.fixLocked}</p>}</div>}
           {selected.id === 'add-counter' && <div className="flex flex-wrap gap-2"><button disabled={!canEditCode} className={primary} onClick={runFeatureChecks}>{ui.runFeature}</button>{!prerequisitesPass(selected) && !featureEditWasUnlocked && <p role="status" className="self-center text-sm text-amber-200">{ui.featureLocked}</p>}</div>}
-          {checks.length > 0 && <ul aria-label={locale === 'ko' ? '실행 검사 결과' : 'Run check results'} className="space-y-2 rounded-xl border border-border p-4">{checks.map((check) => <li key={check.id} className="flex gap-2 text-sm"><span aria-hidden="true" className={check.passed ? 'text-green-300' : 'text-red-300'}>{check.passed ? '✓' : '×'}</span><span>{check.observed}</span></li>)}</ul>}
+          {checks.length > 0 && <ul aria-label={locale === 'ko' ? '실행 검사 결과' : 'Run check results'} className="space-y-2 rounded-xl border border-border p-4">{checks.map((check) => <li key={check.id} className="flex gap-2 text-sm"><span aria-hidden="true" className={check.passed ? 'text-green-300' : 'text-red-300'}>{check.passed ? '✓' : '×'}</span><span>{checkObservation(check, locale)}</span></li>)}</ul>}
           <section className="rounded-xl border border-border p-4"><h3 className="font-semibold">{ui.hint}</h3><details className="mt-2"><summary className="cursor-pointer text-sm text-primary">{locale === 'ko' ? '힌트 보기' : 'Show hint'}</summary><p className="mt-2 text-sm text-text-secondary">{t(selected.hint, locale)}</p></details><p className="mt-3 text-sm text-text-secondary">{t(selected.recovery, locale)}</p></section>
           <div className="flex justify-between gap-2"><button className={button} disabled={currentIndex <= 0} onClick={() => goToStep(course.steps[Math.max(0, currentIndex - 1)].id)}>{ui.prevButton}</button><button className={button} disabled={currentIndex >= course.steps.length - 1} onClick={() => goToStep(course.steps[Math.min(course.steps.length - 1, currentIndex + 1)].id)}>{ui.nextButton}</button></div>
         </section>

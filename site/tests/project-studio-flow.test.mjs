@@ -338,6 +338,40 @@ test('PERSIST-02: a remote current-step change updates the URL and step while pr
   assert.equal(stored.currentStepId, 'add-counter');
 });
 
+for (const initial of [true, false]) test(`malformed output JSON is preserved on ${initial ? 'initial load' : 'storage event'}`, () => {
+  storage.set(progress.PROJECT_OUTPUT_KEY, '{broken output');
+  let tree = render();
+  if (!initial) {
+    storage.delete(progress.PROJECT_OUTPUT_KEY);
+    tree = emitStorage(progress.PROJECT_OUTPUT_KEY);
+    storage.set(progress.PROJECT_OUTPUT_KEY, '{broken output');
+    tree = emitStorage(progress.PROJECT_OUTPUT_KEY);
+  }
+  assert.equal(button(tree, '이 브라우저에 저장').props.disabled, true);
+  assert.match(text(tree), /저장[된한].*파일.*(올바르지|읽지 못)/);
+  assert.equal(storage.get(progress.PROJECT_OUTPUT_KEY), '{broken output');
+});
+
+for (const locale of ['ko', 'en']) test(`${locale} memo observations and step durations use the current locale`, () => {
+  let tree = render(locale);
+  const act = (label) => { button(tree, label).props.onClick(); tree = render(locale); };
+  const resultText = () => text(nodes(tree, n => n.type === 'ul' && n.props['aria-label'] === (locale === 'ko' ? '실행 검사 결과' : 'Run check results'))[0]);
+  assert.match(text(tree), locale === 'ko' ? /3분/ : /3 min/);
+  if (locale === 'en') assert.doesNotMatch(text(tree), /[387]분/);
+  act(locale === 'ko' ? '시작 코드 실행' : 'Run the starter');
+  assert.match(resultText(), locale === 'ko' ? /일반 메모/ : /normal note/);
+  act(locale === 'ko' ? '다음 단계' : 'Next step');
+  editor(tree).props.onChange({ target: { value: fixed } }); tree = render(locale);
+  act(locale === 'ko' ? '동작 검사 실행' : 'Run behavior checks');
+  assert.match(resultText(), locale === 'ko' ? /빈 입력/ : /Empty input/);
+  if (locale === 'ko') assert.doesNotMatch(resultText(), /input|note|Counter/);
+  act(locale === 'ko' ? '다음 단계' : 'Next step');
+  editor(tree).props.onChange({ target: { value: varied } }); tree = render(locale);
+  act(locale === 'ko' ? '기능 검사 실행' : 'Run feature checks');
+  assert.match(resultText(), locale === 'ko' ? /160자/ : /160 remaining/);
+  assert.match(resultText(), locale === 'ko' ? /159자/ : /159 remaining/);
+});
+
 
 test('VISIT-DRAFT: two remote step visits preserve an unsaved code draft until explicit persistence', () => {
   let tree = render();

@@ -457,10 +457,11 @@ export default function ButtonMessageLesson({ locale = 'ko' }: { locale?: Locale
         return;
       }
       const chosen = keepLocal ? local[field] : remote[field];
-      const stored: LessonState = { ...(keepLocal ? remote : remote), [field]: chosen };
-      if (keepLocal) window.localStorage.setItem(BUTTON_LESSON_STORAGE_KEY, JSON.stringify(stored));
+      const merged = mergeLessonState(previousBaseline, local, remote);
+      const stored: LessonState = { ...merged.stored, [field]: chosen };
+      window.localStorage.setItem(BUTTON_LESSON_STORAGE_KEY, JSON.stringify(stored));
       const nextBaseline: LessonState = { ...stored };
-      const display: LessonState = { ...(keepLocal ? stored : local), [field]: chosen };
+      const display: LessonState = { ...stored };
       for (const other of unresolved) {
         nextBaseline[other] = previousBaseline[other];
         display[other] = local[other];

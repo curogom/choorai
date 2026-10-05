@@ -21,6 +21,19 @@ const {SQL_PROGRESS_KEY,freshPractice,blankAnswer,validatePractice}=await import
 globalThis.Worker=BrowserWorker;globalThis.fetch=async()=>new Response(wasm,{status:200});
 const find=id=>{const lesson=lessons.find(l=>l.questions.some(q=>q.id===id));return {lesson,question:lesson.questions.find(q=>q.id===id)};};
 let executions=0;
+test('idle abort reuses the initialized SQLite worker without another WASM fetch', async () => {
+ const {lesson,question}=find('B01-Q01'); const engine=new SQLPracticeEngine();
+ const originalFetch=globalThis.fetch; let fetches=0;
+ globalThis.fetch=async(...args)=>{fetches++;return originalFetch(...args);};
+ try {
+  engine.abortActive();
+  assert.ok((await engine.run(lesson.tables,question.sql,question.sql)).pass);
+  const initializedWorker=engine.worker;
+  engine.abortActive();
+  assert.ok((await engine.run(lesson.tables,question.sql,question.sql)).pass);
+  assert.equal(engine.worker,initializedWorker);assert.equal(fetches,1);
+ } finally {engine.cancel();globalThis.fetch=originalFetch;}
+});
 async function run(id,sql){const {lesson,question}=find(id);const engine=new SQLPracticeEngine();try{const result=await engine.run(lesson.tables,sql||question.sql,question.sql);executions+=result.checks.length;return result;}finally{engine.cancel();}}
 test('actual embedded SQLite Worker: all 25 reference questions on 99 basic and added fixture executions',async()=>{
  let count=0;for(const lesson of lessons)for(const question of lesson.questions.filter(q=>q.type==='sql')){assert.ok((await run(question.id)).pass,question.id);count++;}assert.equal(count,25);assert.equal(executions,99);
@@ -65,7 +78,7 @@ test('3-second timeout kills runaway Worker; restart and five repeat runs succee
  const {lesson,question}=find('B01-Q01');const engine=new SQLPracticeEngine();try{await assert.rejects(engine.run(lesson.tables,'WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x) SELECT SUM(n) FROM x;',question.sql),/3초/);for(let i=0;i<5;i++)assert.ok((await engine.run(lesson.tables,question.sql,question.sql)).pass);}finally{engine.cancel();}
 });
 test('cancel rejects pending result; independent local progress validates pass/self-review and corrupted records',async()=>{
- const {lesson,question}=find('B01-Q01');const engine=new SQLPracticeEngine();const pending=engine.run(lesson.tables,'WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x) SELECT SUM(n) FROM x;',question.sql);setTimeout(()=>engine.cancel(),100);await assert.rejects(pending,/중단/);
+ const {lesson,question}=find('B01-Q01');const engine=new SQLPracticeEngine();const pending=engine.run(lesson.tables,'WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x) SELECT SUM(n) FROM x;',question.sql);setTimeout(()=>engine.abortActive(),100);await assert.rejects(pending,/중단/);
  const qs=lessons.flatMap(l=>l.questions),state=freshPractice();state.answers['B01-Q01']={...blankAnswer(),text:'SELECT * FROM events;',status:'pass',verifiedAt:new Date().toISOString()};assert.deepEqual(validatePractice(JSON.parse(JSON.stringify(state)),qs),state);assert.notEqual(SQL_PROGRESS_KEY,'curo-data-beginner12-v3');assert.notEqual(SQL_PROGRESS_KEY,'curo-sql-b01-v1');
  const bad=structuredClone(state);bad.answers['B01-Q01'].status='reviewed';assert.throws(()=>validatePractice(bad,qs));
  const self=structuredClone(state);self.answers['B02-Q06']={...blankAnswer(),text:'분모와 실패를 함께 봅니다.',status:'reviewed',checks:find('B02-Q06').question.checklist.map(()=>true)};assert.equal(validatePractice(self,qs).answers['B02-Q06'].status,'reviewed');

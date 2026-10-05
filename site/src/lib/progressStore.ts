@@ -1,4 +1,4 @@
-import { getChallengeTracks, getChallengeStepKeys, TRACK_STORAGE_KEY } from '../data/challengePath';
+import { getChallengeTracks, getChallengeStepKeys, clearUnsavedChallengeTracks, TRACK_STORAGE_KEY } from '../data/challengePath';
 // 60분 완주 챌린지 진행률 관리 + Map 노드 완료 상태
 
 import { MAP_NODES } from '../data/mapNodes';
@@ -74,6 +74,7 @@ export function resetProgress(): void {
   });
 
   localStorage.removeItem(TRACK_STORAGE_KEY);
+  clearUnsavedChallengeTracks();
   notifyProgressChange();
 }
 
