@@ -13,6 +13,7 @@ interface NavGroupProps {
   items: NavItem[];
   currentPath?: string;
   storageKey: string;
+  idPrefix: 'desktop' | 'mobile';
 }
 
 export default function NavGroup({
@@ -20,10 +21,12 @@ export default function NavGroup({
   items,
   currentPath,
   storageKey,
+  idPrefix,
 }: NavGroupProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const contentId = `nav-group-${idPrefix}-${storageKey.replace(/[^A-Za-z0-9_-]/g, '-')}`;
 
   // 현재 경로가 이 그룹에 있는지 확인
   const hasActiveItem = currentPath && items.some(item =>
@@ -83,6 +86,7 @@ export default function NavGroup({
           }
         `}
         aria-expanded={isOpen}
+        aria-controls={contentId}
       >
         <span>{title}</span>
         <svg
@@ -96,7 +100,10 @@ export default function NavGroup({
       </button>
 
       <div
+        id={contentId}
         ref={contentRef}
+        hidden={!isOpen}
+        aria-hidden={!isOpen}
         className="overflow-hidden transition-all duration-200 ease-in-out"
         style={{
           maxHeight: isOpen ? (contentHeight ? `${contentHeight}px` : 'none') : '0px',
@@ -118,6 +125,7 @@ export default function NavGroup({
                       : 'text-text-secondary hover:text-white hover:bg-surface'
                     }
                   `}
+                  aria-current={currentPath === item.href ? 'page' : undefined}
                 >
                   <span>{item.label}</span>
                   <span className="flex items-center gap-1">

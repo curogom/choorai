@@ -1,6 +1,7 @@
+import { getChallengeTracks, getChallengeStepKeys, TRACK_STORAGE_KEY } from '../data/challengePath';
 // 60분 완주 챌린지 진행률 관리 + Map 노드 완료 상태
 
-import type { MapNode } from '../data/mapNodes';
+import { MAP_NODES } from '../data/mapNodes';
 
 // Map 노드 완료 상태 키
 const MAP_NODE_STORAGE_KEY = 'choorai-map-completed-nodes';
@@ -21,22 +22,7 @@ export type StepKey = keyof typeof CHALLENGE_STEPS;
 export function calculateOverallProgress(): number {
   if (typeof window === 'undefined') return 0;
 
-  // 사용자가 선택한 경로 감지 (React vs Vue, FastAPI vs Hono)
-  const frontendKey = localStorage.getItem('checklist-60min-frontend-vue')
-    ? '60min-frontend-vue'
-    : '60min-frontend-react';
-  const backendKey = localStorage.getItem('checklist-60min-backend-hono')
-    ? '60min-backend-hono'
-    : '60min-backend-fastapi';
-
-  // 실제로 사용된 단계들만 계산
-  const activeSteps: StepKey[] = [
-    '60min-step1',
-    frontendKey as StepKey,
-    backendKey as StepKey,
-    '60min-connect',
-    '60min-deploy',
-  ];
+  const activeSteps = getChallengeStepKeys(getChallengeTracks());
 
   let totalItems = 0;
   let completedItems = 0;
@@ -49,7 +35,7 @@ export function calculateOverallProgress(): number {
     if (saved) {
       try {
         const items = JSON.parse(saved) as string[];
-        completedItems += Math.min(items.length, config.totalItems);
+        if (Array.isArray(items)) completedItems += Math.min(new Set(items.filter((item) => typeof item === 'string')).size, config.totalItems);
       } catch {
         // JSON 파싱 실패 시 무시
       }
@@ -63,17 +49,13 @@ export function calculateOverallProgress(): number {
 export function calculateCurrentStep(): number {
   if (typeof window === 'undefined') return 1;
 
-  const progress = calculateOverallProgress();
-  if (progress === 0) return 1;
-  if (progress === 100) return 6;
-
-  // 5단계 (19개 항목) 기준으로 현재 단계 계산
-  // Step 1: 0-16%, Step 2: 17-33%, Step 3: 34-50%, Step 4: 51-67%, Step 5: 68-84%, Step 6: 85-100%
-  if (progress < 17) return 1;
-  if (progress < 34) return 2;
-  if (progress < 51) return 3;
-  if (progress < 68) return 4;
-  if (progress < 85) return 5;
+  const keys = getChallengeStepKeys(getChallengeTracks());
+  for (let i = 0; i < keys.length; i++) {
+    try {
+      const items = JSON.parse(localStorage.getItem(`checklist-${keys[i]}`) || '[]');
+      if (!Array.isArray(items) || new Set(items.filter((item) => typeof item === 'string')).size < CHALLENGE_STEPS[keys[i]].totalItems) return i + 1;
+    } catch { return i + 1; }
+  }
   return 6;
 }
 
@@ -91,6 +73,7 @@ export function resetProgress(): void {
     localStorage.removeItem(`checklist-${key}`);
   });
 
+  localStorage.removeItem(TRACK_STORAGE_KEY);
   notifyProgressChange();
 }
 
@@ -102,7 +85,8 @@ export function getCompletedMapNodes(): string[] {
   const saved = localStorage.getItem(MAP_NODE_STORAGE_KEY);
   if (!saved) return [];
   try {
-    return JSON.parse(saved) as string[];
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? [...new Set(parsed.filter((id): id is string => typeof id === 'string'))] : [];
   } catch {
     return [];
   }
@@ -171,9 +155,10 @@ export function getMapNodeStatus(
     return 'current';
   }
 
-  // 이전 order까지의 노드들이 완료되었는지 확인
-  // 간단히 completedNodes.length >= nodeOrder - 1 로 체크
-  if (completedNodes.length >= nodeOrder - 1) {
+  // Guided 경로에 있는 실제 이전 노드의 ID를 모두 확인한다.
+  // 추가 가이드·알 수 없는 ID·중복 기록은 선수조건을 대신하지 않는다.
+  const prerequisites = MAP_NODES.filter((node) => node.order < nodeOrder);
+  if (prerequisites.every((node) => completedNodes.includes(node.id))) {
     return 'current';
   }
 

@@ -1,0 +1,1854 @@
+{
+  "source_sha256": "aeab26bee08dd3bc9097376157e83c960738bb05d7d8b742c63c2dd76b89197c",
+  "lessons": [
+    {
+      "id": "B01",
+      "title": "SELECT에서 GROUP BY까지",
+      "intro": [
+        "먼저 표에서 한 행의 뜻을 살펴보고, 문제 바로 앞의 짧은 설명을 읽은 뒤 연습해 봅니다. 처음 보는 용어를 지금 모두 외울 필요는 없습니다.",
+        "막히면 힌트를 보거나 작은 SQL 조각만 실행해도 괜찮습니다. 원하는 곳에서 쉬고 이어갈 수 있으며, 이론 읽기와 작은 연습은 공식 문제 수나 완료 조건을 늘리지 않습니다.",
+        "테이블의 한 행이 무엇을 뜻하는지 살펴보고, 조회·조건·중복 제거·집계를 차근차근 연습합니다.",
+        "기존 B01 문제 14개를 그대로 담았습니다. 예전에 끝냈더라도 답안을 다시 실행해 결과를 확인할 수 있습니다.",
+        "GROUP BY는 선택한 열의 값이 같은 행들을 한 그룹으로 묶습니다. 예를 들어 GROUP BY user_id이면 사용자마다 결과 한 행이 되고, COUNT(DISTINCT event_id)는 그 사용자 그룹 안의 고유 이벤트 수를 셉니다. 묶는 기준과 세는 대상은 서로 다를 수 있습니다.",
+        "그룹 결과에서는 그룹 기준 열과 COUNT·SUM 같은 집계 결과를 출력하는 것이 기본입니다. GROUP BY user_id 뒤에 집계하지 않은 event_name을 그대로 선택하면 어느 이벤트 종류를 뜻하는지 정해지지 않습니다. SQLite는 이런 비집계 열을 허용할 수 있지만, 실행된다고 의미가 올바른 답은 아닙니다. GROUP BY는 출력 순서를 보장하지 않으며 정렬은 ORDER BY로 따로 지정합니다."
+      ],
+      "goals": [
+        "SELECT와 WHERE로 원하는 컬럼과 행 고르기",
+        "행 수·사용자 수·고유 이벤트 수 구분하기",
+        "GROUP BY의 기준과 집계 대상을 따로 생각하기"
+      ],
+      "tables": {
+        "events": {
+          "cols": [
+            "event_id",
+            "user_id",
+            "event_name"
+          ],
+          "types": [
+            "TEXT NOT NULL",
+            "TEXT NOT NULL",
+            "TEXT NOT NULL"
+          ],
+          "desc": [
+            "이벤트 식별자 · 재전송 시 중복",
+            "사용자 식별자",
+            "이벤트 종류"
+          ],
+          "rows": [
+            [
+              "e01",
+              "U1",
+              "click"
+            ],
+            [
+              "e02",
+              "U1",
+              "map_ready"
+            ],
+            [
+              "e02",
+              "U1",
+              "map_ready"
+            ],
+            [
+              "e03",
+              "U2",
+              "click"
+            ],
+            [
+              "e04",
+              "U2",
+              "map_ready"
+            ],
+            [
+              "e05",
+              "U3",
+              "click"
+            ],
+            [
+              "e06",
+              "U1",
+              "click"
+            ]
+          ],
+          "fixtures": [
+            [
+              [
+                "e08",
+                "U1",
+                "click"
+              ],
+              [
+                "f20",
+                "U1",
+                "map_ready"
+              ],
+              [
+                "e10",
+                "U5",
+                "scroll"
+              ],
+              [
+                "e09",
+                "U4",
+                "map_ready"
+              ],
+              [
+                "e08",
+                "U1",
+                "click"
+              ],
+              [
+                "e07",
+                "U4",
+                "click"
+              ],
+              [
+                "e07",
+                "U4",
+                "click"
+              ],
+              [
+                "e06",
+                "U1",
+                "click"
+              ],
+              [
+                "e05",
+                "U3",
+                "click"
+              ],
+              [
+                "e04",
+                "U2",
+                "map_ready"
+              ],
+              [
+                "e03",
+                "U2",
+                "click"
+              ],
+              [
+                "e02",
+                "U1",
+                "map_ready"
+              ],
+              [
+                "e02",
+                "U1",
+                "map_ready"
+              ],
+              [
+                "e01",
+                "U1",
+                "click"
+              ]
+            ],
+            [
+              [
+                "e01",
+                "U1",
+                "click"
+              ],
+              [
+                "e02",
+                "U1",
+                "map_ready"
+              ],
+              [
+                "e02",
+                "U1",
+                "map_ready"
+              ],
+              [
+                "e03",
+                "U2",
+                "click"
+              ],
+              [
+                "e04",
+                "U2",
+                "map_ready"
+              ],
+              [
+                "e05",
+                "U3",
+                "click"
+              ],
+              [
+                "e06",
+                "U1",
+                "click"
+              ],
+              [
+                "e11",
+                "U2",
+                "click"
+              ],
+              [
+                "e12",
+                "U2",
+                "click"
+              ],
+              [
+                "e13",
+                "U3",
+                "map_ready"
+              ],
+              [
+                "e13",
+                "U3",
+                "map_ready"
+              ],
+              [
+                "e14",
+                "U6",
+                "click"
+              ],
+              [
+                "e15",
+                "U6",
+                "scroll"
+              ]
+            ]
+          ]
+        },
+        "activity_logs": {
+          "cols": [
+            "log_id",
+            "member_id",
+            "action"
+          ],
+          "types": [
+            "TEXT NOT NULL",
+            "TEXT NOT NULL",
+            "TEXT NOT NULL"
+          ],
+          "desc": [
+            "기록 식별자 · 재전송 시 중복",
+            "회원 식별자",
+            "활동 종류"
+          ],
+          "rows": [
+            [
+              "L01",
+              "M1",
+              "search"
+            ],
+            [
+              "L02",
+              "M1",
+              "save"
+            ],
+            [
+              "L02",
+              "M1",
+              "save"
+            ],
+            [
+              "L03",
+              "M2",
+              "search"
+            ],
+            [
+              "L04",
+              "M2",
+              "save"
+            ],
+            [
+              "L05",
+              "M2",
+              "save"
+            ],
+            [
+              "L06",
+              "M3",
+              "search"
+            ],
+            [
+              "L07",
+              "M3",
+              "search"
+            ]
+          ],
+          "fixtures": [
+            [
+              [
+                "L09",
+                "M2",
+                "save"
+              ],
+              [
+                "L11",
+                "M5",
+                "view"
+              ],
+              [
+                "L10",
+                "M4",
+                "save"
+              ],
+              [
+                "L09",
+                "M2",
+                "save"
+              ],
+              [
+                "L08",
+                "M4",
+                "search"
+              ],
+              [
+                "L08",
+                "M4",
+                "search"
+              ],
+              [
+                "L07",
+                "M3",
+                "search"
+              ],
+              [
+                "L06",
+                "M3",
+                "search"
+              ],
+              [
+                "L05",
+                "M2",
+                "save"
+              ],
+              [
+                "L04",
+                "M2",
+                "save"
+              ],
+              [
+                "L03",
+                "M2",
+                "search"
+              ],
+              [
+                "L02",
+                "M1",
+                "save"
+              ],
+              [
+                "L02",
+                "M1",
+                "save"
+              ],
+              [
+                "L01",
+                "M1",
+                "search"
+              ]
+            ],
+            [
+              [
+                "L01",
+                "M1",
+                "search"
+              ],
+              [
+                "L02",
+                "M1",
+                "save"
+              ],
+              [
+                "L02",
+                "M1",
+                "save"
+              ],
+              [
+                "L03",
+                "M2",
+                "search"
+              ],
+              [
+                "L04",
+                "M2",
+                "save"
+              ],
+              [
+                "L05",
+                "M2",
+                "save"
+              ],
+              [
+                "L06",
+                "M3",
+                "search"
+              ],
+              [
+                "L07",
+                "M3",
+                "search"
+              ],
+              [
+                "L12",
+                "M2",
+                "search"
+              ],
+              [
+                "L13",
+                "M4",
+                "search"
+              ],
+              [
+                "L14",
+                "M3",
+                "save"
+              ],
+              [
+                "L14",
+                "M3",
+                "save"
+              ],
+              [
+                "L15",
+                "M3",
+                "save"
+              ],
+              [
+                "L16",
+                "M6",
+                "view"
+              ]
+            ]
+          ]
+        }
+      },
+      "questions": [
+        {
+          "id": "B01-Q01",
+          "title": "테이블 전체 살펴보기",
+          "task": "events의 모든 컬럼과 모든 행을 조회하세요. 중복 행도 그대로 둡니다.",
+          "sql": "SELECT * FROM events;",
+          "hints": [
+            "어디서 읽을지 FROM으로 지정합니다.",
+            "모든 컬럼을 선택하는 기호는 *입니다."
+          ],
+          "why": "SELECT는 컬럼, FROM은 테이블을 정합니다. 같은 내용의 행도 원본에 있으면 그대로 나옵니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "테이블은 이름이 붙은 표입니다. events에서 한 행은 수집된 기록 1건이고, 열은 기록의 속성입니다. event_id는 논리 이벤트 ID, user_id는 사용자 ID, event_name은 종류입니다. e02가 두 번 보이는 것은 같은 이벤트가 재전송되어 원시 행이 두 개라는 뜻입니다.\n\nSELECT는 보여 줄 열을, FROM은 읽을 표를 고릅니다. SELECT *의 별표는 모든 열입니다. SQL 끝의 세미콜론은 문장의 끝을 표시합니다. 줄바꿈은 읽기 편하도록 써도 됩니다. SQL 키워드는 대소문자를 바꿔도 되지만 표 이름·열 이름은 스키마에서 확인하세요. 이번 조회는 원본 표를 수정하지 않습니다.\n\nSELECT는 중복을 자동으로 없애지 않습니다. 지금은 행을 그대로 관찰하는 연습입니다. 결과의 행 순서는 ORDER BY를 지정하기 전까지 보장되지 않습니다.",
+          "theoryTitle": "처음 만나는 표와 SELECT",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q02",
+          "title": "필요한 컬럼 고르기",
+          "task": "모든 행의 user_id, event_name을 이 순서로 조회하세요.",
+          "sql": "SELECT user_id, event_name FROM events;",
+          "hints": [
+            "컬럼은 쉼표로 나열합니다.",
+            "SELECT user_id, event_name 다음에 FROM과 테이블명을 씁니다."
+          ],
+          "why": "컬럼을 줄이는 것과 중복을 없애는 것은 다릅니다. 이 문제는 원본 7행을 유지합니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "SELECT 뒤에 필요한 열을 쉼표로 나열합니다. 적은 순서가 결과의 열 순서입니다. user_id, event_name을 고르면 두 열만 보이고, event_id가 화면에서 빠져도 원래의 각 행은 남습니다.\n\n같은 U1·click이 여러 번 보여도 아직 오류가 아닙니다. 열 선택은 어떤 속성을 볼지 정하는 일이고 중복 제거는 다음에 별도로 배웁니다.",
+          "theoryTitle": "열을 고르는 것과 행을 줄이는 것",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q03",
+          "title": "click만 조회하기",
+          "task": "event_name이 'click'인 행을 모든 컬럼으로 조회하세요.",
+          "sql": "SELECT * FROM events WHERE event_name = 'click';",
+          "hints": [
+            "행을 고르는 조건은 WHERE입니다.",
+            "문자열 값 'click'에는 작은따옴표를 붙입니다."
+          ],
+          "why": "WHERE는 집계 전에 대상 행을 고릅니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "WHERE는 조건이 참인 원본 행만 남깁니다. event_name = 'click'은 event_name 열의 값이 click인지 비교합니다. 등호는 값을 바꾸는 대입이 아니라 이 조회의 비교입니다.\n\n열 이름 event_name에는 작은따옴표를 쓰지 않고, 글자 값 'click'에는 작은따옴표를 씁니다. FROM 뒤에 WHERE를 적습니다. SELECT의 *는 남은 행에서 모든 열을 보여 달라는 뜻입니다.",
+          "theoryTitle": "WHERE로 행 고르기",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q04",
+          "title": "두 조건 함께 적용하기",
+          "task": "U1 사용자의 click 행을 모든 컬럼으로 조회하세요.",
+          "sql": "SELECT * FROM events WHERE user_id = 'U1' AND event_name = 'click';",
+          "hints": [
+            "두 조건을 모두 만족해야 합니다.",
+            "WHERE에서 두 비교식을 AND로 연결합니다."
+          ],
+          "why": "U1이라는 사용자 조건과 click이라는 종류 조건은 각각 다른 컬럼에 적용합니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "AND로 두 비교식을 연결하면 둘 다 참인 행만 남습니다. 사용자 조건과 종류 조건을 각각 완전한 비교식으로 씁니다.\n\n먼저 U1의 행을 찾은 뒤 그중 click을 골라 보세요. OR는 둘 중 하나만 참이어도 남기므로 이번 질문과 뜻이 달라집니다. 한 번에 어렵다면 사용자 조건만 실행하고 AND 조건을 더해도 됩니다.",
+          "theoryTitle": "AND는 두 조건을 모두 확인해요",
+          "smallSteps": [
+            {
+              "title": "사용자 조건만 먼저 보기",
+              "sql": "SELECT * FROM events WHERE user_id = 'U1';",
+              "expected_shape": "원본 기본 표에서 U1의 4행. 아직 click 이외의 행도 보입니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B01-Q05",
+          "title": "이벤트 종류 알아보기",
+          "task": "중복 없이 event_name만 조회하세요.",
+          "sql": "SELECT DISTINCT event_name FROM events;",
+          "hints": [
+            "이 문제의 기준은 사용자가 아니라 이벤트 종류입니다.",
+            "SELECT DISTINCT event_name을 사용해 보세요."
+          ],
+          "why": "DISTINCT는 선택한 컬럼 값의 중복을 제거합니다. 이벤트 ID 개수와 종류 개수는 다릅니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "SELECT DISTINCT event_name은 결과에서 같은 event_name 값을 하나만 남깁니다. 이벤트 종류를 알고 싶으므로 user_id나 event_id는 함께 선택하지 않습니다.\n\nDISTINCT user_id, event_name이면 두 열의 조합이 같은 것만 합쳐집니다. 여러 열을 선택하면 각각 따로 중복을 없애는 것이 아닙니다. 원본 표의 행을 삭제하는 것도 아닙니다.",
+          "theoryTitle": "DISTINCT는 선택한 값의 조합을 한 번만 보여 줘요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q06",
+          "title": "click 원시 행 수",
+          "task": "click인 원시 행 수를 한 값으로 구하세요. 재전송도 행으로 셉니다.",
+          "sql": "SELECT COUNT(*) FROM events WHERE event_name = 'click';",
+          "hints": [
+            "COUNT(*)는 행을 셉니다.",
+            "click 행을 WHERE로 고른 뒤 COUNT(*)를 계산합니다."
+          ],
+          "why": "원시 행 수는 재전송을 제거하지 않은 수입니다. 현재 click에는 중복이 없지만 추가 검증 데이터에는 있습니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "COUNT(*)는 조건에 남은 행을 셉니다. 이 별표는 SELECT *처럼 모든 열을 출력하라는 뜻이 아니라 행을 세는 COUNT의 표기입니다.\n\n먼저 WHERE로 click 행을 고르고 그 행 수를 계산합니다. GROUP BY가 없으면 전체 대상의 개수가 결과 한 행에 들어갑니다. 대상 행이 없어도 COUNT(*) 결과는 0 한 값입니다. 재전송도 수신 행이므로 여기서는 그대로 셉니다.",
+          "theoryTitle": "COUNT로 목록 대신 개수 하나 얻기",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q07",
+          "title": "click한 사용자 수",
+          "task": "click을 한 고유 사용자 수를 한 값으로 구하세요.",
+          "sql": "SELECT COUNT(DISTINCT user_id) FROM events WHERE event_name = 'click';",
+          "hints": [
+            "한 사람이 여러 번 click해도 한 명입니다.",
+            "COUNT(DISTINCT user_id)로 사용자를 셉니다."
+          ],
+          "why": "집계 기준은 user_id입니다. event_id를 세면 사용자 수가 아닌 이벤트 수가 됩니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "COUNT(DISTINCT user_id)는 중복되지 않는 사용자 ID 수를 셉니다. 한 사용자가 두 번 click했다면 원시 행은 둘일 수 있지만 사용자 ID는 하나입니다.\n\n먼저 click 행을 고르고 그 안에서 user_id 목록을 중복 없이 만든다고 생각해 보세요. COUNT(DISTINCT event_id)는 논리 이벤트 수이며 다른 질문입니다. 이번 events의 ID들은 NULL이 없습니다.",
+          "theoryTitle": "사용자 수와 이벤트 수 구분하기",
+          "smallSteps": [
+            {
+              "title": "먼저 사용자 목록 보기",
+              "sql": "SELECT DISTINCT user_id FROM events WHERE event_name = 'click';",
+              "expected_shape": "한 행이 click한 사용자 ID 하나인 목록",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B01-Q08",
+          "title": "재전송 제외하기",
+          "task": "map_ready의 고유 event_id 수를 한 값으로 구하세요.",
+          "sql": "SELECT COUNT(DISTINCT event_id) FROM events WHERE event_name = 'map_ready';",
+          "hints": [
+            "e02는 두 행이지만 같은 이벤트입니다.",
+            "COUNT 안에서 event_id의 중복을 없앱니다."
+          ],
+          "why": "재전송 중복은 event_id로 제거합니다. COUNT(*)는 원시 행 수를 셉니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "같은 event_id의 재전송은 같은 논리 이벤트입니다. map_ready 행을 고른 뒤 event_id 중복을 없애면 논리 이벤트의 개수를 얻습니다.\n\n기본 표의 e02는 두 번 도착했지만 이벤트 하나입니다. user_id 중복을 없애면 사용자 수가 되고, event_name 중복을 없애면 종류 수가 됩니다. 세려는 대상을 먼저 말하고 그 대상을 식별하는 열을 고르세요.",
+          "theoryTitle": "재전송을 셀 때의 기준은 event_id예요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q09",
+          "title": "사용자별 click 이벤트 수",
+          "task": "click이 있는 사용자별로 user_id, 고유 click event_id 수를 이 순서로 구하세요. click이 없는 사용자는 제외합니다.",
+          "sql": "SELECT user_id, COUNT(DISTINCT event_id) FROM events WHERE event_name = 'click' GROUP BY user_id;",
+          "hints": [
+            "묶는 기준은 사용자, 세는 기준은 이벤트입니다.",
+            "WHERE로 click을 고르고 GROUP BY user_id, COUNT(DISTINCT event_id)를 조합합니다."
+          ],
+          "why": "GROUP BY는 결과 한 행이 대표할 기준입니다. 각 사용자 그룹 안에서 고유 이벤트를 셉니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "WHERE로 click 행을 고른 뒤 GROUP BY user_id로 같은 사용자의 행을 한 그룹에 모읍니다. 결과 한 행은 사용자 한 명을 대표합니다. 각 그룹 안에서 COUNT(DISTINCT event_id)로 고유 click 이벤트를 셉니다. 묶는 기준 user_id와 세는 대상 event_id는 다를 수 있습니다.\n\nSELECT에는 그룹 기준 열과 집계 결과를 적는 것이 기본입니다. 집계하지 않은 event_name 같은 열을 임의로 섞으면 그 값이 무엇을 대표하는지 불분명할 수 있습니다. SQLite에서 실행된다는 사실만으로 뜻이 맞지는 않습니다.\n\n작성 순서는 SELECT → FROM → WHERE → GROUP BY입니다. 생각할 때는 원본 행 고르기 → 사용자별 묶기 → 그룹 안에서 세기 순서로 읽으세요. GROUP BY는 출력 정렬을 보장하지 않습니다.",
+          "theoryTitle": "GROUP BY는 결과 한 행의 단위를 정해요",
+          "smallSteps": [
+            {
+              "title": "묶기 전에 남을 행 보기",
+              "sql": "SELECT user_id, event_id FROM events WHERE event_name = 'click';",
+              "expected_shape": "한 행은 원시 click 기록 하나. 다음 단계에서 user_id별로 묶습니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B01-Q10",
+          "title": "종류별 사용자와 이벤트 수",
+          "task": "event_name별로 event_name, 고유 사용자 수, 고유 이벤트 수를 이 순서로 구하세요.",
+          "sql": "SELECT event_name, COUNT(DISTINCT user_id), COUNT(DISTINCT event_id) FROM events GROUP BY event_name;",
+          "hints": [
+            "그룹은 종류, 두 집계의 기준은 각각 사용자와 이벤트입니다.",
+            "GROUP BY event_name에 서로 다른 COUNT(DISTINCT ...) 두 개를 씁니다."
+          ],
+          "why": "같은 그룹 안에서도 user_id와 event_id를 세면 서로 다른 질문에 답하게 됩니다.",
+          "table": "events",
+          "type": "sql",
+          "tables": [
+            "events"
+          ],
+          "theory": "이번에는 event_name별로 묶습니다. 결과 한 행은 이벤트 종류 하나입니다. 그 그룹 안에서 COUNT(DISTINCT user_id)는 사용자 수, COUNT(DISTINCT event_id)는 이벤트 수입니다.\n\n같은 사람이 같은 종류의 이벤트를 여러 번 만들 수 있으므로 두 수가 꼭 같지는 않습니다. SELECT의 열 순서도 문제의 event_name, 사용자 수, 이벤트 수 순서와 맞춰 보세요.",
+          "theoryTitle": "한 그룹 안에서 서로 다른 대상을 셀 수 있어요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q11",
+          "title": "새 이름의 테이블 읽기",
+          "task": "M2 회원의 save 행을 모든 컬럼으로 조회하세요.",
+          "sql": "SELECT * FROM activity_logs WHERE member_id = 'M2' AND action = 'save';",
+          "hints": [
+            "이번 테이블은 activity_logs입니다.",
+            "member_id와 action 컬럼에 조건을 적용합니다."
+          ],
+          "why": "이전 문제의 user_id, event_name이 아니라 현재 스키마의 이름을 사용합니다.",
+          "table": "activity_logs",
+          "type": "sql",
+          "tables": [
+            "activity_logs"
+          ],
+          "theory": "activity_logs는 다른 이름의 연습 표입니다. 한 행은 수신한 활동 기록 1건이고 log_id는 논리 기록 ID, member_id는 회원 ID, action은 활동 종류입니다. 재전송이면 같은 log_id가 다시 나타납니다.\n\nevents에서 배운 방법을 옮기되, user_id·event_name이라는 옛 열 이름을 그대로 쓰지 않습니다. 현재 표의 member_id·action을 확인하고 M2 조건과 save 조건을 AND로 묶어 보세요.",
+          "theoryTitle": "새 표에서는 스키마부터 읽어요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q12",
+          "title": "search한 회원 수",
+          "task": "search를 한 고유 회원 수를 한 값으로 구하세요.",
+          "sql": "SELECT COUNT(DISTINCT member_id) FROM activity_logs WHERE action = 'search';",
+          "hints": [
+            "같은 회원의 반복 search는 한 명으로 셉니다.",
+            "COUNT(DISTINCT member_id)를 사용합니다."
+          ],
+          "why": "행이나 log_id가 아닌 member_id의 종류 수를 구합니다.",
+          "table": "activity_logs",
+          "type": "sql",
+          "tables": [
+            "activity_logs"
+          ],
+          "theory": "search 행을 고른 뒤 회원 ID를 중복 없이 세면 됩니다. 한 회원이 여러 번 search해도 회원 한 명입니다.\n\n이번 표의 사람 단위 열은 member_id입니다. log_id를 세면 기록 수가 되므로 결과 숫자가 우연히 같더라도 질문의 뜻은 다릅니다.",
+          "theoryTitle": "이름이 바뀌어도 세는 대상은 먼저 정해요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q13",
+          "title": "회원별 save 기록 수",
+          "task": "save가 있는 회원별로 member_id, 고유 save log_id 수를 이 순서로 구하세요. save가 없는 회원은 제외합니다.",
+          "sql": "SELECT member_id, COUNT(DISTINCT log_id) FROM activity_logs WHERE action = 'save' GROUP BY member_id;",
+          "hints": [
+            "회원별로 묶고 기록 ID를 셉니다.",
+            "WHERE action 조건과 GROUP BY member_id를 사용합니다."
+          ],
+          "why": "M1의 L02 재전송은 한 기록입니다. M2의 서로 다른 기록은 각각 셉니다.",
+          "table": "activity_logs",
+          "type": "sql",
+          "tables": [
+            "activity_logs"
+          ],
+          "theory": "먼저 save 행만 남깁니다. GROUP BY member_id로 회원별 그룹을 만들고, 그룹 안에서 log_id를 중복 없이 셉니다.\n\n같은 L02의 재전송은 기록 하나지만, 같은 회원의 서로 다른 log_id는 각각 별도 기록입니다. save 행이 없는 회원은 WHERE 이후 이 결과에 나타나지 않습니다.",
+          "theoryTitle": "회원별로 묶고 기록을 세어 봐요",
+          "smallSteps": []
+        },
+        {
+          "id": "B01-Q14",
+          "title": "action별 회원과 기록 수",
+          "task": "action별로 action, 고유 회원 수, 고유 기록 수를 이 순서로 구하세요.",
+          "sql": "SELECT action, COUNT(DISTINCT member_id), COUNT(DISTINCT log_id) FROM activity_logs GROUP BY action;",
+          "hints": [
+            "묶는 컬럼은 action입니다.",
+            "member_id와 log_id에 각각 DISTINCT 집계를 적용합니다."
+          ],
+          "why": "그룹 기준과 집계 대상을 분리해서 읽으면 테이블명이 달라져도 같은 원리를 적용할 수 있습니다.",
+          "table": "activity_logs",
+          "type": "sql",
+          "tables": [
+            "activity_logs"
+          ],
+          "theory": "결과 한 행은 action 하나입니다. 그 action 안에서 고유 member_id 수와 고유 log_id 수를 각각 구합니다.\n\n답을 쓰기 전에 ‘무엇별로 묶나’, ‘첫 번째 숫자는 무엇을 세나’, ‘두 번째 숫자는 무엇을 세나’를 말해 보세요. B01-Q10과 같은 구조이며 이름을 현재 스키마에 맞추는 연습입니다.",
+          "theoryTitle": "그룹 기준과 두 집계 대상을 다시 나누어 봐요",
+          "smallSteps": []
+        }
+      ],
+      "source": "supplied-v3"
+    },
+    {
+      "id": "B02",
+      "title": "SQL로 첫 지표 만들기",
+      "intro": [
+        "먼저 표에서 한 행의 뜻을 살펴보고, 문제 바로 앞의 짧은 설명을 읽은 뒤 연습해 봅니다. 처음 보는 용어를 지금 모두 외울 필요는 없습니다.",
+        "막히면 힌트를 보거나 작은 SQL 조각만 실행해도 괜찮습니다. 원하는 곳에서 쉬고 이어갈 수 있으며, 이론 읽기와 작은 연습은 공식 문제 수나 완료 조건을 늘리지 않습니다.",
+        "한 행은 화면을 열어 보려는 한 번의 시도입니다. 같은 사용자가 다시 시도하면 attempt_id가 달라집니다. 이 단원에서는 이미 정리된 시도 테이블을 사용하며 재전송 중복은 없습니다.",
+        "SELECT는 출력할 열, FROM은 읽을 테이블, WHERE는 포함할 행을 고릅니다. 문자열은 작은따옴표로 감싸고, 두 조건을 모두 만족하려면 AND를 씁니다. ORDER BY를 쓰지 않으면 행 순서는 보장되지 않습니다.",
+        "COUNT(*)는 행 수이고 COUNT(열)은 그 열이 NULL이 아닌 행 수입니다. NULL은 0이나 빈 문자열이 아니라 아직 없거나 적용되지 않는 값입니다. ready_ms는 시작 시각이 아니라 준비까지 걸린 시간이며, 성공한 시도만 값이 있습니다.",
+        "GROUP BY 이후 결과 한 행은 한 그룹을 대표합니다. 예를 들어 web 2행과 mobile 1행을 GROUP BY platform으로 묶으면 결과는 플랫폼별 1행씩 총 2행입니다. SELECT platform, COUNT(*)는 각 상자의 이름과 그 안의 행 수를 보여 줍니다. WHERE로 먼저 고른 행들을 그룹 상자에 넣는다고 생각해 보세요.",
+        "CASE WHEN status = 'success' THEN 1 ELSE 0 END는 성공 행에 1, 나머지 행에 0을 붙이는 작은 분류식입니다. SUM(CASE WHEN ... END)는 그 1들을 더해 성공 수를 셉니다. COUNT(*)는 같은 그룹의 모든 행을 세므로 성공 수와 전체 수를 한 결과에 나란히 놓을 수 있습니다.",
+        "AVG는 NULL을 제외합니다. 이 단원의 성공률은 성공 시도 수 ÷ 모든 시도 수 × 100이며 fail과 pending도 분모에 포함합니다. 소수 계산에는 100.0을, 표시 자릿수에는 ROUND를 사용합니다."
+      ],
+      "goals": [
+        "필요한 열과 조건을 선택한다",
+        "행 수와 NULL이 아닌 값 수를 구분한다",
+        "플랫폼별 평균과 성공률을 직접 정의한다"
+      ],
+      "tables": {
+        "play_attempts": {
+          "cols": [
+            "attempt_id",
+            "user_id",
+            "platform",
+            "started_at_ms",
+            "ready_ms",
+            "status"
+          ],
+          "types": [
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "INTEGER",
+            "INTEGER",
+            "TEXT"
+          ],
+          "desc": [
+            "시도 ID, 행마다 고유",
+            "사용자 ID, 여러 시도에서 반복 가능",
+            "web 또는 mobile",
+            "가상 기준시점 이후 시작 시각(ms)",
+            "준비까지 걸린 시간(ms), 성공 외에는 NULL",
+            "success / fail / pending"
+          ],
+          "rows": [
+            [
+              "a01",
+              "u01",
+              "web",
+              1000,
+              800,
+              "success"
+            ],
+            [
+              "a02",
+              "u01",
+              "mobile",
+              2500,
+              1500,
+              "success"
+            ],
+            [
+              "a03",
+              "u02",
+              "web",
+              4000,
+              null,
+              "fail"
+            ],
+            [
+              "a04",
+              "u03",
+              "mobile",
+              5500,
+              null,
+              "pending"
+            ],
+            [
+              "a05",
+              "u04",
+              "web",
+              7000,
+              2200,
+              "success"
+            ],
+            [
+              "a06",
+              "u02",
+              "mobile",
+              8500,
+              null,
+              "fail"
+            ]
+          ],
+          "fixtures": [
+            [
+              [
+                "b05",
+                "u14",
+                "mobile",
+                6000,
+                null,
+                "fail"
+              ],
+              [
+                "b04",
+                "u13",
+                "mobile",
+                4000,
+                3000,
+                "success"
+              ],
+              [
+                "b03",
+                "u12",
+                "mobile",
+                2000,
+                1000,
+                "success"
+              ],
+              [
+                "b02",
+                "u12",
+                "web",
+                900,
+                null,
+                "pending"
+              ],
+              [
+                "b01",
+                "u11",
+                "web",
+                100,
+                500,
+                "success"
+              ]
+            ],
+            [
+              [
+                "c01",
+                "u21",
+                "web",
+                200,
+                null,
+                "fail"
+              ],
+              [
+                "c02",
+                "u22",
+                "web",
+                1000,
+                null,
+                "pending"
+              ],
+              [
+                "c03",
+                "u21",
+                "mobile",
+                5000,
+                750,
+                "success"
+              ],
+              [
+                "c04",
+                "u23",
+                "mobile",
+                7000,
+                1250,
+                "success"
+              ],
+              [
+                "c05",
+                "u24",
+                "mobile",
+                8000,
+                2500,
+                "success"
+              ],
+              [
+                "c06",
+                "u25",
+                "mobile",
+                9000,
+                null,
+                "pending"
+              ],
+              [
+                "c07",
+                "u26",
+                "web",
+                12000,
+                null,
+                "fail"
+              ]
+            ]
+          ]
+        }
+      },
+      "questions": [
+        {
+          "id": "B02-Q01",
+          "title": "행과 열을 골라 보기",
+          "task": "모든 시도의 attempt_id, platform, status를 이 순서로 출력하세요. attempt_id 오름차순으로 정렬하세요.",
+          "type": "sql",
+          "sql": "SELECT attempt_id, platform, status FROM play_attempts ORDER BY attempt_id;",
+          "hints": [
+            "SELECT 뒤에 필요한 열 세 개를 쉼표로 나열합니다.",
+            "FROM play_attempts 뒤에 ORDER BY attempt_id를 붙입니다."
+          ],
+          "why": "열을 줄여도 행 수는 줄지 않습니다. 첫 조회에서는 결과 한 행이 여전히 한 시도인지 확인하는 습관을 만듭니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "play_attempts의 한 행은 시도 1회입니다. 재전송은 이미 정리되어 있고 attempt_id가 각 행을 식별합니다. 같은 user_id가 다시 시도하면 다른 행이 됩니다.\n\nstarted_at_ms는 공통 가상 기준시점 이후의 시작 시각이고, ready_ms는 시작부터 준비까지 걸린 시간입니다. 둘 다 ms지만 의미가 다릅니다. 1,000ms는 1초입니다.\n\nORDER BY attempt_id는 attempt_id 오름차순입니다. ASC를 생략해도 오름차순이고 DESC는 내림차순입니다. SELECT 열 나열 순서는 결과 열 순서이고 ORDER BY는 결과 행 순서입니다. AS 이름은 결과 열에 읽기 쉬운 별칭을 붙이며 원본 스키마를 바꾸지 않습니다.",
+          "theoryTitle": "시도 표와 정렬과 출력 별칭",
+          "smallSteps": []
+        },
+        {
+          "id": "B02-Q02",
+          "title": "조건을 두 개 적용하기",
+          "task": "mobile에서 성공한 시도만 조회하세요. 출력 열 순서는 attempt_id, user_id, ready_ms이며 ready_ms 오름차순, 동률이면 attempt_id 오름차순입니다.",
+          "type": "sql",
+          "sql": "SELECT attempt_id, user_id, ready_ms FROM play_attempts WHERE platform = 'mobile' AND status = 'success' ORDER BY ready_ms, attempt_id;",
+          "hints": [
+            "platform = 'mobile'과 status = 'success'를 각각 비교합니다.",
+            "두 비교를 AND로 연결하고 ORDER BY에 두 정렬 기준을 적습니다."
+          ],
+          "why": "WHERE는 집계하기 전에 행을 고릅니다. 모바일 성공 기록의 준비 시간을 보는 질문과 전체 시도의 성공률을 구하는 질문은 분모가 다릅니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "WHERE에서 mobile과 success 조건을 AND로 묶으면 모바일 성공 시도만 남습니다. ready_ms는 이 성공 시도에 걸린 시간이며 시작 시각이 아닙니다.\n\nORDER BY ready_ms, attempt_id는 먼저 시간이 작은 순서, 시간이 같으면 ID 순서입니다. 두 기준은 모두 오름차순입니다. 이 질문은 성공 시도의 시간을 보는 것이므로 성공만 골라도 되지만 다음의 전체 성공률에서는 같은 필터를 쓰면 분모가 달라집니다.",
+          "theoryTitle": "두 조건과 두 정렬 기준",
+          "smallSteps": []
+        },
+        {
+          "id": "B02-Q03",
+          "title": "COUNT 두 가지 비교하기",
+          "task": "전체 테이블에서 1행을 출력하세요. 열 순서는 전체 시도 수, ready_ms가 있는 시도 수, ready_ms가 NULL인 시도 수입니다. 마지막 값은 앞의 두 COUNT 차이로 구해도 됩니다.",
+          "type": "sql",
+          "sql": "SELECT COUNT(*) AS total_attempts, COUNT(ready_ms) AS measured_attempts, COUNT(*) - COUNT(ready_ms) AS missing_ready_attempts FROM play_attempts;",
+          "hints": [
+            "COUNT(*)와 COUNT(ready_ms)는 서로 다른 것을 셉니다.",
+            "전체 행 수에서 측정값이 있는 행 수를 빼면 NULL인 행 수입니다."
+          ],
+          "why": "NULL을 0으로 채우면 준비 시간이 0ms였다는 뜻으로 바뀝니다. 실패와 관찰 중인 시도의 준비 시간을 알 수 없다는 사실을 그대로 유지해야 합니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "NULL은 값이 없거나 아직 관측되지 않았다는 표시입니다. 0이나 빈 문자열과 같지 않습니다. 이 표에서 ready_ms는 성공한 시도만 값이 있고 fail·pending은 NULL입니다. 0ms라면 실제로 즉시 준비됐다는 측정값이 됩니다.\n\nCOUNT(*)는 모든 행 수를, COUNT(ready_ms)는 ready_ms가 NULL이 아닌 행 수를 셉니다. 전체 수에서 있는 수를 빼면 NULL인 수입니다. 값이 0이어도 NULL이 아니므로 COUNT(ready_ms)에 포함됩니다. NULL을 조건으로 찾을 때는 = NULL 대신 IS NULL 또는 IS NOT NULL을 씁니다.\n\nAS total_attempts처럼 별칭을 붙이면 결과를 읽기 쉽습니다. 별칭은 자유지만 열의 개수와 순서는 문제와 맞춰야 합니다.",
+          "theoryTitle": "NULL과 COUNT의 두 방식",
+          "smallSteps": [
+            {
+              "title": "값이 없는 행 직접 보기",
+              "sql": "SELECT attempt_id, ready_ms, status FROM play_attempts WHERE ready_ms IS NULL;",
+              "expected_shape": "기본 표에서 fail 두 행과 pending 한 행. NULL을 0으로 바꾸지 않습니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B02-Q04",
+          "title": "성공한 시도의 평균 시간",
+          "task": "성공한 시도만 대상으로 플랫폼별 결과를 구하세요. 출력 열 순서는 platform, 성공 시도 수, 평균 ready_ms(소수점 첫째 자리 반올림)입니다. 성공이 하나도 없는 플랫폼은 제외하고 platform 오름차순으로 정렬하세요.",
+          "type": "sql",
+          "sql": "SELECT platform, COUNT(*) AS success_attempts, ROUND(AVG(ready_ms), 1) AS avg_ready_ms FROM play_attempts WHERE status = 'success' GROUP BY platform ORDER BY platform;",
+          "hints": [
+            "WHERE status = 'success'로 분석 대상을 먼저 고릅니다.",
+            "GROUP BY platform 안에서 COUNT(*)와 ROUND(AVG(ready_ms), 1)을 계산합니다."
+          ],
+          "why": "이 평균은 성공한 시도에 대한 조건부 평균입니다. 실패가 많아져도 성공한 소수의 속도가 빠르면 평균만 좋아 보일 수 있으므로 성공률과 함께 해석해야 합니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "GROUP BY platform으로 묶으면 결과 한 행은 플랫폼 하나입니다. 이번에는 WHERE로 성공한 행만 먼저 남기므로 성공이 없는 플랫폼은 결과에서 빠집니다.\n\nCOUNT(*)는 그 그룹의 성공 시도 수입니다. AVG(ready_ms)는 NULL이 아닌 값의 합을 그 값의 개수로 나눈 평균입니다. 그룹의 모든 값이 NULL이면 AVG는 NULL입니다. ROUND(평균, 1)은 소수점 첫째 자리까지 반올림해 표시합니다.\n\n이 값은 성공 시도에 한정된 평균입니다. 실패나 아직 준비되지 않은 경험을 포함한 전체 품질을 이것 하나로 설명할 수는 없습니다.",
+          "theoryTitle": "성공한 시도 안에서 평균 내기",
+          "smallSteps": [
+            {
+              "title": "평균에 들어갈 값 확인",
+              "sql": "SELECT platform, ready_ms FROM play_attempts WHERE status = 'success' ORDER BY platform;",
+              "expected_shape": "기본 표에서 mobile 1500, web 800과 2200이 평균에 들어갑니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B02-Q05",
+          "title": "분모를 지키는 성공률",
+          "task": "플랫폼별로 platform, 전체 시도 수, 성공 시도 수, 성공률(%)을 이 순서로 출력하세요. 성공률은 success 수 ÷ 모든 시도 수 × 100이고 fail과 pending도 분모에 포함합니다. 소수점 첫째 자리로 반올림하고 platform 오름차순으로 정렬하세요.",
+          "type": "sql",
+          "sql": "SELECT platform, COUNT(*) AS total_attempts, SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) AS success_attempts, ROUND(100.0 * SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) / COUNT(*), 1) AS success_rate_pct FROM play_attempts GROUP BY platform ORDER BY platform;",
+          "hints": [
+            "WHERE로 성공 행만 남기지 마세요. CASE WHEN으로 성공일 때만 1을 더합니다.",
+            "분모는 그룹 전체 COUNT(*)이고 100.0을 곱해 정수 나눗셈을 피합니다."
+          ],
+          "why": "성공 행을 WHERE로 고르면 분모까지 성공 시도만 남아 항상 100%가 됩니다. 조건부 집계는 분모를 유지하면서 분자만 좁힙니다. pending을 포함한다는 정의는 이 연습의 약속이며 실제 제품 지표에서는 관찰 시간이 중요합니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "성공률은 성공 수 ÷ 전체 시도 수 × 100입니다. 이번 수업의 정의에서는 fail과 pending도 전체 시도 수에 포함합니다. 성공만 WHERE로 고르면 분모도 성공 수가 되어 의도한 성공률이 아닙니다.\n\nCASE WHEN status = 'success' THEN 1 ELSE 0 END는 성공 행에 1, 나머지 행에 0을 주는 식입니다. WHEN은 조건, THEN은 참일 때 값, ELSE는 나머지 값, END는 식의 끝입니다. SUM은 값을 더하는 집계입니다. 이 1과 0을 SUM하면 성공 수가 되고 COUNT(*)는 같은 그룹의 모든 시도 수를 유지합니다.\n\n소수 계산을 위해 100.0을 곱한 뒤 COUNT(*)로 나눕니다. SQLite에서는 정수끼리 나누면 소수 부분을 잃을 수 있습니다. ROUND(값, 1)로 소수점 첫째 자리까지 반올림합니다. 이것은 0~100 범위의 백분율이며 0~1 비율과 구분합니다.\n\n현재 GROUP BY 결과의 각 그룹은 실제 행을 하나 이상 포함하므로 COUNT(*) 분모는 0이 아닙니다. 아직 충분히 관찰했는지를 판단하는 별도 지표는 뒤에서 배웁니다.",
+          "theoryTitle": "CASE로 분자만 좁히고 전체 분모는 남겨요",
+          "smallSteps": [
+            {
+              "title": "성공 표시를 행마다 보기",
+              "sql": "SELECT attempt_id, platform, status, CASE WHEN status = 'success' THEN 1 ELSE 0 END AS success_flag FROM play_attempts;",
+              "expected_shape": "기본 표의 성공 세 행에 1, fail·pending 세 행에 0",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            },
+            {
+              "title": "분자와 분모만 먼저 계산",
+              "sql": "SELECT platform, COUNT(*) AS total_attempts, SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) AS success_attempts FROM play_attempts GROUP BY platform;",
+              "expected_shape": "기본 표에서 mobile 전체 3·성공 1, web 전체 3·성공 2. 다음에 백분율 열을 추가합니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B02-Q06",
+          "title": "평균이 빨라졌는데 불만은 늘었다",
+          "task": "성공한 시도의 평균 ready_ms는 줄었지만 실패 시도는 늘었습니다. “제품이 빨라졌다”라고 바로 결론 내리기 어려운 이유와 함께 볼 지표 두 가지를 적어 보세요.",
+          "type": "reflection",
+          "hints": [
+            "먼저 결과 한 행이 무엇을 대표하는지 말로 적어 보세요.",
+            "분자·분모, 빠지는 행, 아직 알 수 없는 값을 구분해 보세요."
+          ],
+          "why": "집계 함수 사용법과 지표 해석은 별개입니다. 어떤 기록이 빠졌는지를 설명할 수 있어야 분석 결과를 오해 없이 전달할 수 있습니다.",
+          "checklist": [
+            "성공한 시도만 평균에 들어간다는 선택 효과를 설명한다",
+            "성공률 또는 실패율을 함께 제시한다",
+            "전체 시도 수와 pending 수 또는 느린 구간 지표를 제시한다"
+          ],
+          "solution": "이 평균은 성공한 시도만 보여 줍니다. 느린 시도가 실패로 빠지면 실제 경험이 나빠져도 성공 집단의 평균은 내려갈 수 있습니다. 전체 시도 수, 성공률·실패율, pending 수를 같이 보고 가능하면 지연 시간 분포도 확인합니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "이 문제는 SQL 실행이 아니라 해석 연습입니다. 성공한 시도만의 평균에서는 실패와 pending의 ready_ms가 빠집니다. 느린 시도가 실패로 빠졌다면 평균이 내려가도 전체 경험이 좋아졌다고 단정하기 어렵습니다.\n\n평균을 해석할 때 전체 시도 수, 성공·실패·pending의 수나 비율도 함께 살펴봅니다. 지연 시간 분포는 빠른 일부와 느린 일부가 섞였는지 보는 데 도움이 됩니다. 새로운 분포 계산식을 지금 외울 필요는 없습니다. 자신의 말로 이유와 함께 볼 지표를 적어 보세요.",
+          "theoryTitle": "숫자가 좋아 보여도 빠진 행을 살펴봐요",
+          "smallSteps": []
+        },
+        {
+          "id": "B02-Q07",
+          "title": "NULL을 0으로 바꿔도 될까",
+          "task": "ready_ms가 NULL인 행을 0으로 채워 AVG를 계산하면 어떤 의미가 바뀌나요? 이 테이블에서 NULL을 그대로 두는 이유를 한두 문장으로 설명하세요.",
+          "type": "reflection",
+          "hints": [
+            "먼저 결과 한 행이 무엇을 대표하는지 말로 적어 보세요.",
+            "분자·분모, 빠지는 행, 아직 알 수 없는 값을 구분해 보세요."
+          ],
+          "why": "결측치 처리도 데이터 정의의 일부입니다. 계산을 편하게 만들기 위한 임의의 대체가 새로운 사실을 만들어서는 안 됩니다.",
+          "checklist": [
+            "NULL과 0ms가 다른 의미임을 쓴다",
+            "실패·관찰 중인 시도를 즉시 준비된 성공처럼 해석하면 안 됨을 쓴다"
+          ],
+          "solution": "NULL은 준비 시간이 관측되지 않았다는 뜻이고 0ms는 즉시 준비됐다는 실제 측정값입니다. NULL을 0으로 채우면 실패와 pending이 빠른 시도로 계산되어 평균을 부당하게 낮춥니다.",
+          "tables": [
+            "play_attempts"
+          ],
+          "theory": "이 문제도 해석 연습입니다. NULL을 0으로 바꾸면 관측되지 않은 준비 시간이 실제 0ms 측정값으로 취급됩니다. AVG는 원래 NULL을 빼지만, 0으로 바꾼 값은 포함합니다. 그 결과 평균의 의미와 분모가 함께 바뀝니다.\n\n실패나 pending을 아주 빠르게 성공한 시도처럼 해석하지 않으려면 관측되지 않았다는 사실을 보존해야 합니다. 두 값이 왜 다른지 한두 문장으로 적으면 충분합니다.",
+          "theoryTitle": "모르는 값과 실제로 0인 값을 구분해요",
+          "smallSteps": []
+        }
+      ],
+      "source": "supplied-v3"
+    },
+    {
+      "id": "B03",
+      "title": "사용자·시도·이벤트를 따로 세기",
+      "intro": [
+        "먼저 표에서 한 행의 뜻을 살펴보고, 문제 바로 앞의 짧은 설명을 읽은 뒤 연습해 봅니다. 처음 보는 용어를 지금 모두 외울 필요는 없습니다.",
+        "막히면 힌트를 보거나 작은 SQL 조각만 실행해도 괜찮습니다. 원하는 곳에서 쉬고 이어갈 수 있으며, 이론 읽기와 작은 연습은 공식 문제 수나 완료 조건을 늘리지 않습니다.",
+        "B01·B02에서 배운 행, DISTINCT, GROUP BY, NULL, CASE를 필요한 만큼 떠올립니다. Q04·Q05의 긴 SQL은 작은 조각을 실행한 뒤 합쳐도 괜찮습니다.",
+        "raw_events의 한 행은 원시 수신 기록입니다. event_id는 논리 이벤트, (user_id, attempt_id)는 시도, user_id는 사용자 단위입니다. event_ts_ms와 received_ts_ms는 같은 기준시점 이후의 시각이며 소요시간이 아닙니다.",
+        "정상 SQL 연습에서는 ID·시각에 NULL이 없고 ingest_id가 고유합니다. 같은 event_id의 사용자·시도·종류·발생 시각은 같으며 수신 시각과 ingest_id만 다를 수 있습니다. 종류별 여러 이벤트가 가능하고 모든 시도에 click이 있으며 한 시도에 ready와 fail이 함께 있지 않습니다. 이 계약 위반은 Q08의 해석 주제로 따로 다룹니다.",
+        "한 사용자는 여러 번 시도할 수 있고, 한 시도는 click으로 시작해 ready 또는 fail로 끝납니다. 아직 종료 이벤트가 없는 시도도 있습니다. 이 단원의 논리적 시도 키는 (user_id, attempt_id) 두 열입니다.",
+        "event_id는 한 번 발생한 논리 이벤트의 ID입니다. 네트워크 재전송 때문에 같은 event_id가 여러 원시 행으로 도착할 수 있습니다. 같은 event_id의 사용자·시도·종류·발생 시각은 동일하고, 수신 시각과 ingest_id만 다릅니다.",
+        "사용자 중복 제거는 사람 수를 셀 때, 시도 중복 제거는 시도 수를 셀 때, 이벤트 중복 제거는 재전송을 없앨 때 사용합니다. user_id로 이벤트를 한 줄만 남기면 정상적인 재시도와 ready까지 사라집니다.",
+        "ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id)는 같은 논리 이벤트 안에서 가장 먼저 수신된 행에 1을 붙입니다. 동률의 최종 기준은 ingest_id입니다. WITH로 중간 결과에 이름을 붙이면 중복 제거와 이후 집계를 분리해서 읽을 수 있습니다.",
+        "WITH는 임시 결과에 이름을 붙여 아래 SELECT에서 읽게 합니다. 먼저 WITH ranked AS (SELECT 원본열, ROW_NUMBER() OVER (...) AS rn FROM raw_events)로 순번표를 만들고, 다음 줄 SELECT * FROM ranked WHERE rn = 1로 대표 행만 읽습니다. CTE는 여기서 실제 테이블을 수정하거나 새 파일을 만드는 명령이 아닙니다. 괄호 안 SELECT를 먼저 읽고, 바깥 SELECT를 읽으면 됩니다.",
+        "PARTITION BY event_id는 순번을 다시 1부터 매길 범위이고 GROUP BY처럼 원본 행을 줄이지 않습니다. 예를 들어 e01이 2행이면 두 행에 rn=1, rn=2가 붙고, 나중에 WHERE rn=1을 적용할 때 비로소 1행이 남습니다.",
+        "이 단원의 lifecycle 집계는 이벤트 연결을 배우는 단계입니다. 5초 안에 끝났는지, 충분히 관찰했는지는 아직 판단하지 않습니다. 종료 이벤트가 없으면 상태를 open으로 표시합니다."
+      ],
+      "goals": [
+        "사람 수·시도 수·이벤트 수·원시 행 수를 구분한다",
+        "재전송만 제거하고 정상 재시도는 보존한다",
+        "논리 이벤트를 시도별 lifecycle로 묶는다"
+      ],
+      "tables": {
+        "raw_events": {
+          "cols": [
+            "ingest_id",
+            "event_id",
+            "attempt_id",
+            "user_id",
+            "event_name",
+            "event_ts_ms",
+            "received_ts_ms"
+          ],
+          "types": [
+            "INTEGER",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "TEXT",
+            "INTEGER",
+            "INTEGER"
+          ],
+          "desc": [
+            "원시 수신 행의 고유 ID",
+            "논리 이벤트 ID, 재전송이면 반복",
+            "시도 ID, user_id와 함께 시도 식별",
+            "사용자 ID",
+            "click / ready / fail",
+            "이벤트 발생 시각(ms)",
+            "수집기가 받은 시각(ms)"
+          ],
+          "rows": [
+            [
+              1,
+              "e01",
+              "a01",
+              "u01",
+              "click",
+              1000,
+              1010
+            ],
+            [
+              2,
+              "e01",
+              "a01",
+              "u01",
+              "click",
+              1000,
+              1090
+            ],
+            [
+              3,
+              "e02",
+              "a01",
+              "u01",
+              "ready",
+              1700,
+              1710
+            ],
+            [
+              4,
+              "e03",
+              "a02",
+              "u01",
+              "click",
+              3000,
+              3010
+            ],
+            [
+              5,
+              "e04",
+              "a02",
+              "u01",
+              "fail",
+              3600,
+              3620
+            ],
+            [
+              6,
+              "e05",
+              "a03",
+              "u02",
+              "click",
+              5000,
+              5010
+            ],
+            [
+              7,
+              "e06",
+              "a03",
+              "u02",
+              "ready",
+              6200,
+              6230
+            ],
+            [
+              8,
+              "e06",
+              "a03",
+              "u02",
+              "ready",
+              6200,
+              6250
+            ],
+            [
+              9,
+              "e07",
+              "a04",
+              "u03",
+              "click",
+              7000,
+              7010
+            ]
+          ],
+          "fixtures": [
+            [
+              [
+                21,
+                "f08",
+                "b04",
+                "u13",
+                "click",
+                9000,
+                9020
+              ],
+              [
+                20,
+                "f07",
+                "b04",
+                "u12",
+                "click",
+                7000,
+                7020
+              ],
+              [
+                19,
+                "f06",
+                "b03",
+                "u12",
+                "fail",
+                5000,
+                5010
+              ],
+              [
+                18,
+                "f05",
+                "b03",
+                "u12",
+                "click",
+                4000,
+                4200
+              ],
+              [
+                17,
+                "f05",
+                "b03",
+                "u12",
+                "click",
+                4000,
+                4050
+              ],
+              [
+                16,
+                "f05",
+                "b03",
+                "u12",
+                "click",
+                4000,
+                4100
+              ],
+              [
+                15,
+                "f04",
+                "b02",
+                "u11",
+                "ready",
+                2800,
+                2810
+              ],
+              [
+                14,
+                "f04",
+                "b02",
+                "u11",
+                "ready",
+                2800,
+                2810
+              ],
+              [
+                13,
+                "f03",
+                "b02",
+                "u11",
+                "click",
+                2000,
+                2010
+              ],
+              [
+                12,
+                "f02",
+                "b01",
+                "u11",
+                "ready",
+                1000,
+                1010
+              ],
+              [
+                11,
+                "f01",
+                "b01",
+                "u11",
+                "click",
+                100,
+                120
+              ],
+              [
+                22,
+                "f09",
+                "1b01",
+                "u1",
+                "click",
+                50,
+                60
+              ],
+              [
+                23,
+                "f10",
+                "b01",
+                "u11",
+                "click",
+                200,
+                210
+              ],
+              [
+                24,
+                "f11",
+                "b01",
+                "u11",
+                "ready",
+                1200,
+                1210
+              ],
+              [
+                25,
+                "f12",
+                "b03",
+                "u12",
+                "fail",
+                5500,
+                5510
+              ]
+            ],
+            [
+              [
+                21,
+                "g01",
+                "c01",
+                "u21",
+                "click",
+                1000,
+                1020
+              ],
+              [
+                22,
+                "g02",
+                "c01",
+                "u21",
+                "fail",
+                1300,
+                1320
+              ],
+              [
+                23,
+                "g03",
+                "c02",
+                "u22",
+                "click",
+                2000,
+                2010
+              ],
+              [
+                24,
+                "g04",
+                "c02",
+                "u22",
+                "ready",
+                4200,
+                4210
+              ],
+              [
+                25,
+                "g05",
+                "c03",
+                "u23",
+                "click",
+                5000,
+                5010
+              ],
+              [
+                26,
+                "g06",
+                "c03",
+                "u23",
+                "ready",
+                5200,
+                5210
+              ],
+              [
+                27,
+                "g07",
+                "c04",
+                "u23",
+                "click",
+                8000,
+                8010
+              ],
+              [
+                28,
+                "g08",
+                "c04",
+                "u23",
+                "fail",
+                8200,
+                8210
+              ],
+              [
+                29,
+                "g08",
+                "c04",
+                "u23",
+                "fail",
+                8200,
+                8290
+              ],
+              [
+                30,
+                "g09",
+                "c05",
+                "u24",
+                "click",
+                10000,
+                10010
+              ],
+              [
+                31,
+                "g10",
+                "c06",
+                "u24",
+                "click",
+                12000,
+                12010
+              ],
+              [
+                32,
+                "g11",
+                "c06",
+                "u24",
+                "ready",
+                13000,
+                13010
+              ]
+            ],
+            [
+              [
+                8,
+                "f01",
+                "shared",
+                "uA",
+                "click",
+                100,
+                120
+              ],
+              [
+                2,
+                "f01",
+                "shared",
+                "uA",
+                "click",
+                100,
+                150
+              ],
+              [
+                7,
+                "f02",
+                "shared",
+                "uA",
+                "ready",
+                180,
+                200
+              ],
+              [
+                4,
+                "f02",
+                "shared",
+                "uA",
+                "ready",
+                180,
+                200
+              ],
+              [
+                9,
+                "f03",
+                "shared",
+                "uB",
+                "click",
+                300,
+                310
+              ],
+              [
+                10,
+                "f04",
+                "shared",
+                "uB",
+                "fail",
+                400,
+                410
+              ],
+              [
+                11,
+                "f05",
+                "again",
+                "uA",
+                "click",
+                500,
+                510
+              ],
+              [
+                12,
+                "f06",
+                "again",
+                "uA",
+                "click",
+                550,
+                560
+              ],
+              [
+                13,
+                "f06",
+                "again",
+                "uA",
+                "click",
+                550,
+                590
+              ]
+            ],
+            [
+              [
+                1,
+                "c1",
+                "bc",
+                "a",
+                "click",
+                100,
+                110
+              ],
+              [
+                2,
+                "c2",
+                "c",
+                "ab",
+                "click",
+                200,
+                210
+              ],
+              [
+                3,
+                "c3",
+                "c",
+                "a:b",
+                "click",
+                300,
+                310
+              ],
+              [
+                4,
+                "c4",
+                "b:c",
+                "a",
+                "click",
+                400,
+                410
+              ]
+            ],
+            [],
+            [
+              [
+                1,
+                "n1",
+                "first",
+                "uZ",
+                "click",
+                0,
+                1
+              ],
+              [
+                2,
+                "n2",
+                "first",
+                "uZ",
+                "ready",
+                0,
+                2
+              ],
+              [
+                3,
+                "n3",
+                "second",
+                "uZ",
+                "click",
+                100,
+                101
+              ],
+              [
+                4,
+                "n4",
+                "second",
+                "uZ",
+                "fail",
+                200,
+                201
+              ],
+              [
+                5,
+                "n5",
+                "third",
+                "uY",
+                "click",
+                300,
+                301
+              ]
+            ]
+          ]
+        }
+      },
+      "questions": [
+        {
+          "id": "B03-Q01",
+          "title": "사용자 목록 만들기",
+          "task": "raw_events에 한 번이라도 등장한 고유 user_id만 출력하세요. 사용자 오름차순으로 정렬하고 같은 사람이 여러 이벤트를 보내도 한 번만 표시하세요.",
+          "type": "sql",
+          "sql": "SELECT DISTINCT user_id FROM raw_events ORDER BY user_id;",
+          "hints": [
+            "SELECT DISTINCT는 선택한 열의 조합을 기준으로 중복을 제거합니다.",
+            "사람 목록을 구하므로 event_id나 attempt_id를 함께 선택하지 않습니다."
+          ],
+          "why": "이 결과는 사람 목록이지 정제된 이벤트 테이블이 아닙니다. 사람을 셀 때 만든 결과를 이벤트 분석의 원본으로 재사용하면 활동 기록이 사라집니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "SELECT는 보여 줄 열을 고른다. DISTINCT는 **선택한 열 조합**이 같은 결과를 하나만 남긴다. user_id만 선택하면 사용자 목록이고, user_id와 event_id를 함께 선택하면 사용자·이벤트 조합 목록이다. 중복을 없애는 목적부터 정한다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": []
+        },
+        {
+          "id": "B03-Q02",
+          "title": "시도 목록 만들기",
+          "task": "click이 기록된 고유 시도를 조회하세요. 출력 열 순서는 user_id, attempt_id이고 두 열 오름차순입니다. 같은 사용자의 다른 시도는 각각 남기고 재전송된 click은 한 시도로 표시하세요.",
+          "type": "sql",
+          "sql": "SELECT DISTINCT user_id, attempt_id FROM raw_events WHERE event_name = 'click' ORDER BY user_id, attempt_id;",
+          "hints": [
+            "WHERE event_name = 'click'로 시작 이벤트를 고릅니다.",
+            "DISTINCT user_id, attempt_id는 두 열의 조합이 같은 경우만 합칩니다."
+          ],
+          "why": "시도는 사용자의 반복 행동을 보존합니다. user_id만 DISTINCT하면 재시도를 잃고, event_id를 포함하면 한 시도에 여러 시작 이벤트가 있을 때 시도 목록의 의미가 달라집니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "한 사람이 다시 시도한 것은 보존한다. WHERE로 click을 고르고 DISTINCT user_id, attempt_id를 적용하면 시작 기록이 있는 시도 목록이 된다. 두 열을 문자열로 합칠 필요가 없다. `GROUP BY user_id, attempt_id`로 같은 목록을 구해도 된다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": []
+        },
+        {
+          "id": "B03-Q03",
+          "title": "재전송을 찾아내기",
+          "task": "원시 행이 2개 이상인 event_id만 찾으세요. 출력 열 순서는 event_id, 원시 행 수, 초과 재전송 행 수(원시 행 수−1)입니다. event_id 오름차순으로 정렬하세요.",
+          "type": "sql",
+          "sql": "SELECT event_id, COUNT(*) AS raw_rows, COUNT(*) - 1 AS extra_rows FROM raw_events GROUP BY event_id HAVING COUNT(*) >= 2 ORDER BY event_id;",
+          "hints": [
+            "먼저 event_id로 묶어 COUNT(*)를 계산합니다.",
+            "그룹의 개수 조건은 WHERE 대신 HAVING에 둡니다."
+          ],
+          "why": "중복 이벤트 그룹 수와 초과 수신 행 수는 다릅니다. 같은 이벤트가 세 번 오면 중복 그룹은 하나지만 제거할 초과 행은 두 개입니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "WHERE는 묶기 전의 원래 행을 고른다. GROUP BY는 같은 event_id를 한 묶음으로 만든다. HAVING은 그 묶음의 COUNT(*) 같은 집계 결과를 보고 묶음을 남길지 정한다.\n\n예를 들어 e01의 원시 행 2개를 묶으면 `e01, 2`가 되고, `HAVING COUNT(*) >= 2`가 이를 남긴다. 첫 도착 1행을 제외한 초과 수신은 `COUNT(*) - 1`이다. 같은 이벤트가 3번 도착하면 중복 이벤트 종류는 1개, 초과 수신 행은 2개다.\n\n작성 순서: SELECT → FROM → WHERE(필요할 때) → GROUP BY → HAVING → ORDER BY. 생각할 때는 원본에서 행을 고른 뒤 묶고, 묶음 조건을 확인한다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": [
+            {
+              "title": "필터 없이 그룹별 수부터 보기",
+              "sql": "SELECT event_id, COUNT(*) AS raw_rows FROM raw_events GROUP BY event_id ORDER BY event_id;",
+              "expected_shape": "기본 표에서 e01과 e06은 2, 다른 이벤트는 1. 다음에 HAVING을 추가합니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B03-Q04",
+          "title": "한 이벤트에 한 행만 남기기",
+          "task": "event_id별로 received_ts_ms가 가장 작은 원시 행 한 개를 남기세요. 수신 시각이 같으면 ingest_id가 가장 작은 행을 선택합니다. 출력 열 순서는 ingest_id, event_id, user_id, attempt_id, event_name, event_ts_ms, received_ts_ms이며 event_id 오름차순입니다.",
+          "type": "sql",
+          "sql": "WITH ranked AS (\n  SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn\n  FROM raw_events\n), clean AS (\n  SELECT * FROM ranked WHERE rn = 1\n)\nSELECT ingest_id, event_id, user_id, attempt_id, event_name, event_ts_ms, received_ts_ms FROM clean ORDER BY event_id;",
+          "hints": [
+            "ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id)로 각 이벤트의 순번을 만듭니다.",
+            "먼저 WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events)를 쓰고, 이어 SELECT 필요한열 FROM ranked WHERE rn = 1로 읽습니다."
+          ],
+          "why": "DISTINCT *는 수신 ID와 시각이 다른 재전송을 제거하지 못합니다. 보존할 대표 행을 결정하는 명시적인 규칙이 필요하며, 최종 동률 기준까지 있어야 재실행해도 결과가 같습니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "대표 행의 우선순위는 received_ts_ms가 작은 순서, 동률이면 ingest_id가 작은 순서다. ingest_id만 최소로 고르는 규칙이 아니다.\n\nROW_NUMBER()는 순번 열을 추가한다. `PARTITION BY event_id`는 같은 이벤트끼리 번호를 1부터 다시 매기는 기준이다. GROUP BY와 달리 이 단계에서는 행이 사라지지 않는다. WITH ranked AS (...)는 이 중간 결과에 ranked라는 이름을 붙인다. 원본 테이블을 수정하지 않는다.\n\n다음 조각을 먼저 실행해 순번을 본 뒤, 바깥 SELECT에서 rn=1인 행만 남겨 보자.\n\n```sql\nSELECT ingest_id, event_id, received_ts_ms,\n       ROW_NUMBER() OVER (\n         PARTITION BY event_id\n         ORDER BY received_ts_ms, ingest_id\n       ) AS rn\nFROM raw_events\nORDER BY event_id, rn;\n```\n\n기본 표의 e01은 ingest_id 1에 rn=1, 2에 rn=2가 붙고 e06은 7에 rn=1, 8에 rn=2가 붙는다. 전체는 아직 9행이다. 윈도 함수 안의 ORDER BY는 순번 기준이고 마지막 ORDER BY는 출력 순서다.\n\nAS rn은 추가한 순번 열의 이름입니다. rn은 안쪽 SELECT에서 만든 열이므로 여기서는 ranked라는 중간 결과를 만든 뒤 바깥 WHERE rn = 1에서 고릅니다. 같은 SELECT의 WHERE에 아직 만들어지지 않은 순번을 바로 쓰지 않습니다.\n\n중간 결과가 둘이면 WITH ranked AS (...), clean AS (...)처럼 쉼표로 이어 쓰고 마지막에 SELECT를 씁니다. WITH를 각각 다시 쓰거나 중간에 세미콜론으로 끊지 않습니다. ranked와 clean은 이 SQL 문 안에서 읽는 이름이며 다음 SQL 문까지 저장되는 표가 아닙니다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": [
+            {
+              "title": "순번을 붙여도 행은 줄지 않아요",
+              "sql": "SELECT ingest_id, event_id, received_ts_ms, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events ORDER BY event_id, rn;",
+              "expected_shape": "기본 표는 아직 9행. e01과 e06에 각각 1, 2가 붙습니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            },
+            {
+              "title": "이름을 붙인 중간 결과에서 1만 남기기",
+              "sql": "WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events) SELECT ingest_id, event_id, received_ts_ms, rn FROM ranked WHERE rn = 1 ORDER BY event_id;",
+              "expected_shape": "기본 표 7행. 이 작은 조각의 4열은 설명용이며 공식 답은 요청된 7열입니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B03-Q05",
+          "title": "시도 lifecycle 복원하기",
+          "task": "앞 문제의 규칙으로 이벤트를 정제한 뒤, 시도별로 user_id, attempt_id, click 시각, ready 시각, fail 시각, 상태를 출력하세요. 각 시각은 그 종류의 최소 event_ts_ms이고 없으면 NULL입니다. 이 데이터는 모든 시도에 click이 있으며 ready와 fail이 함께 존재하지 않습니다. 상태는 ready가 있으면 success, fail이 있으면 fail, 둘 다 없으면 open입니다. user_id, attempt_id 오름차순으로 정렬하세요. 출력 시각의 별칭은 click_at_ms, ready_at_ms, fail_at_ms를 권장합니다. B02의 ready_ms(소요시간)와 달리 여기서는 발생 시각입니다.",
+          "type": "sql",
+          "sql": "WITH ranked AS (\n  SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn\n  FROM raw_events\n), clean AS (\n  SELECT * FROM ranked WHERE rn = 1\n)\nSELECT user_id, attempt_id,\n       MIN(CASE WHEN event_name = 'click' THEN event_ts_ms END) AS click_at_ms,\n       MIN(CASE WHEN event_name = 'ready' THEN event_ts_ms END) AS ready_at_ms,\n       MIN(CASE WHEN event_name = 'fail' THEN event_ts_ms END) AS fail_at_ms,\n       CASE WHEN MAX(CASE WHEN event_name = 'ready' THEN 1 ELSE 0 END) = 1 THEN 'success'\n            WHEN MAX(CASE WHEN event_name = 'fail' THEN 1 ELSE 0 END) = 1 THEN 'fail'\n            ELSE 'open' END AS lifecycle_status\nFROM clean GROUP BY user_id, attempt_id ORDER BY user_id, attempt_id;",
+          "hints": [
+            "MIN(CASE WHEN event_name = ... THEN event_ts_ms END)은 해당 종류가 없으면 NULL입니다.",
+            "GROUP BY에는 user_id와 attempt_id를 모두 사용하고 상태는 이벤트 존재 여부로 만듭니다."
+          ],
+          "why": "같은 사용자의 첫 click과 마지막 ready를 바로 묶으면 다른 시도가 이어질 수 있습니다. 먼저 같은 시도에 속한 이벤트를 모아야 하며, open은 실패 확정과 구분해야 합니다. 이 결과의 ready_at_ms는 준비 시각입니다. 걸린 시간은 ready_at_ms - click_at_ms이며, 이번 문제는 소요시간 계산을 요구하지 않습니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "한 시도 안의 이벤트를 한 행으로 모으는 작업이다. 먼저 Q04의 정제 결과를 만든다. 그 뒤 `(user_id, attempt_id)`로 묶는다.\n\n`CASE WHEN event_name='ready' THEN event_ts_ms END`는 ready의 시각만 남기고 다른 종류에는 NULL을 준다. ELSE를 생략한 CASE의 나머지 결과가 NULL이다. MIN은 이 값 중 가장 이른 것을 고르고, ready가 하나도 없으면 NULL이 된다. 시각 0은 가능한 값이므로 없는 시각을 0으로 바꾸지 않는다.\n\n예를 들어 u01/a01의 정제된 두 행을 보면 다음과 같다.\n\n| event_name | event_ts_ms | CASE로 남긴 ready 시각 |\n|---|---|---|\n| click | 1000 | NULL |\n| ready | 1700 | 1700 |\n\n이 열의 MIN은 1700이다. ready의 존재를 확인하려면 `CASE WHEN event_name='ready' THEN 1 ELSE 0 END`의 MAX를 쓸 수 있다. 1이 하나라도 있으면 MAX는 1이다. ready가 있으면 success, 그렇지 않고 fail이 있으면 fail, 둘 다 없으면 open이다.\n\n**시각과 소요시간:** 여기서 ready_at_ms는 준비 시각이다. B02의 ready_ms는 소요시간이었다. u01/a01의 준비 시각은 1700ms이고 걸린 시간은 1700−1000=700ms다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": [
+            {
+              "title": "한 시도의 정제된 이벤트만 보기",
+              "sql": "WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events), clean AS (SELECT * FROM ranked WHERE rn = 1) SELECT user_id, attempt_id, event_name, event_ts_ms FROM clean WHERE user_id = 'u01' AND attempt_id = 'a01';",
+              "expected_shape": "기본 표의 click 1000, ready 1700 두 행",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            },
+            {
+              "title": "CASE가 남기는 값 관찰하기",
+              "sql": "WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events), clean AS (SELECT * FROM ranked WHERE rn = 1) SELECT user_id, attempt_id, event_name, CASE WHEN event_name = 'ready' THEN event_ts_ms END AS ready_at_ms FROM clean;",
+              "expected_shape": "ready 행은 발생 시각, 나머지는 NULL. ELSE를 생략하면 NULL입니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            },
+            {
+              "title": "한 종류부터 시도별로 모으기",
+              "sql": "WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events), clean AS (SELECT * FROM ranked WHERE rn = 1) SELECT user_id, attempt_id, MIN(CASE WHEN event_name = 'ready' THEN event_ts_ms END) AS ready_at_ms FROM clean GROUP BY user_id, attempt_id;",
+              "expected_shape": "기본 표는 시도별 4행. 준비된 시도는 시각, 미관측 시도는 NULL입니다.",
+              "counts_toward_progress": false,
+              "execution_mode": "preview_only_no_progress_write"
+            }
+          ]
+        },
+        {
+          "id": "B03-Q06",
+          "title": "네 가지 개수 나란히 보기",
+          "task": "전체 원시 행 수, 고유 논리 이벤트 수, 고유 시도 수, 고유 사용자 수를 이 순서로 1행에 출력하세요. 시도는 (user_id, attempt_id) 조합입니다. 문자열 이어 붙이기 대신 DISTINCT 두 열의 서브쿼리로 시도 수를 구해 보세요.",
+          "type": "sql",
+          "sql": "SELECT COUNT(*) AS raw_rows,\n       COUNT(DISTINCT event_id) AS logical_events,\n       (SELECT COUNT(*) FROM (SELECT DISTINCT user_id, attempt_id FROM raw_events)) AS attempts,\n       COUNT(DISTINCT user_id) AS users\nFROM raw_events;",
+          "hints": [
+            "COUNT(DISTINCT event_id)는 논리 이벤트를 세지만 사람 수는 아닙니다.",
+            "두 열의 조합 개수는 SELECT DISTINCT user_id, attempt_id 결과를 바깥 COUNT(*)로 셉니다."
+          ],
+          "why": "일반적으로 원시 행 ≥ 논리 이벤트 ≥ 시도 ≥ 사용자이지만 이것이 모든 데이터의 법칙은 아닙니다. 지금은 한 시도에 click이 있고 각 이벤트가 정확히 한 시도에 속한다는 데이터 계약 아래에서 성립합니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "전체 수신 행, 논리 이벤트, 시도, 사용자 ID는 세는 대상이 다르다. 먼저 Q02처럼 고유 시도 목록을 만든 뒤 그 결과의 행 수를 세면 된다.\n\n```sql\nSELECT COUNT(*)\nFROM (\n  SELECT DISTINCT user_id, attempt_id\n  FROM raw_events\n);\n```\n\n괄호 안 SELECT는 중간 표이며 바깥 COUNT(*)가 그 행을 센다. 이번 정상 데이터는 모든 시도에 click이 있으므로 이 시도 집합과 Q02의 시작 시도 집합이 같다. 이 한 값짜리 SELECT를 바깥 출력 열 하나로 사용할 수도 있다. 이를 스칼라 서브쿼리라고 한다.\n\nCOUNT(DISTINCT user_id || attempt_id)는 `(a, bc)`와 `(ab, c)`를 같은 abc로 만들 수 있다. 구분자도 ID에 들어갈 수 있다면 안전하지 않다. 두 열을 그대로 DISTINCT한다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": []
+        },
+        {
+          "id": "B03-Q07",
+          "title": "사용자 기준으로 한 줄만 남겼다면",
+          "task": "한 동료가 “중복이 많다”며 user_id별로 가장 최근 원시 행 하나만 남겼습니다. 재전송 제거 방식으로 왜 잘못됐는지, 어떤 키로 무엇을 제거해야 하는지 설명하세요.",
+          "type": "reflection",
+          "hints": [
+            "먼저 결과 한 행이 무엇을 대표하는지 말로 적어 보세요.",
+            "분자·분모, 빠지는 행, 아직 알 수 없는 값을 구분해 보세요."
+          ],
+          "why": "중복 제거는 “무엇이 동일한 것인가”라는 분석 단위를 먼저 정한 다음에 실행해야 합니다.",
+          "checklist": [
+            "한 사용자의 정상적인 여러 시도와 이벤트가 사라짐을 설명한다",
+            "재전송은 event_id로 제거해야 함을 쓴다",
+            "시도 분석은 user_id와 attempt_id 조합을 보존함을 쓴다"
+          ],
+          "solution": "같은 사용자의 click, ready, fail과 정상 재시도는 중복이 아닙니다. 재전송만 event_id별로 한 행을 남기고, 시도 분석에는 (user_id, attempt_id)를 사용합니다. 사용자 수를 계산할 때만 user_id의 중복을 제거합니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "중복은 데이터의 모양만 보고 정하지 않는다. 이번 결과 한 행이 사용자·시도·이벤트 중 무엇이어야 하는지 먼저 말한다. 사용자 목록은 사람 단위의 수를 계산할 때 유용하지만 이벤트의 원본을 대신하지는 않는다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": []
+        },
+        {
+          "id": "B03-Q08",
+          "title": "같은 event_id의 내용이 다르다면",
+          "task": "같은 event_id인데 한 행은 ready, 다른 행은 fail이라면 지금의 “먼저 수신된 행 보존” 규칙만으로 충분할까요? 추가로 확인할 내용과 안전한 처리 방향을 적으세요.",
+          "type": "reflection",
+          "hints": [
+            "먼저 결과 한 행이 무엇을 대표하는지 말로 적어 보세요.",
+            "분자·분모, 빠지는 행, 아직 알 수 없는 값을 구분해 보세요."
+          ],
+          "why": "중복 제거 규칙이 기술적으로 실행된다는 것과 의미적으로 올바르다는 것은 다릅니다.",
+          "checklist": [
+            "같은 event_id의 payload 불변 계약 위반임을 말한다",
+            "충돌 행을 별도로 집계하거나 격리한다",
+            "수집·클라이언트 구현 또는 ID 생성 규칙을 조사한다"
+          ],
+          "solution": "충분하지 않습니다. 재전송은 같은 논리 이벤트의 동일한 payload라는 전제가 깨졌습니다. 충돌 event_id를 별도 품질 오류로 기록하거나 격리하고, 원본과 수집 로그를 보존한 채 ID 재사용 또는 구현 오류를 조사해야 합니다. 먼저 온 값이 진실이라고 자동으로 단정하면 안 됩니다.",
+          "tables": [
+            "raw_events"
+          ],
+          "theory": "Q04의 첫 수신 보존 규칙은 같은 event_id의 내용이 같다는 계약 위에서만 안전하게 의미를 해석할 수 있다. 같은 ID에 ready와 fail이 함께 있으면 무엇이 실제인지 수신 순서만으로 증명되지 않는다. 실행 성공과 데이터 신뢰성은 다른 문제다.",
+          "theoryTitle": "먼저 이해할 것",
+          "smallSteps": []
+        }
+      ],
+      "source": "supplied-v3"
+    }
+  ],
+  "feedback": {
+    "syntax_error": "SQL을 실행하지 못했어요. 표시된 위치의 철자, 쉼표, 괄호를 하나씩 살펴볼까요? 생각한 방법은 그대로 두고 문법부터 고쳐도 괜찮아요.",
+    "result_mismatch": "실행은 됐어요. 결과 한 행의 뜻과 세려던 대상을 먼저 확인해 볼까요? 원본 표와 결과를 나란히 보며 한 부분씩 바꿔도 괜찮아요.",
+    "correct": "이번 검증 데이터에서 결과가 맞아요. 어떤 행을 남겼고 무엇을 셌는지 짧게 설명해 보면 더 분명해져요.",
+    "hint": "필요하면 힌트나 예시 답을 펼쳐 보세요. 보고 따라 실행하는 것도 연습이에요.",
+    "pause": "여기까지 하고 나중에 이어가도 괜찮아요. 정해진 시간 안에 모두 끝낼 필요는 없어요.",
+    "reflection": "정답 문장과 똑같이 쓸 필요는 없어요. 본인의 말로 이유를 적고 점검 항목과 비교해 보세요."
+  },
+  "content_patch_source_sha256": "ad328f008de6f0f6594f0e30657c0e66ccf17424ae049fcc58372efb6cc4c59c",
+  "content_patch_check": "HTML source hash differs; all 3 lesson table snapshots and all 29 exact question IDs checked before named-key merge.",
+  "content_patch_version": "1",
+  "content_patch_zip_sha256": "f8520aa7be9f6be06c02a0a267ed338d6a414a441fb778a3826a8fb9734cdf32"
+}

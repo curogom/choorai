@@ -11,7 +11,7 @@ import MetaBadge from '../../../../../components/MetaBadge';
 import PageNavigation from '../../../../../components/PageNavigation.astro';
 
 const steps = [
-  { label: 'Preparation', status: 'completed' as const },
+  { label: 'Preparation', status: 'previous' as const },
   { label: 'Frontend', status: 'current' as const },
   { label: 'Backend', status: 'upcoming' as const },
   { label: 'Connect', status: 'upcoming' as const },
@@ -38,7 +38,7 @@ const checklist = [
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="Breadcrumb">
       <a href="/en" class="hover:text-white transition-colors">Home</a>
       <span>/</span>
-      <a href="/en/start/60min" class="hover:text-white transition-colors">60-Min Challenge</a>
+      <a href="/en/path/60min" class="hover:text-white transition-colors">60-Min Challenge</a>
       <span>/</span>
       <span class="text-text-secondary">Frontend</span>
       <span>/</span>
@@ -148,7 +148,7 @@ npm install`}
         <CodeBlock
           client:load
           code={`# Install Tailwind
-npm install -D tailwindcss postcss autoprefixer
+npm install -D tailwindcss@3.4.19 postcss autoprefixer
 
 # Generate config files
 npx tailwindcss init -p`}

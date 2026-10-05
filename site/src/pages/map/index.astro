@@ -133,6 +133,18 @@ const row1Nodes = MAP_NODES.filter((n) => n.row === 1).sort((a, b) => b.order - 
       </div>
     </div>
 
+    <!-- Standalone browser project, with its own progress and honest local-only scope -->
+    <section class="mt-12 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 to-surface p-6 sm:p-8">
+      <div class="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div>
+          <p class="text-sm font-bold text-primary">첫 프로젝트 · 별도 진도</p>
+          <h2 class="mt-1 text-xl font-bold text-white">메모 웹앱을 직접 완성해 보세요</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-text-secondary">화면 제목을 바꾸고, 메모를 추가하고, 브라우저에 저장하는 네 단계를 따라갑니다. 설치·계정·API 키 없이 무료로 연습하며, 기존 8단계 로드맵 진도와는 별도로 기록합니다.</p>
+        </div>
+        <a href="/project/memo/" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-background hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background">프로젝트 시작 <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
     <!-- 빠른 시작 CTA -->
     <div class="mt-12 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20 text-center">
       <h2 class="text-lg font-bold text-white mb-2">처음이신가요?</h2>

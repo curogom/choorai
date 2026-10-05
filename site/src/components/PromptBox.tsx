@@ -86,7 +86,7 @@ export default function PromptBox({
             onClick={handleCopy}
             className="
               flex items-center gap-2
-              bg-accent-purple hover:bg-accent-purple-hover
+              bg-purple-700 hover:bg-purple-800
               text-white px-5 py-2.5 rounded-lg
               font-bold text-sm transition-all hover:scale-105
               shadow-lg shadow-accent-purple/20

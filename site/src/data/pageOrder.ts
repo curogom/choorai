@@ -1,3 +1,4 @@
+import { getChallengePath, type ChallengeTracks } from './challengePath';
 import type { Lang } from '../i18n/ui';
 
 export interface PageInfo {
@@ -229,7 +230,17 @@ export const PAGE_ORDER: PageInfo[] = PAGE_PATHS.map((path) => ({
   title: PAGE_TITLES_KO[path] || path,
 }));
 
-export function getNavigation(currentPath: string, lang: Lang = 'ko') {
+export function getNavigation(currentPath: string, lang: Lang = 'ko', tracks?: ChallengeTracks) {
+  const challenge = getChallengePath(tracks);
+  const challengeIndex = currentPath === '/path/60min' ? 0
+    : currentPath.startsWith('/start/60min/frontend/') ? 1
+    : currentPath.startsWith('/start/60min/backend/') ? 2
+    : challenge.indexOf(currentPath);
+  if (challengeIndex >= 0) {
+    const titles = PAGE_TITLES[lang];
+    const page = (path: string): PageInfo => ({ path, title: titles[path] || path });
+    return { prev: challengeIndex > 0 ? page(challenge[challengeIndex - 1]) : null, next: challengeIndex < challenge.length - 1 ? page(challenge[challengeIndex + 1]) : null };
+  }
   const idx = PAGE_PATHS.findIndex((p) => p === currentPath);
   if (idx === -1) return { prev: null, next: null };
 

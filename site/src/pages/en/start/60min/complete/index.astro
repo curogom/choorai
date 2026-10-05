@@ -1,25 +1,8 @@
 ---
 import DocsLayout from '../../../../../layouts/DocsLayout.astro';
-import Stepper from '../../../../../components/Stepper';
-import ChallengeProgressBar from '../../../../../components/ChallengeProgressBar';
+import ChallengeCompletionSummary from '../../../../../components/ChallengeCompletionSummary';
 import Callout from '../../../../../components/Callout';
 import PageNavigation from '../../../../../components/PageNavigation.astro';
-
-const steps = [
-  { label: 'Preparation', status: 'completed' as const },
-  { label: 'Frontend', status: 'completed' as const },
-  { label: 'Backend', status: 'completed' as const },
-  { label: 'Connect', status: 'completed' as const },
-  { label: 'Deploy', status: 'completed' as const },
-  { label: 'Complete', status: 'current' as const },
-];
-
-const achievements = [
-  { icon: '🎨', title: 'React Frontend', description: 'Modern UI with Vite + Tailwind' },
-  { icon: '⚡', title: 'FastAPI Backend', description: 'REST API built with Python' },
-  { icon: '🔗', title: 'API Integration', description: 'State management with TanStack Query' },
-  { icon: '🚀', title: 'Deployed', description: 'Published on Cloudflare Pages' },
-];
 
 const nextSteps = [
   {
@@ -51,70 +34,12 @@ const nextSteps = [
 
 <DocsLayout
   lang="en"
-  title="60-Minute Challenge - Congratulations!"
-  description="You've completed your first web service deployment"
+  title="60-Minute Path · Actual Progress"
+  description="Review completion marks saved in the 60-minute browser checklist"
   currentPath="/start/60min/complete"
 >
   <div class="max-w-4xl mx-auto px-6 py-8">
-    <!-- Progress -->
-    <div class="mb-8 p-4 bg-surface rounded-xl border border-border">
-      <ChallengeProgressBar client:load />
-    </div>
-
-    <!-- Step Indicator -->
-    <div class="mb-12">
-      <Stepper client:load steps={steps} locale="en" />
-    </div>
-
-    <!-- Congratulations Header -->
-    <header class="text-center mb-12">
-      <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent-purple mb-6">
-        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <h1 class="text-4xl md:text-5xl font-black text-white mb-4">
-        Congratulations!
-      </h1>
-      <p class="text-xl text-text-secondary max-w-2xl mx-auto">
-        Even with zero coding experience, you built and deployed your
-        <strong class="text-primary">first web service</strong> with the help of AI.
-      </p>
-    </header>
-
-    <!-- Achievement Cards -->
-    <section class="mb-12">
-      <h2 class="text-xl font-bold text-white mb-6 text-center">What You Built Today</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {achievements.map((item) => (
-          <div class="bg-surface border border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors">
-            <div class="text-3xl mb-2">{item.icon}</div>
-            <h3 class="font-bold text-white text-sm mb-1">{item.title}</h3>
-            <p class="text-text-secondary text-xs">{item.description}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <!-- Stats -->
-    <section class="mb-12">
-      <div class="bg-gradient-to-r from-primary/10 to-accent-purple/10 rounded-2xl border border-primary/20 p-8">
-        <div class="grid grid-cols-3 gap-6 text-center">
-          <div>
-            <div class="text-4xl font-black text-primary">6</div>
-            <div class="text-sm text-text-secondary">Steps Completed</div>
-          </div>
-          <div>
-            <div class="text-4xl font-black text-primary">2</div>
-            <div class="text-sm text-text-secondary">Services Built</div>
-          </div>
-          <div>
-            <div class="text-4xl font-black text-primary">1</div>
-            <div class="text-sm text-text-secondary">Deployed URL</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <ChallengeCompletionSummary client:load locale="en" />
 
     <!-- Next Steps -->
     <section class="mb-12">
@@ -156,38 +81,6 @@ const nextSteps = [
             </svg>
           </a>
         ))}
-      </div>
-    </section>
-
-    <!-- Share -->
-    <section class="mb-12">
-      <div class="bg-surface border border-border rounded-2xl p-8 text-center">
-        <h2 class="text-xl font-bold text-white mb-4">Share Your Achievement!</h2>
-        <p class="text-text-secondary mb-6">
-          Show off completing your first web service deployment. Your story can inspire others.
-        </p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <a
-            href="https://twitter.com/intent/tweet?text=I had zero coding experience but deployed my first web service with the help of AI! 🚀%0A%0ACompleted the @choorai_com 60-Minute Challenge!&url=https://choorai.com/start/60min"
-            target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-[#1DA1F2] text-white rounded-lg font-medium hover:bg-[#1a8cd8] transition-colors no-underline"
-          >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-            </svg>
-            Share on Twitter
-          </a>
-          <a
-            href="https://github.com/choorai/examples"
-            target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors no-underline"
-          >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-            View Example Code
-          </a>
-        </div>
       </div>
     </section>
 

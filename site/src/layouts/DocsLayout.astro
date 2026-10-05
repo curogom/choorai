@@ -110,7 +110,10 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
 ---
 
 <BaseLayout title={title} description={description} lang={lang} structuredData={allStructuredData}>
-  <div class="min-h-screen flex flex-col">
+  <div id="docs-page-shell" class="min-h-screen flex flex-col">
+    <a id="docs-skip-link" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-2 focus:z-[120] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:font-bold focus:text-background" href="#docs-main">
+      {lang === 'en' ? 'Skip to main content' : '본문으로 바로가기'}
+    </a>
     <!-- 헤더 -->
     <header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,6 +124,9 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
               id="mobile-menu-trigger"
               class="lg:hidden p-2 -ml-2 text-text-secondary hover:text-white transition-colors"
               aria-label={t('layout.menuOpen')}
+              aria-controls="mobile-sidebar"
+              aria-expanded="false"
+              type="button"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -140,6 +146,9 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
               id="search-trigger"
               class="hidden md:flex items-center h-9 w-64 rounded-lg border border-border bg-surface px-3 hover:border-primary/50 transition-colors cursor-pointer"
               aria-label={t('layout.searchOpen')}
+              aria-controls="search-modal"
+              aria-expanded="false"
+              type="button"
             >
               <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -174,6 +183,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
               {section.groups?.map((group) => (
                 <NavGroup
                   client:load
+                  idPrefix="desktop"
                   title={group.title}
                   items={group.items}
                   currentPath={currentPathLocalized}
@@ -198,6 +208,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
                               : 'text-text-secondary hover:text-white hover:bg-surface'
                             }
                           `}
+                          aria-current={currentPathLocalized === item.href ? 'page' : undefined}
                         >
                           <span>{item.label}</span>
                           {item.badge && (
@@ -217,7 +228,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
       </aside>
 
       <!-- 메인 콘텐츠 -->
-      <main class="flex-1 min-w-0">
+      <main id="docs-main" class="flex-1 min-w-0" tabindex="-1">
         <slot />
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="mt-10 mb-6 pt-6 border-t border-border/70">
@@ -256,12 +267,12 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
   </div>
 
   <!-- 모바일 사이드바 -->
-  <div id="mobile-sidebar" class="fixed inset-0 z-[90] lg:hidden hidden" role="dialog" aria-modal="true" aria-label={t('layout.navMenu')}>
+  <div id="mobile-sidebar" class="fixed inset-0 z-[90] lg:hidden hidden" role="dialog" aria-modal="true" aria-label={t('layout.navMenu')} tabindex="-1">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="mobile-overlay" aria-hidden="true"></div>
     <div class="absolute top-0 left-0 w-72 h-full bg-background border-r border-border shadow-2xl transform transition-transform duration-300" id="mobile-drawer">
       <div class="flex items-center justify-between h-14 px-4 border-b border-border">
         <span class="text-lg font-bold">{t('layout.menu')}</span>
-        <button id="mobile-menu-close" class="p-2 text-text-secondary hover:text-white transition-colors" aria-label={t('layout.menuClose')}>
+        <button id="mobile-menu-close" type="button" class="p-2 text-text-secondary hover:text-white transition-colors" aria-label={t('layout.menuClose')}>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -276,6 +287,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
             {section.groups?.map((group) => (
               <NavGroup
                 client:load
+                idPrefix="mobile"
                 title={group.title}
                 items={group.items}
                 currentPath={currentPathLocalized}
@@ -297,6 +309,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
                             : 'text-text-secondary hover:text-white hover:bg-surface'
                           }
                         `}
+                        aria-current={currentPathLocalized === item.href ? 'page' : undefined}
                       >
                         <span>{item.label}</span>
                         <span class="flex items-center gap-1">
@@ -336,9 +349,12 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
   </div>
 
   <!-- 검색 모달 -->
-  <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label={t('layout.search')}>
+  <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label={t('layout.search')} tabindex="-1">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="search-overlay" aria-hidden="true"></div>
     <div class="relative max-w-2xl mx-auto mt-20 bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
+      <button id="search-close" type="button" class="absolute right-3 top-3 z-10 rounded-lg border border-border bg-surface px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-primary" aria-label={lang === 'en' ? 'Close search' : '검색 닫기'}>
+        {lang === 'en' ? 'Close' : '닫기'}
+      </button>
       <div class="p-4">
         <div id="pagefind-container"></div>
       </div>
@@ -348,6 +364,54 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
   <script define:vars={{ searchPlaceholder: t('layout.searchPlaceholder'), searchNoResults: t('layout.searchNoResults'), searchResults: t('layout.searchResults'), searchOneResult: t('layout.searchOneResult') }}>
     // Pagefind 초기화 (lazy loading)
     let pagefindLoaded = false;
+    const shell = document.getElementById('docs-page-shell');
+    const modal = document.getElementById('search-modal');
+    const searchTrigger = document.getElementById('search-trigger');
+    const searchOverlay = document.getElementById('search-overlay');
+    const searchClose = document.getElementById('search-close');
+    const mobileSidebar = document.getElementById('mobile-sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    const mobileTrigger = document.getElementById('mobile-menu-trigger');
+    const mobileClose = document.getElementById('mobile-menu-close');
+    let searchOpener = null;
+    let previousOverflow = '';
+
+    function isVisible(element) { return Boolean(element && !element.classList.contains('hidden')); }
+
+    function lockBackground() {
+      if (!isVisible(modal) && !isVisible(mobileSidebar)) previousOverflow = document.body.style.overflow;
+      if (shell) shell.inert = true;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function unlockBackground() {
+      if (isVisible(modal) || isVisible(mobileSidebar)) return;
+      if (shell) shell.inert = false;
+      document.body.style.overflow = previousOverflow;
+    }
+
+    function modalFocusables(container) {
+      return Array.from(container?.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])') || [])
+        .filter((element) => !element.closest('[inert]') && element.getClientRects().length > 0);
+    }
+
+    function trapModalFocus(event, container) {
+      if (event.key !== 'Tab' || !isVisible(container)) return;
+      const items = modalFocusables(container);
+      if (items.length === 0) { event.preventDefault(); container?.focus(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === container || !container?.contains(document.activeElement))) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === container || !container?.contains(document.activeElement))) {
+        event.preventDefault(); first.focus();
+      }
+    }
+
+    function focusSearchInput() {
+      const input = document.querySelector('.pagefind-ui__search-input');
+      if (input && isVisible(modal)) input.focus();
+    }
 
     async function initSearch() {
       if (pagefindLoaded) return;
@@ -384,6 +448,7 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
             showImages: false,
             translations: { placeholder: searchPlaceholder, zero_results: searchNoResults, many_results: searchResults, one_result: searchOneResult }
           });
+          setTimeout(focusSearchInput, 0);
         };
         document.head.appendChild(script);
       } catch (e) {
@@ -391,43 +456,70 @@ const allStructuredData = [...docsStructuredData, ...pageStructuredData];
       }
     }
 
-    // 모달 열기/닫기
-    const modal = document.getElementById('search-modal');
-    const trigger = document.getElementById('search-trigger');
-    const overlay = document.getElementById('search-overlay');
-
     function openSearch() {
+      if (isVisible(modal)) { focusSearchInput(); return; }
+      searchOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      closeMobileMenu(false);
+      lockBackground();
       modal?.classList.remove('hidden');
+      searchTrigger?.setAttribute('aria-expanded', 'true');
+      modal?.focus();
       initSearch();
-      setTimeout(() => (document.querySelector('.pagefind-ui__search-input'))?.focus(), 100);
+      setTimeout(focusSearchInput, 100);
     }
-    function closeSearch() { modal?.classList.add('hidden'); }
-
-    trigger?.addEventListener('click', openSearch);
-    overlay?.addEventListener('click', closeSearch);
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-      if (e.key === 'Escape') { closeSearch(); closeMobileMenu(); }
-    });
-
-    // 모바일 메뉴 열기/닫기
-    const mobileSidebar = document.getElementById('mobile-sidebar');
-    const mobileOverlay = document.getElementById('mobile-overlay');
-    const mobileTrigger = document.getElementById('mobile-menu-trigger');
-    const mobileClose = document.getElementById('mobile-menu-close');
+    function closeSearch(restoreFocus = true) {
+      if (!isVisible(modal)) return;
+      modal?.classList.add('hidden');
+      searchTrigger?.setAttribute('aria-expanded', 'false');
+      unlockBackground();
+      if (restoreFocus) {
+        const openerIsUsable = searchOpener && searchOpener !== document.body && searchOpener !== document.documentElement && searchOpener.isConnected && searchOpener.getClientRects().length > 0;
+        const fallback = openerIsUsable ? searchOpener
+          : searchTrigger && searchTrigger.getClientRects().length > 0 ? searchTrigger
+            : mobileTrigger && mobileTrigger.getClientRects().length > 0 ? mobileTrigger
+              : document.getElementById('docs-skip-link');
+        fallback?.focus();
+      }
+    }
 
     function openMobileMenu() {
+      if (isVisible(mobileSidebar)) { mobileClose?.focus(); return; }
+      closeSearch(false);
+      lockBackground();
       mobileSidebar?.classList.remove('hidden');
+      mobileTrigger?.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      mobileClose?.focus();
     }
-    function closeMobileMenu() {
+    function closeMobileMenu(restoreFocus = true) {
+      if (!isVisible(mobileSidebar)) return;
       mobileSidebar?.classList.add('hidden');
-      document.body.style.overflow = '';
+      mobileTrigger?.setAttribute('aria-expanded', 'false');
+      unlockBackground();
+      if (restoreFocus) mobileTrigger?.focus();
     }
 
+    searchTrigger?.addEventListener('click', openSearch);
+    searchOverlay?.addEventListener('click', () => closeSearch());
+    searchClose?.addEventListener('click', () => closeSearch());
     mobileTrigger?.addEventListener('click', openMobileMenu);
     mobileClose?.addEventListener('click', closeMobileMenu);
     mobileOverlay?.addEventListener('click', closeMobileMenu);
+
+    document.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        openSearch();
+        return;
+      }
+      if (event.key === 'Escape') {
+        if (isVisible(modal)) closeSearch();
+        else if (isVisible(mobileSidebar)) closeMobileMenu();
+        return;
+      }
+      if (isVisible(modal)) trapModalFocus(event, modal);
+      else if (isVisible(mobileSidebar)) trapModalFocus(event, mobileSidebar);
+    });
 
     // 사이드바에서 현재 활성 항목으로 스크롤
     const sidebar = document.getElementById('sidebar');

@@ -1,0 +1,51 @@
+{
+  "id": "memo-first-webapp",
+  "version": 2,
+  "title": {"ko":"메모 앱 코드 고치기","en":"Fix and extend a notes app"},
+  "goal": {"ko":"교육용 Choorai Steps 문법으로 조건 분기를 고치고, 입력 이벤트 기능을 추가해 실제 미리보기 동작을 바꿉니다.","en":"Use the educational Choorai Steps language to fix a condition and add an input-event feature that changes the live preview."},
+  "estimatedMinutes": 18,
+  "environment": {
+    "requirements": {"ko":["브라우저만 있으면 됩니다.","설치·계정·API 키가 필요하지 않습니다."],"en":["A web browser is enough.","No install, account, or API key is required."]},
+    "cost": {"ko":"무료 · 브라우저 안에서만 동작","en":"Free · runs in this browser"},
+    "scope": {"ko":"편집기는 JavaScript/HTML이 아닌 제한된 교육용 규칙 문법을 실행합니다. 정해진 조건과 명령만 해석하고 DOM·네트워크·계정·API에는 접근하지 않습니다.","en":"The editor runs a restricted educational rule language, not JavaScript or HTML. It interprets only fixed conditions and commands and cannot access the DOM, network, accounts, or APIs."}
+  },
+  "startingFile": {
+    "name":"memo.choorai",
+    "starterTitle":"나의 메모",
+    "contents":"note_limit: 160\non add:\n  if note is not empty:\n    show empty_note_error\n  else:\n    add note to list"
+  },
+  "steps": [
+    {
+      "id":"run-starter","kind":"run","time":"3분",
+      "title":{"ko":"시작 코드 실행하기","en":"Run the starter code"},
+      "goal":{"ko":"메모 추가 이벤트와 조건 분기가 실행되는 순서를 관찰합니다.","en":"Observe how the add event and condition branch run."},
+      "action":{"ko":"시작 코드를 실행해 글자가 있는 메모를 넣어 봅니다. 현재 코드는 잘못된 안내를 보여 주는 버그가 있습니다.","en":"Run the starter with a non-empty note. The current code has a bug and shows the wrong message."},
+      "expected":{"ko":"메모가 목록에 추가되는 대신 빈 메모 안내가 나타납니다. 다음 단계에서 조건을 고칩니다.","en":"A blank-note message appears instead of adding the note. You will fix the condition next."},
+      "hint":{"ko":"`on add` 아래에서 `if` 조건이 참이면 `show`가 실행되고, 아니면 `else`의 명령이 실행됩니다.","en":"Under `on add`, the `show` command runs when the `if` condition is true; otherwise the `else` command runs."},
+      "recovery":{"ko":"실행 결과가 보이지 않으면 ‘시작 코드 실행’ 버튼을 다시 누르세요.","en":"If you do not see a result, select “Run starter” again."},
+      "verification":{"type":"runtime-observation","rule":"the known starter bug is observed by running the interpreter"}
+    },
+    {
+      "id":"fix-guard","kind":"edit-run","time":"8분","requires":["run-starter"],
+      "title":{"ko":"빈 메모 조건 고치기","en":"Fix the empty-note condition"},
+      "goal":{"ko":"`if` 조건의 방향을 바꾸고 두 입력 사례를 실행해 동작을 확인합니다.","en":"Change the `if` condition and run two input cases to verify the behavior."},
+      "action":{"ko":"코드에서 `note is not empty`를 `note is empty`로 고치고 ‘동작 검사 실행’을 누르세요. 빈 입력은 거절되고 일반 메모는 목록에 추가되어야 합니다.","en":"Change `note is not empty` to `note is empty`, then run the behavior checks. Empty input should be rejected and a normal note should be added."},
+      "expected":{"ko":"두 실행 검사 모두 통과합니다. 코드를 바꾸면 이전 검사는 취소되며 다시 실행해야 합니다.","en":"Both runtime checks pass. Editing the code clears prior checks, so run them again."},
+      "hint":{"ko":"`empty`는 글자가 없는 경우를 뜻합니다. 이 조건이 참일 때 안내를 보여 주고, 그 외에는 메모를 추가합니다.","en":"`empty` means no text was entered. Show the message when that condition is true and add a note otherwise."},
+      "recovery":{"ko":"검사에 실패하면 각 입력에서 실제로 실행된 명령을 읽고 조건 한 단어를 고친 뒤 다시 실행하세요.","en":"If a check fails, read the command that ran for each input, correct the condition, and run the checks again."},
+      "verification":{"type":"interpreter-tests","rule":"empty input displays a message; non-empty input appends one note and clears input"}
+    },
+    {
+      "id":"add-counter","kind":"feature","time":"7분","requires":["fix-guard"],
+      "title":{"ko":"입력 글자 수 기능 추가하기","en":"Add a character-count feature"},
+      "goal":{"ko":"새로운 `on input` 이벤트를 코드에 추가하고 미리보기의 남은 글자 수를 움직입니다.","en":"Add a new `on input` event in code and make the remaining-character count update in the preview."},
+      "action":{"ko":"코드 끝에 빈 줄을 넣고 아래 두 줄을 직접 추가하세요. 그런 다음 ‘기능 검사 실행’을 누릅니다.\n\non input:\n  show remaining characters","en":"Add a blank line at the end, then type these two lines yourself. Select “Run feature checks” afterward.\n\non input:\n  show remaining characters"},
+      "expected":{"ko":"입력이 비어 있으면 160자, 한 글자를 입력하면 159자가 남았다고 실제 실행 결과에 표시됩니다.","en":"The executed input handler shows 160 remaining when empty and 159 after one character."},
+      "hint":{"ko":"이 문법은 `on input` 이벤트와 `show remaining characters` 명령만 허용합니다. 설정 토글이 아니라 새 실행 경로를 코드로 추가합니다.","en":"This language accepts an `on input` event and a `show remaining characters` command. You are adding a new executable path, not toggling a setting."},
+      "recovery":{"ko":"기능 검사가 실패하면 이벤트 이름, 들여쓰기, 명령을 확인하세요. 코드를 고친 뒤 조건 검사와 기능 검사가 함께 다시 실행됩니다.","en":"If the feature check fails, inspect the event name, indentation, and command. After an edit, both the condition and feature checks run again."},
+      "verification":{"type":"runtime-feature-tests","rule":"the added input handler reports the remaining limit for empty and one-character values"}
+    }
+  ],
+  "completion":{"required":["run-starter","fix-guard","add-counter"],"evidence":"the starter bug is observed, the condition tests pass, and the new input event produces the expected remaining-character output"},
+  "next":{"ko":"다음에는 목록에서 메모를 수정하거나 지우는 이벤트를 직접 추가해 봅니다. 이번 코드는 교육용 문법이며 JavaScript/HTML은 아닙니다.","en":"Next, add your own edit or delete event for notes. This project uses an educational language, not JavaScript or HTML."}
+}

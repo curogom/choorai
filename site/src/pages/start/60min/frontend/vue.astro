@@ -11,7 +11,7 @@ import MetaBadge from '../../../../components/MetaBadge';
 import PageNavigation from '../../../../components/PageNavigation.astro';
 
 const steps = [
-  { label: '사전 준비', status: 'completed' as const },
+  { label: '사전 준비', status: 'previous' as const },
   { label: '프론트엔드 (React/Vue)', status: 'current' as const },
   { label: '백엔드 (FastAPI/Hono)', status: 'upcoming' as const },
   { label: '연결', status: 'upcoming' as const },
@@ -37,7 +37,7 @@ const checklist = [
     <nav class="flex items-center gap-2 text-sm text-text-secondary mb-6" aria-label="현재 위치">
       <a href="/" class="hover:text-white transition-colors">홈</a>
       <span>/</span>
-      <a href="/start/60min" class="hover:text-white transition-colors">60분 완주</a>
+      <a href="/path/60min" class="hover:text-white transition-colors">60분 완주</a>
       <span>/</span>
       <span class="text-text-secondary">프론트엔드</span>
       <span>/</span>
@@ -147,7 +147,7 @@ npm install`}
         <CodeBlock
           client:load
           code={`# Tailwind 설치
-npm install -D tailwindcss postcss autoprefixer
+npm install -D tailwindcss@3.4.19 postcss autoprefixer
 
 # 설정 파일 생성
 npx tailwindcss init -p`}

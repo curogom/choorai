@@ -142,5 +142,8 @@ jobs:
       - name: Install dependencies
         run: cd site && npm ci
 
+      - name: Run site learner regression tests
+        run: cd site && node --test tests/*.test.mjs tests/sql/*.test.mjs
+
       - name: Build site
         run: cd site && npm run build

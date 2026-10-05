@@ -1,0 +1,3800 @@
+{
+  "candidates": [
+    {
+      "id": "B01-Q01-A1",
+      "question_id": "B01-Q01",
+      "kind": "equivalent",
+      "reason": "별표 대신 원본 스키마의 모든 열을 순서대로 명시",
+      "sql": "SELECT event_id, user_id, event_name FROM events;"
+    },
+    {
+      "id": "B01-Q01-W1",
+      "question_id": "B01-Q01",
+      "kind": "wrong",
+      "reason": "원시 행을 보존하라는 요구와 달리 재전송을 제거",
+      "sql": "SELECT DISTINCT event_id, user_id, event_name FROM events;"
+    },
+    {
+      "id": "B01-Q02-A1",
+      "question_id": "B01-Q02",
+      "kind": "equivalent",
+      "reason": "테이블 별칭을 쓰되 투영과 원시 행 중복을 유지",
+      "sql": "SELECT e.user_id, e.event_name FROM events AS e;"
+    },
+    {
+      "id": "B01-Q02-W1",
+      "question_id": "B01-Q02",
+      "kind": "wrong",
+      "reason": "두 출력 열의 중복을 제거하여 원시 행 수를 바꿈",
+      "sql": "SELECT DISTINCT user_id, event_name FROM events;"
+    },
+    {
+      "id": "B01-Q03-A1",
+      "question_id": "B01-Q03",
+      "kind": "equivalent",
+      "reason": "동등한 한 원소 IN 조건으로 click 행 선택",
+      "sql": "SELECT event_id, user_id, event_name FROM events WHERE event_name IN ('click');"
+    },
+    {
+      "id": "B01-Q03-W1",
+      "question_id": "B01-Q03",
+      "kind": "wrong",
+      "reason": "다른 이벤트 종류를 선택",
+      "sql": "SELECT * FROM events WHERE event_name = 'map_ready';"
+    },
+    {
+      "id": "B01-Q04-A1",
+      "question_id": "B01-Q04",
+      "kind": "equivalent",
+      "reason": "조건 순서와 괄호가 달라도 AND 의미는 같음",
+      "sql": "SELECT event_id, user_id, event_name FROM events WHERE (event_name = 'click') AND (user_id = 'U1');"
+    },
+    {
+      "id": "B01-Q04-W1",
+      "question_id": "B01-Q04",
+      "kind": "wrong",
+      "reason": "AND 대신 OR를 써서 어느 한 조건만 맞는 행까지 포함",
+      "sql": "SELECT * FROM events WHERE user_id = 'U1' OR event_name = 'click';"
+    },
+    {
+      "id": "B01-Q05-A1",
+      "question_id": "B01-Q05",
+      "kind": "equivalent",
+      "reason": "GROUP BY로 종류당 한 행 생성",
+      "sql": "SELECT event_name FROM events GROUP BY event_name;"
+    },
+    {
+      "id": "B01-Q05-W1",
+      "question_id": "B01-Q05",
+      "kind": "wrong",
+      "reason": "중복 제거 없이 모든 원시 행의 종류 출력",
+      "sql": "SELECT event_name FROM events;"
+    },
+    {
+      "id": "B01-Q06-A1",
+      "question_id": "B01-Q06",
+      "kind": "equivalent",
+      "reason": "조건으로 고른 서브쿼리의 행 수 계산",
+      "sql": "SELECT COUNT(*) FROM (SELECT event_id FROM events WHERE event_name = 'click');"
+    },
+    {
+      "id": "B01-Q06-W1",
+      "question_id": "B01-Q06",
+      "kind": "wrong",
+      "reason": "원시 행 대신 고유 이벤트 수를 계산하여 재전송을 누락",
+      "sql": "SELECT COUNT(DISTINCT event_id) FROM events WHERE event_name = 'click';"
+    },
+    {
+      "id": "B01-Q07-A1",
+      "question_id": "B01-Q07",
+      "kind": "equivalent",
+      "reason": "고유 사용자 목록을 만든 뒤 행 수 계산",
+      "sql": "SELECT COUNT(*) FROM (SELECT DISTINCT user_id FROM events WHERE event_name = 'click');"
+    },
+    {
+      "id": "B01-Q07-W1",
+      "question_id": "B01-Q07",
+      "kind": "wrong",
+      "reason": "사용자 대신 고유 이벤트 수를 계산",
+      "sql": "SELECT COUNT(DISTINCT event_id) FROM events WHERE event_name = 'click';"
+    },
+    {
+      "id": "B01-Q08-A1",
+      "question_id": "B01-Q08",
+      "kind": "equivalent",
+      "reason": "고유 이벤트 목록을 만든 뒤 행 수 계산",
+      "sql": "SELECT COUNT(*) FROM (SELECT DISTINCT event_id FROM events WHERE event_name = 'map_ready');"
+    },
+    {
+      "id": "B01-Q08-W1",
+      "question_id": "B01-Q08",
+      "kind": "wrong",
+      "reason": "논리 이벤트 대신 재전송 포함 원시 행 수 계산",
+      "sql": "SELECT COUNT(*) FROM events WHERE event_name = 'map_ready';"
+    },
+    {
+      "id": "B01-Q09-A1",
+      "question_id": "B01-Q09",
+      "kind": "equivalent",
+      "reason": "먼저 사용자·이벤트 조합을 중복 제거한 후 사용자별로 셈",
+      "sql": "SELECT user_id, COUNT(*) FROM (SELECT DISTINCT user_id, event_id FROM events WHERE event_name = 'click') GROUP BY user_id;"
+    },
+    {
+      "id": "B01-Q09-W1",
+      "question_id": "B01-Q09",
+      "kind": "wrong",
+      "reason": "재전송된 click까지 별개 이벤트로 셈",
+      "sql": "SELECT user_id, COUNT(*) FROM events WHERE event_name = 'click' GROUP BY user_id;"
+    },
+    {
+      "id": "B01-Q10-A1",
+      "question_id": "B01-Q10",
+      "kind": "equivalent",
+      "reason": "정상 데이터의 이벤트 payload 불변 계약 아래 이벤트별 중복 제거 후 집계",
+      "sql": "SELECT event_name, COUNT(DISTINCT user_id), COUNT(*) FROM (SELECT DISTINCT event_id, user_id, event_name FROM events) GROUP BY event_name;"
+    },
+    {
+      "id": "B01-Q10-W1",
+      "question_id": "B01-Q10",
+      "kind": "wrong",
+      "reason": "사용자 수 자리에도 이벤트 수를 출력",
+      "sql": "SELECT event_name, COUNT(DISTINCT event_id), COUNT(DISTINCT event_id) FROM events GROUP BY event_name;"
+    },
+    {
+      "id": "B01-Q11-A1",
+      "question_id": "B01-Q11",
+      "kind": "equivalent",
+      "reason": "조건을 안팎 서브쿼리로 나누어 교집합 선택",
+      "sql": "SELECT log_id, member_id, action FROM (SELECT * FROM activity_logs WHERE member_id = 'M2') WHERE action = 'save';"
+    },
+    {
+      "id": "B01-Q11-W1",
+      "question_id": "B01-Q11",
+      "kind": "wrong",
+      "reason": "OR로 조건을 연결하여 다른 회원의 save와 M2의 다른 활동 포함",
+      "sql": "SELECT * FROM activity_logs WHERE member_id = 'M2' OR action = 'save';"
+    },
+    {
+      "id": "B01-Q12-A1",
+      "question_id": "B01-Q12",
+      "kind": "equivalent",
+      "reason": "회원별 목록을 GROUP BY로 만든 뒤 셈",
+      "sql": "SELECT COUNT(*) FROM (SELECT member_id FROM activity_logs WHERE action = 'search' GROUP BY member_id);"
+    },
+    {
+      "id": "B01-Q12-W1",
+      "question_id": "B01-Q12",
+      "kind": "wrong",
+      "reason": "회원 수 대신 search 원시 행 수 계산",
+      "sql": "SELECT COUNT(*) FROM activity_logs WHERE action = 'search';"
+    },
+    {
+      "id": "B01-Q13-A1",
+      "question_id": "B01-Q13",
+      "kind": "equivalent",
+      "reason": "회원·기록 조합 목록을 만든 뒤 회원별 개수 계산",
+      "sql": "SELECT member_id, COUNT(*) FROM (SELECT DISTINCT member_id, log_id FROM activity_logs WHERE action = 'save') GROUP BY member_id;"
+    },
+    {
+      "id": "B01-Q13-W1",
+      "question_id": "B01-Q13",
+      "kind": "wrong",
+      "reason": "save 재전송을 중복 기록으로 셈",
+      "sql": "SELECT member_id, COUNT(*) FROM activity_logs WHERE action = 'save' GROUP BY member_id;"
+    },
+    {
+      "id": "B01-Q14-A1",
+      "question_id": "B01-Q14",
+      "kind": "equivalent",
+      "reason": "정상 데이터의 동일 log_id payload 계약 아래 기록별 중복 제거 후 집계",
+      "sql": "SELECT action, COUNT(DISTINCT member_id), COUNT(*) FROM (SELECT DISTINCT log_id, member_id, action FROM activity_logs) GROUP BY action;"
+    },
+    {
+      "id": "B01-Q14-W1",
+      "question_id": "B01-Q14",
+      "kind": "wrong",
+      "reason": "회원 수와 기록 수 열의 의미를 뒤바꿈",
+      "sql": "SELECT action, COUNT(DISTINCT log_id), COUNT(DISTINCT member_id) FROM activity_logs GROUP BY action;"
+    },
+    {
+      "id": "B02-Q01-A1",
+      "question_id": "B02-Q01",
+      "kind": "equivalent",
+      "reason": "기준 정렬 방향을 ASC로 명시하고 테이블 별칭 사용",
+      "sql": "SELECT p.attempt_id, p.platform, p.status FROM play_attempts AS p ORDER BY p.attempt_id ASC;"
+    },
+    {
+      "id": "B02-Q01-W1",
+      "question_id": "B02-Q01",
+      "kind": "wrong",
+      "reason": "전체 시도 대신 성공 시도만 출력",
+      "sql": "SELECT attempt_id, platform, status FROM play_attempts WHERE status = 'success' ORDER BY attempt_id;"
+    },
+    {
+      "id": "B02-Q02-A1",
+      "question_id": "B02-Q02",
+      "kind": "equivalent",
+      "reason": "서브쿼리에서 플랫폼을 고르고 바깥에서 성공을 고름",
+      "sql": "SELECT attempt_id, user_id, ready_ms FROM (SELECT * FROM play_attempts WHERE platform = 'mobile') WHERE status = 'success' ORDER BY ready_ms ASC, attempt_id ASC;"
+    },
+    {
+      "id": "B02-Q02-W1",
+      "question_id": "B02-Q02",
+      "kind": "wrong",
+      "reason": "플랫폼 조건 없이 모든 성공 시도 출력",
+      "sql": "SELECT attempt_id, user_id, ready_ms FROM play_attempts WHERE status = 'success' ORDER BY ready_ms, attempt_id;"
+    },
+    {
+      "id": "B02-Q03-A1",
+      "question_id": "B02-Q03",
+      "kind": "equivalent",
+      "reason": "CASE가 NULL일 때만 비NULL 상수를 반환하게 하여 결측 행을 셈",
+      "sql": "SELECT COUNT(*), COUNT(ready_ms), COUNT(CASE WHEN ready_ms IS NULL THEN 1 END) FROM play_attempts;"
+    },
+    {
+      "id": "B02-Q03-W1",
+      "question_id": "B02-Q03",
+      "kind": "wrong",
+      "reason": "NULL을 채워 COUNT하여 측정되지 않은 행도 측정값 있는 것으로 셈",
+      "sql": "SELECT COUNT(*), COUNT(COALESCE(ready_ms, 0)), COUNT(*) - COUNT(COALESCE(ready_ms, 0)) FROM play_attempts;"
+    },
+    {
+      "id": "B02-Q04-A1",
+      "question_id": "B02-Q04",
+      "kind": "equivalent",
+      "reason": "AVG 대신 측정값 합을 측정값 개수로 나눔; 소수 계산 유지",
+      "sql": "SELECT platform, COUNT(*), ROUND(1.0 * SUM(ready_ms) / COUNT(ready_ms), 1) FROM play_attempts WHERE status = 'success' GROUP BY platform ORDER BY platform;"
+    },
+    {
+      "id": "B02-Q04-W1",
+      "question_id": "B02-Q04",
+      "kind": "wrong",
+      "reason": "성공 평균에 NULL을 0으로 대입한 전체 시도 평균을 사용",
+      "sql": "SELECT platform, SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), ROUND(AVG(COALESCE(ready_ms, 0)), 1) FROM play_attempts GROUP BY platform ORDER BY platform;"
+    },
+    {
+      "id": "B02-Q05-A1",
+      "question_id": "B02-Q05",
+      "kind": "equivalent",
+      "reason": "0/1 평균을 백분율로 바꾸는 동등한 조건부 집계",
+      "sql": "SELECT platform, COUNT(*), COUNT(CASE WHEN status = 'success' THEN 1 END), ROUND(100.0 * AVG(CASE WHEN status = 'success' THEN 1.0 ELSE 0.0 END), 1) FROM play_attempts GROUP BY platform ORDER BY platform;"
+    },
+    {
+      "id": "B02-Q05-W1",
+      "question_id": "B02-Q05",
+      "kind": "wrong",
+      "reason": "성공만 WHERE에 남겨 분모까지 성공 수로 바꿈",
+      "sql": "SELECT platform, COUNT(*), SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), ROUND(100.0 * SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) / COUNT(*), 1) FROM play_attempts WHERE status = 'success' GROUP BY platform ORDER BY platform;"
+    },
+    {
+      "id": "B02-Q05-W2",
+      "question_id": "B02-Q05",
+      "kind": "wrong",
+      "reason": "정수끼리 먼저 나누어 소수 비율을 잃음",
+      "sql": "SELECT platform, COUNT(*), SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), ROUND(SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) FROM play_attempts GROUP BY platform ORDER BY platform;"
+    },
+    {
+      "id": "B03-Q01-A1",
+      "question_id": "B03-Q01",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A01 재사용: DISTINCT 대신 GROUP BY",
+      "sql": "SELECT user_id FROM raw_events GROUP BY user_id ORDER BY user_id;"
+    },
+    {
+      "id": "B03-Q02-A1",
+      "question_id": "B03-Q02",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A02 재사용: 두 열 GROUP BY로 동일 시도 목록",
+      "sql": "SELECT user_id, attempt_id FROM raw_events WHERE event_name = 'click' GROUP BY user_id, attempt_id ORDER BY user_id, attempt_id;"
+    },
+    {
+      "id": "B03-Q03-A1",
+      "question_id": "B03-Q03",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A03 재사용: 그룹 CTE를 만들고 바깥 WHERE로 그룹 결과 필터",
+      "sql": "WITH counts AS (SELECT event_id, COUNT(*) AS n FROM raw_events GROUP BY event_id) SELECT event_id, n, n-1 FROM counts WHERE n>=2 ORDER BY event_id;"
+    },
+    {
+      "id": "B03-Q04-A1",
+      "question_id": "B03-Q04",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A04 재사용: 윈도 함수 대신 먼저 오는 행이 없다는 조건",
+      "sql": "SELECT r.ingest_id, r.event_id, r.user_id, r.attempt_id, r.event_name, r.event_ts_ms, r.received_ts_ms FROM raw_events r WHERE NOT EXISTS (SELECT 1 FROM raw_events x WHERE x.event_id=r.event_id AND (x.received_ts_ms<r.received_ts_ms OR (x.received_ts_ms=r.received_ts_ms AND x.ingest_id<r.ingest_id))) ORDER BY event_id;"
+    },
+    {
+      "id": "B03-Q05-A1",
+      "question_id": "B03-Q05",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A05 재사용: 동일 payload 재전송은 MIN/MAX에 영향을 주지 않음. 명시적 정제 CTE 없이도 값이 같음",
+      "sql": "SELECT user_id,attempt_id, MIN(CASE WHEN event_name='click' THEN event_ts_ms END), MIN(CASE WHEN event_name='ready' THEN event_ts_ms END), MIN(CASE WHEN event_name='fail' THEN event_ts_ms END), CASE WHEN MAX(CASE WHEN event_name='ready' THEN 1 ELSE 0 END)=1 THEN 'success' WHEN MAX(CASE WHEN event_name='fail' THEN 1 ELSE 0 END)=1 THEN 'fail' ELSE 'open' END FROM raw_events GROUP BY user_id,attempt_id ORDER BY user_id, attempt_id;"
+    },
+    {
+      "id": "B03-Q06-A1",
+      "question_id": "B03-Q06",
+      "kind": "equivalent",
+      "reason": "기존 B03 검증 묶음 A06 재사용: 한 행짜리 스칼라 집계들을 읽기 쉽게 나열",
+      "sql": "SELECT (SELECT COUNT(*) FROM raw_events), (SELECT COUNT(*) FROM (SELECT DISTINCT event_id FROM raw_events)), (SELECT COUNT(*) FROM (SELECT DISTINCT user_id,attempt_id FROM raw_events)), (SELECT COUNT(*) FROM (SELECT DISTINCT user_id FROM raw_events));"
+    },
+    {
+      "id": "B03-Q01-W1",
+      "question_id": "B03-Q01",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W01 재사용: 사용자 목록의 중복을 제거하지 않음",
+      "sql": "SELECT user_id FROM raw_events;"
+    },
+    {
+      "id": "B03-Q03-W1",
+      "question_id": "B03-Q03",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W02 재사용: 원시 수신 횟수 대신 같은 event_id의 고유 값 수를 셈",
+      "sql": "SELECT event_id, COUNT(DISTINCT event_id), COUNT(DISTINCT event_id)-1 FROM raw_events GROUP BY event_id HAVING COUNT(DISTINCT event_id)>=2;"
+    },
+    {
+      "id": "B03-Q04-W1",
+      "question_id": "B03-Q04",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W03 재사용: 수신시각을 무시하고 최소 ingest_id로 고름",
+      "sql": "SELECT ingest_id,event_id,user_id,attempt_id,event_name,event_ts_ms,received_ts_ms FROM raw_events WHERE ingest_id IN (SELECT MIN(ingest_id) FROM raw_events GROUP BY event_id);"
+    },
+    {
+      "id": "B03-Q05-W1",
+      "question_id": "B03-Q05",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W04 재사용: 서로 다른 사용자의 같은 attempt_id를 합침",
+      "sql": "SELECT user_id,attempt_id, MIN(CASE WHEN event_name='click' THEN event_ts_ms END), MIN(CASE WHEN event_name='ready' THEN event_ts_ms END), MIN(CASE WHEN event_name='fail' THEN event_ts_ms END), CASE WHEN MAX(CASE WHEN event_name='ready' THEN 1 ELSE 0 END)=1 THEN 'success' WHEN MAX(CASE WHEN event_name='fail' THEN 1 ELSE 0 END)=1 THEN 'fail' ELSE 'open' END FROM raw_events GROUP BY attempt_id;"
+    },
+    {
+      "id": "B03-Q06-W1",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W05 재사용: attempt_id가 사용자 전체에서 고유하다고 가정",
+      "sql": "SELECT COUNT(*),COUNT(DISTINCT event_id),COUNT(DISTINCT attempt_id),COUNT(DISTINCT user_id) FROM raw_events;"
+    },
+    {
+      "id": "B03-Q06-W2",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W06 재사용: 두 열을 구분자 없이 결합",
+      "sql": "SELECT COUNT(*),COUNT(DISTINCT event_id),COUNT(DISTINCT user_id || attempt_id),COUNT(DISTINCT user_id) FROM raw_events;"
+    },
+    {
+      "id": "B03-Q06-W3",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W07 재사용: 콜론이 ID에 올 수 있는데 문자열 구분자로만 사용",
+      "sql": "SELECT COUNT(*),COUNT(DISTINCT event_id),COUNT(DISTINCT user_id || ':' || attempt_id),COUNT(DISTINCT user_id) FROM raw_events;"
+    },
+    {
+      "id": "B03-Q05-W2",
+      "question_id": "B03-Q05",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W08 재사용: 종료 이벤트 미관측 NULL을 시각 0으로 바꿈",
+      "sql": "SELECT user_id,attempt_id, MIN(CASE WHEN event_name='click' THEN event_ts_ms END), COALESCE(MIN(CASE WHEN event_name='ready' THEN event_ts_ms END),0), MIN(CASE WHEN event_name='fail' THEN event_ts_ms END), CASE WHEN MAX(CASE WHEN event_name='ready' THEN 1 ELSE 0 END)=1 THEN 'success' WHEN MAX(CASE WHEN event_name='fail' THEN 1 ELSE 0 END)=1 THEN 'fail' ELSE 'open' END FROM raw_events GROUP BY user_id,attempt_id;"
+    },
+    {
+      "id": "B03-Q06-W4",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W09 재사용: 기본 표의 숫자를 답처럼 하드코딩",
+      "sql": "SELECT 9,7,4,3;"
+    },
+    {
+      "id": "B03-Q06-W5",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W10 재사용: 마지막 두 열 위치를 바꿈",
+      "sql": "SELECT COUNT(*),COUNT(DISTINCT event_id),COUNT(DISTINCT user_id),(SELECT COUNT(*) FROM (SELECT DISTINCT user_id,attempt_id FROM raw_events)) FROM raw_events;"
+    },
+    {
+      "id": "B03-Q06-W6",
+      "question_id": "B03-Q06",
+      "kind": "wrong",
+      "reason": "기존 B03 검증 묶음 W11 재사용: 숫자 대신 문자열을 출력",
+      "sql": "SELECT CAST(COUNT(*) AS TEXT),COUNT(DISTINCT event_id),(SELECT COUNT(*) FROM (SELECT DISTINCT user_id,attempt_id FROM raw_events)),COUNT(DISTINCT user_id) FROM raw_events;"
+    },
+    {
+      "id": "B03-Q02-W1",
+      "question_id": "B03-Q02",
+      "kind": "wrong",
+      "reason": "attempt_id만 그룹 기준으로 사용해 서로 다른 사용자의 같은 시도 ID를 합침",
+      "sql": "SELECT user_id, attempt_id FROM raw_events WHERE event_name = 'click' GROUP BY attempt_id ORDER BY user_id, attempt_id;"
+    },
+    {
+      "id": "B03-Q05-A2",
+      "question_id": "B03-Q05",
+      "kind": "equivalent",
+      "reason": "명시적으로 정제한 뒤 시각 표를 만들고 NULL 여부로 상태 계산; 시각 0도 올바르게 처리",
+      "sql": "WITH ranked AS (\n SELECT *, ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY received_ts_ms, ingest_id) AS rn FROM raw_events\n), times AS (\n SELECT user_id, attempt_id,\n MIN(CASE WHEN event_name='click' THEN event_ts_ms END) AS click_at_ms,\n MIN(CASE WHEN event_name='ready' THEN event_ts_ms END) AS ready_at_ms,\n MIN(CASE WHEN event_name='fail' THEN event_ts_ms END) AS fail_at_ms\n FROM ranked WHERE rn=1 GROUP BY user_id, attempt_id\n)\nSELECT user_id, attempt_id, click_at_ms, ready_at_ms, fail_at_ms,\n CASE WHEN ready_at_ms IS NOT NULL THEN 'success' WHEN fail_at_ms IS NOT NULL THEN 'fail' ELSE 'open' END\nFROM times ORDER BY user_id, attempt_id;"
+    }
+  ],
+  "frozen": [
+    {
+      "question_id": "B01-Q01",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e04",
+          "U2",
+          "map_ready"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q01",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "f20",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e10",
+          "U5",
+          "scroll"
+        ],
+        [
+          "e09",
+          "U4",
+          "map_ready"
+        ],
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "e07",
+          "U4",
+          "click"
+        ],
+        [
+          "e07",
+          "U4",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e04",
+          "U2",
+          "map_ready"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e01",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q01",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e04",
+          "U2",
+          "map_ready"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ],
+        [
+          "e11",
+          "U2",
+          "click"
+        ],
+        [
+          "e12",
+          "U2",
+          "click"
+        ],
+        [
+          "e13",
+          "U3",
+          "map_ready"
+        ],
+        [
+          "e13",
+          "U3",
+          "map_ready"
+        ],
+        [
+          "e14",
+          "U6",
+          "click"
+        ],
+        [
+          "e15",
+          "U6",
+          "scroll"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q02",
+      "fixture_id": "source-0",
+      "columns": [
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U2",
+          "map_ready"
+        ],
+        [
+          "U3",
+          "click"
+        ],
+        [
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q02",
+      "fixture_id": "source-1",
+      "columns": [
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U5",
+          "scroll"
+        ],
+        [
+          "U4",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U4",
+          "click"
+        ],
+        [
+          "U4",
+          "click"
+        ],
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U3",
+          "click"
+        ],
+        [
+          "U2",
+          "map_ready"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q02",
+      "fixture_id": "source-2",
+      "columns": [
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U2",
+          "map_ready"
+        ],
+        [
+          "U3",
+          "click"
+        ],
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U3",
+          "map_ready"
+        ],
+        [
+          "U3",
+          "map_ready"
+        ],
+        [
+          "U6",
+          "click"
+        ],
+        [
+          "U6",
+          "scroll"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q03",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q03",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "e07",
+          "U4",
+          "click"
+        ],
+        [
+          "e07",
+          "U4",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e01",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q03",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ],
+        [
+          "e11",
+          "U2",
+          "click"
+        ],
+        [
+          "e12",
+          "U2",
+          "click"
+        ],
+        [
+          "e14",
+          "U6",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q04",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q04",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "e08",
+          "U1",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ],
+        [
+          "e01",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q04",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_id",
+        "user_id",
+        "event_name"
+      ],
+      "rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q05",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_name"
+      ],
+      "rows": [
+        [
+          "click"
+        ],
+        [
+          "map_ready"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q05",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_name"
+      ],
+      "rows": [
+        [
+          "click"
+        ],
+        [
+          "map_ready"
+        ],
+        [
+          "scroll"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q05",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_name"
+      ],
+      "rows": [
+        [
+          "click"
+        ],
+        [
+          "map_ready"
+        ],
+        [
+          "scroll"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q06",
+      "fixture_id": "source-0",
+      "columns": [
+        "COUNT(*)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q06",
+      "fixture_id": "source-1",
+      "columns": [
+        "COUNT(*)"
+      ],
+      "rows": [
+        [
+          8
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q06",
+      "fixture_id": "source-2",
+      "columns": [
+        "COUNT(*)"
+      ],
+      "rows": [
+        [
+          7
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q07",
+      "fixture_id": "source-0",
+      "columns": [
+        "COUNT(DISTINCT user_id)"
+      ],
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q07",
+      "fixture_id": "source-1",
+      "columns": [
+        "COUNT(DISTINCT user_id)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q07",
+      "fixture_id": "source-2",
+      "columns": [
+        "COUNT(DISTINCT user_id)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q08",
+      "fixture_id": "source-0",
+      "columns": [
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q08",
+      "fixture_id": "source-1",
+      "columns": [
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q08",
+      "fixture_id": "source-2",
+      "columns": [
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q09",
+      "fixture_id": "source-0",
+      "columns": [
+        "user_id",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "U1",
+          2
+        ],
+        [
+          "U2",
+          1
+        ],
+        [
+          "U3",
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q09",
+      "fixture_id": "source-1",
+      "columns": [
+        "user_id",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "U1",
+          3
+        ],
+        [
+          "U2",
+          1
+        ],
+        [
+          "U3",
+          1
+        ],
+        [
+          "U4",
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q09",
+      "fixture_id": "source-2",
+      "columns": [
+        "user_id",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "U1",
+          2
+        ],
+        [
+          "U2",
+          3
+        ],
+        [
+          "U3",
+          1
+        ],
+        [
+          "U6",
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q10",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_name",
+        "COUNT(DISTINCT user_id)",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "click",
+          3,
+          4
+        ],
+        [
+          "map_ready",
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q10",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_name",
+        "COUNT(DISTINCT user_id)",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "click",
+          4,
+          6
+        ],
+        [
+          "map_ready",
+          3,
+          4
+        ],
+        [
+          "scroll",
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q10",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_name",
+        "COUNT(DISTINCT user_id)",
+        "COUNT(DISTINCT event_id)"
+      ],
+      "rows": [
+        [
+          "click",
+          4,
+          7
+        ],
+        [
+          "map_ready",
+          3,
+          3
+        ],
+        [
+          "scroll",
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q11",
+      "fixture_id": "source-0",
+      "columns": [
+        "log_id",
+        "member_id",
+        "action"
+      ],
+      "rows": [
+        [
+          "L04",
+          "M2",
+          "save"
+        ],
+        [
+          "L05",
+          "M2",
+          "save"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q11",
+      "fixture_id": "source-1",
+      "columns": [
+        "log_id",
+        "member_id",
+        "action"
+      ],
+      "rows": [
+        [
+          "L09",
+          "M2",
+          "save"
+        ],
+        [
+          "L09",
+          "M2",
+          "save"
+        ],
+        [
+          "L05",
+          "M2",
+          "save"
+        ],
+        [
+          "L04",
+          "M2",
+          "save"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q11",
+      "fixture_id": "source-2",
+      "columns": [
+        "log_id",
+        "member_id",
+        "action"
+      ],
+      "rows": [
+        [
+          "L04",
+          "M2",
+          "save"
+        ],
+        [
+          "L05",
+          "M2",
+          "save"
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q12",
+      "fixture_id": "source-0",
+      "columns": [
+        "COUNT(DISTINCT member_id)"
+      ],
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q12",
+      "fixture_id": "source-1",
+      "columns": [
+        "COUNT(DISTINCT member_id)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q12",
+      "fixture_id": "source-2",
+      "columns": [
+        "COUNT(DISTINCT member_id)"
+      ],
+      "rows": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q13",
+      "fixture_id": "source-0",
+      "columns": [
+        "member_id",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "M1",
+          1
+        ],
+        [
+          "M2",
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q13",
+      "fixture_id": "source-1",
+      "columns": [
+        "member_id",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "M1",
+          1
+        ],
+        [
+          "M2",
+          3
+        ],
+        [
+          "M4",
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q13",
+      "fixture_id": "source-2",
+      "columns": [
+        "member_id",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "M1",
+          1
+        ],
+        [
+          "M2",
+          2
+        ],
+        [
+          "M3",
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q14",
+      "fixture_id": "source-0",
+      "columns": [
+        "action",
+        "COUNT(DISTINCT member_id)",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "save",
+          2,
+          3
+        ],
+        [
+          "search",
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q14",
+      "fixture_id": "source-1",
+      "columns": [
+        "action",
+        "COUNT(DISTINCT member_id)",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "save",
+          3,
+          5
+        ],
+        [
+          "search",
+          4,
+          5
+        ],
+        [
+          "view",
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B01-Q14",
+      "fixture_id": "source-2",
+      "columns": [
+        "action",
+        "COUNT(DISTINCT member_id)",
+        "COUNT(DISTINCT log_id)"
+      ],
+      "rows": [
+        [
+          "save",
+          3,
+          5
+        ],
+        [
+          "search",
+          4,
+          6
+        ],
+        [
+          "view",
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q01",
+      "fixture_id": "source-0",
+      "columns": [
+        "attempt_id",
+        "platform",
+        "status"
+      ],
+      "rows": [
+        [
+          "a01",
+          "web",
+          "success"
+        ],
+        [
+          "a02",
+          "mobile",
+          "success"
+        ],
+        [
+          "a03",
+          "web",
+          "fail"
+        ],
+        [
+          "a04",
+          "mobile",
+          "pending"
+        ],
+        [
+          "a05",
+          "web",
+          "success"
+        ],
+        [
+          "a06",
+          "mobile",
+          "fail"
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q01",
+      "fixture_id": "source-1",
+      "columns": [
+        "attempt_id",
+        "platform",
+        "status"
+      ],
+      "rows": [
+        [
+          "b01",
+          "web",
+          "success"
+        ],
+        [
+          "b02",
+          "web",
+          "pending"
+        ],
+        [
+          "b03",
+          "mobile",
+          "success"
+        ],
+        [
+          "b04",
+          "mobile",
+          "success"
+        ],
+        [
+          "b05",
+          "mobile",
+          "fail"
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q01",
+      "fixture_id": "source-2",
+      "columns": [
+        "attempt_id",
+        "platform",
+        "status"
+      ],
+      "rows": [
+        [
+          "c01",
+          "web",
+          "fail"
+        ],
+        [
+          "c02",
+          "web",
+          "pending"
+        ],
+        [
+          "c03",
+          "mobile",
+          "success"
+        ],
+        [
+          "c04",
+          "mobile",
+          "success"
+        ],
+        [
+          "c05",
+          "mobile",
+          "success"
+        ],
+        [
+          "c06",
+          "mobile",
+          "pending"
+        ],
+        [
+          "c07",
+          "web",
+          "fail"
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q02",
+      "fixture_id": "source-0",
+      "columns": [
+        "attempt_id",
+        "user_id",
+        "ready_ms"
+      ],
+      "rows": [
+        [
+          "a02",
+          "u01",
+          1500
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q02",
+      "fixture_id": "source-1",
+      "columns": [
+        "attempt_id",
+        "user_id",
+        "ready_ms"
+      ],
+      "rows": [
+        [
+          "b03",
+          "u12",
+          1000
+        ],
+        [
+          "b04",
+          "u13",
+          3000
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q02",
+      "fixture_id": "source-2",
+      "columns": [
+        "attempt_id",
+        "user_id",
+        "ready_ms"
+      ],
+      "rows": [
+        [
+          "c03",
+          "u21",
+          750
+        ],
+        [
+          "c04",
+          "u23",
+          1250
+        ],
+        [
+          "c05",
+          "u24",
+          2500
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q03",
+      "fixture_id": "source-0",
+      "columns": [
+        "total_attempts",
+        "measured_attempts",
+        "missing_ready_attempts"
+      ],
+      "rows": [
+        [
+          6,
+          3,
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q03",
+      "fixture_id": "source-1",
+      "columns": [
+        "total_attempts",
+        "measured_attempts",
+        "missing_ready_attempts"
+      ],
+      "rows": [
+        [
+          5,
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q03",
+      "fixture_id": "source-2",
+      "columns": [
+        "total_attempts",
+        "measured_attempts",
+        "missing_ready_attempts"
+      ],
+      "rows": [
+        [
+          7,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q04",
+      "fixture_id": "source-0",
+      "columns": [
+        "platform",
+        "success_attempts",
+        "avg_ready_ms"
+      ],
+      "rows": [
+        [
+          "mobile",
+          1,
+          1500.0
+        ],
+        [
+          "web",
+          2,
+          1500.0
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q04",
+      "fixture_id": "source-1",
+      "columns": [
+        "platform",
+        "success_attempts",
+        "avg_ready_ms"
+      ],
+      "rows": [
+        [
+          "mobile",
+          2,
+          2000.0
+        ],
+        [
+          "web",
+          1,
+          500.0
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q04",
+      "fixture_id": "source-2",
+      "columns": [
+        "platform",
+        "success_attempts",
+        "avg_ready_ms"
+      ],
+      "rows": [
+        [
+          "mobile",
+          3,
+          1500.0
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q05",
+      "fixture_id": "source-0",
+      "columns": [
+        "platform",
+        "total_attempts",
+        "success_attempts",
+        "success_rate_pct"
+      ],
+      "rows": [
+        [
+          "mobile",
+          3,
+          1,
+          33.3
+        ],
+        [
+          "web",
+          3,
+          2,
+          66.7
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q05",
+      "fixture_id": "source-1",
+      "columns": [
+        "platform",
+        "total_attempts",
+        "success_attempts",
+        "success_rate_pct"
+      ],
+      "rows": [
+        [
+          "mobile",
+          3,
+          2,
+          66.7
+        ],
+        [
+          "web",
+          2,
+          1,
+          50.0
+        ]
+      ]
+    },
+    {
+      "question_id": "B02-Q05",
+      "fixture_id": "source-2",
+      "columns": [
+        "platform",
+        "total_attempts",
+        "success_attempts",
+        "success_rate_pct"
+      ],
+      "rows": [
+        [
+          "mobile",
+          4,
+          3,
+          75.0
+        ],
+        [
+          "web",
+          3,
+          0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "source-0",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "u01"
+        ],
+        [
+          "u02"
+        ],
+        [
+          "u03"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "source-1",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "u1"
+        ],
+        [
+          "u11"
+        ],
+        [
+          "u12"
+        ],
+        [
+          "u13"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "source-2",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "u21"
+        ],
+        [
+          "u22"
+        ],
+        [
+          "u23"
+        ],
+        [
+          "u24"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "uA"
+        ],
+        [
+          "uB"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "a"
+        ],
+        [
+          "a:b"
+        ],
+        [
+          "ab"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "user_id"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q01",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "user_id"
+      ],
+      "rows": [
+        [
+          "uY"
+        ],
+        [
+          "uZ"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "source-0",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "u01",
+          "a01"
+        ],
+        [
+          "u01",
+          "a02"
+        ],
+        [
+          "u02",
+          "a03"
+        ],
+        [
+          "u03",
+          "a04"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "source-1",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "u1",
+          "1b01"
+        ],
+        [
+          "u11",
+          "b01"
+        ],
+        [
+          "u11",
+          "b02"
+        ],
+        [
+          "u12",
+          "b03"
+        ],
+        [
+          "u12",
+          "b04"
+        ],
+        [
+          "u13",
+          "b04"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "source-2",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "u21",
+          "c01"
+        ],
+        [
+          "u22",
+          "c02"
+        ],
+        [
+          "u23",
+          "c03"
+        ],
+        [
+          "u23",
+          "c04"
+        ],
+        [
+          "u24",
+          "c05"
+        ],
+        [
+          "u24",
+          "c06"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "uA",
+          "again"
+        ],
+        [
+          "uA",
+          "shared"
+        ],
+        [
+          "uB",
+          "shared"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "a",
+          "b:c"
+        ],
+        [
+          "a",
+          "bc"
+        ],
+        [
+          "a:b",
+          "c"
+        ],
+        [
+          "ab",
+          "c"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q02",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "user_id",
+        "attempt_id"
+      ],
+      "rows": [
+        [
+          "uY",
+          "third"
+        ],
+        [
+          "uZ",
+          "first"
+        ],
+        [
+          "uZ",
+          "second"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "source-0",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": [
+        [
+          "e01",
+          2,
+          1
+        ],
+        [
+          "e06",
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "source-1",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": [
+        [
+          "f04",
+          2,
+          1
+        ],
+        [
+          "f05",
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "source-2",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": [
+        [
+          "g08",
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": [
+        [
+          "f01",
+          2,
+          1
+        ],
+        [
+          "f02",
+          2,
+          1
+        ],
+        [
+          "f06",
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q03",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "event_id",
+        "raw_rows",
+        "extra_rows"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "source-0",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          1,
+          "e01",
+          "u01",
+          "a01",
+          "click",
+          1000,
+          1010
+        ],
+        [
+          3,
+          "e02",
+          "u01",
+          "a01",
+          "ready",
+          1700,
+          1710
+        ],
+        [
+          4,
+          "e03",
+          "u01",
+          "a02",
+          "click",
+          3000,
+          3010
+        ],
+        [
+          5,
+          "e04",
+          "u01",
+          "a02",
+          "fail",
+          3600,
+          3620
+        ],
+        [
+          6,
+          "e05",
+          "u02",
+          "a03",
+          "click",
+          5000,
+          5010
+        ],
+        [
+          7,
+          "e06",
+          "u02",
+          "a03",
+          "ready",
+          6200,
+          6230
+        ],
+        [
+          9,
+          "e07",
+          "u03",
+          "a04",
+          "click",
+          7000,
+          7010
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "source-1",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          11,
+          "f01",
+          "u11",
+          "b01",
+          "click",
+          100,
+          120
+        ],
+        [
+          12,
+          "f02",
+          "u11",
+          "b01",
+          "ready",
+          1000,
+          1010
+        ],
+        [
+          13,
+          "f03",
+          "u11",
+          "b02",
+          "click",
+          2000,
+          2010
+        ],
+        [
+          14,
+          "f04",
+          "u11",
+          "b02",
+          "ready",
+          2800,
+          2810
+        ],
+        [
+          17,
+          "f05",
+          "u12",
+          "b03",
+          "click",
+          4000,
+          4050
+        ],
+        [
+          19,
+          "f06",
+          "u12",
+          "b03",
+          "fail",
+          5000,
+          5010
+        ],
+        [
+          20,
+          "f07",
+          "u12",
+          "b04",
+          "click",
+          7000,
+          7020
+        ],
+        [
+          21,
+          "f08",
+          "u13",
+          "b04",
+          "click",
+          9000,
+          9020
+        ],
+        [
+          22,
+          "f09",
+          "u1",
+          "1b01",
+          "click",
+          50,
+          60
+        ],
+        [
+          23,
+          "f10",
+          "u11",
+          "b01",
+          "click",
+          200,
+          210
+        ],
+        [
+          24,
+          "f11",
+          "u11",
+          "b01",
+          "ready",
+          1200,
+          1210
+        ],
+        [
+          25,
+          "f12",
+          "u12",
+          "b03",
+          "fail",
+          5500,
+          5510
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "source-2",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          21,
+          "g01",
+          "u21",
+          "c01",
+          "click",
+          1000,
+          1020
+        ],
+        [
+          22,
+          "g02",
+          "u21",
+          "c01",
+          "fail",
+          1300,
+          1320
+        ],
+        [
+          23,
+          "g03",
+          "u22",
+          "c02",
+          "click",
+          2000,
+          2010
+        ],
+        [
+          24,
+          "g04",
+          "u22",
+          "c02",
+          "ready",
+          4200,
+          4210
+        ],
+        [
+          25,
+          "g05",
+          "u23",
+          "c03",
+          "click",
+          5000,
+          5010
+        ],
+        [
+          26,
+          "g06",
+          "u23",
+          "c03",
+          "ready",
+          5200,
+          5210
+        ],
+        [
+          27,
+          "g07",
+          "u23",
+          "c04",
+          "click",
+          8000,
+          8010
+        ],
+        [
+          28,
+          "g08",
+          "u23",
+          "c04",
+          "fail",
+          8200,
+          8210
+        ],
+        [
+          30,
+          "g09",
+          "u24",
+          "c05",
+          "click",
+          10000,
+          10010
+        ],
+        [
+          31,
+          "g10",
+          "u24",
+          "c06",
+          "click",
+          12000,
+          12010
+        ],
+        [
+          32,
+          "g11",
+          "u24",
+          "c06",
+          "ready",
+          13000,
+          13010
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          8,
+          "f01",
+          "uA",
+          "shared",
+          "click",
+          100,
+          120
+        ],
+        [
+          4,
+          "f02",
+          "uA",
+          "shared",
+          "ready",
+          180,
+          200
+        ],
+        [
+          9,
+          "f03",
+          "uB",
+          "shared",
+          "click",
+          300,
+          310
+        ],
+        [
+          10,
+          "f04",
+          "uB",
+          "shared",
+          "fail",
+          400,
+          410
+        ],
+        [
+          11,
+          "f05",
+          "uA",
+          "again",
+          "click",
+          500,
+          510
+        ],
+        [
+          12,
+          "f06",
+          "uA",
+          "again",
+          "click",
+          550,
+          560
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          1,
+          "c1",
+          "a",
+          "bc",
+          "click",
+          100,
+          110
+        ],
+        [
+          2,
+          "c2",
+          "ab",
+          "c",
+          "click",
+          200,
+          210
+        ],
+        [
+          3,
+          "c3",
+          "a:b",
+          "c",
+          "click",
+          300,
+          310
+        ],
+        [
+          4,
+          "c4",
+          "a",
+          "b:c",
+          "click",
+          400,
+          410
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q04",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "ingest_id",
+        "event_id",
+        "user_id",
+        "attempt_id",
+        "event_name",
+        "event_ts_ms",
+        "received_ts_ms"
+      ],
+      "rows": [
+        [
+          1,
+          "n1",
+          "uZ",
+          "first",
+          "click",
+          0,
+          1
+        ],
+        [
+          2,
+          "n2",
+          "uZ",
+          "first",
+          "ready",
+          0,
+          2
+        ],
+        [
+          3,
+          "n3",
+          "uZ",
+          "second",
+          "click",
+          100,
+          101
+        ],
+        [
+          4,
+          "n4",
+          "uZ",
+          "second",
+          "fail",
+          200,
+          201
+        ],
+        [
+          5,
+          "n5",
+          "uY",
+          "third",
+          "click",
+          300,
+          301
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "source-0",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "u01",
+          "a01",
+          1000,
+          1700,
+          null,
+          "success"
+        ],
+        [
+          "u01",
+          "a02",
+          3000,
+          null,
+          3600,
+          "fail"
+        ],
+        [
+          "u02",
+          "a03",
+          5000,
+          6200,
+          null,
+          "success"
+        ],
+        [
+          "u03",
+          "a04",
+          7000,
+          null,
+          null,
+          "open"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "source-1",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "u1",
+          "1b01",
+          50,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "u11",
+          "b01",
+          100,
+          1000,
+          null,
+          "success"
+        ],
+        [
+          "u11",
+          "b02",
+          2000,
+          2800,
+          null,
+          "success"
+        ],
+        [
+          "u12",
+          "b03",
+          4000,
+          null,
+          5000,
+          "fail"
+        ],
+        [
+          "u12",
+          "b04",
+          7000,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "u13",
+          "b04",
+          9000,
+          null,
+          null,
+          "open"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "source-2",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "u21",
+          "c01",
+          1000,
+          null,
+          1300,
+          "fail"
+        ],
+        [
+          "u22",
+          "c02",
+          2000,
+          4200,
+          null,
+          "success"
+        ],
+        [
+          "u23",
+          "c03",
+          5000,
+          5200,
+          null,
+          "success"
+        ],
+        [
+          "u23",
+          "c04",
+          8000,
+          null,
+          8200,
+          "fail"
+        ],
+        [
+          "u24",
+          "c05",
+          10000,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "u24",
+          "c06",
+          12000,
+          13000,
+          null,
+          "success"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "uA",
+          "again",
+          500,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "uA",
+          "shared",
+          100,
+          180,
+          null,
+          "success"
+        ],
+        [
+          "uB",
+          "shared",
+          300,
+          null,
+          400,
+          "fail"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "a",
+          "b:c",
+          400,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "a",
+          "bc",
+          100,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "a:b",
+          "c",
+          300,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "ab",
+          "c",
+          200,
+          null,
+          null,
+          "open"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": []
+    },
+    {
+      "question_id": "B03-Q05",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "user_id",
+        "attempt_id",
+        "click_ms",
+        "ready_ms",
+        "fail_ms",
+        "lifecycle_status"
+      ],
+      "rows": [
+        [
+          "uY",
+          "third",
+          300,
+          null,
+          null,
+          "open"
+        ],
+        [
+          "uZ",
+          "first",
+          0,
+          0,
+          null,
+          "success"
+        ],
+        [
+          "uZ",
+          "second",
+          100,
+          null,
+          200,
+          "fail"
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "source-0",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          9,
+          7,
+          4,
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "source-1",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          15,
+          12,
+          6,
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "source-2",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          12,
+          11,
+          6,
+          4
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "reuse-b03-F1",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          9,
+          6,
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "reuse-b03-F2",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          4,
+          4,
+          4,
+          3
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "reuse-b03-F3",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "question_id": "B03-Q06",
+      "fixture_id": "reuse-b03-F4",
+      "columns": [
+        "raw_rows",
+        "logical_events",
+        "attempts",
+        "users"
+      ],
+      "rows": [
+        [
+          5,
+          5,
+          3,
+          2
+        ]
+      ]
+    }
+  ],
+  "independent": [
+    {
+      "id": "B01-Q01-source0-independent",
+      "question_id": "B01-Q01",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e02",
+          "U1",
+          "map_ready"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e04",
+          "U2",
+          "map_ready"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ],
+      "reason": "원본 7행과 e02 중복을 그대로 보존"
+    },
+    {
+      "id": "B01-Q02-source0-independent",
+      "question_id": "B01-Q02",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "U1",
+          "click"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U1",
+          "map_ready"
+        ],
+        [
+          "U2",
+          "click"
+        ],
+        [
+          "U2",
+          "map_ready"
+        ],
+        [
+          "U3",
+          "click"
+        ],
+        [
+          "U1",
+          "click"
+        ]
+      ],
+      "reason": "각 원본 행을 두 열로 투영하되 행 중복 보존"
+    },
+    {
+      "id": "B01-Q03-source0-independent",
+      "question_id": "B01-Q03",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e03",
+          "U2",
+          "click"
+        ],
+        [
+          "e05",
+          "U3",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ],
+      "reason": "event_name이 click인 행을 직접 선택"
+    },
+    {
+      "id": "B01-Q04-source0-independent",
+      "question_id": "B01-Q04",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "e01",
+          "U1",
+          "click"
+        ],
+        [
+          "e06",
+          "U1",
+          "click"
+        ]
+      ],
+      "reason": "U1이면서 click인 두 행"
+    },
+    {
+      "id": "B01-Q05-source0-independent",
+      "question_id": "B01-Q05",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "click"
+        ],
+        [
+          "map_ready"
+        ]
+      ],
+      "reason": "종류 집합은 click과 map_ready"
+    },
+    {
+      "id": "B01-Q06-source0-independent",
+      "question_id": "B01-Q06",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          4
+        ]
+      ],
+      "reason": "click 원시 행 4개"
+    },
+    {
+      "id": "B01-Q07-source0-independent",
+      "question_id": "B01-Q07",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          3
+        ]
+      ],
+      "reason": "click 사용자 U1 U2 U3의 3개 ID"
+    },
+    {
+      "id": "B01-Q08-source0-independent",
+      "question_id": "B01-Q08",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          2
+        ]
+      ],
+      "reason": "map_ready event_id는 e02와 e04의 2개"
+    },
+    {
+      "id": "B01-Q09-source0-independent",
+      "question_id": "B01-Q09",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "U1",
+          2
+        ],
+        [
+          "U2",
+          1
+        ],
+        [
+          "U3",
+          1
+        ]
+      ],
+      "reason": "U1 2개 U2 1개 U3 1개"
+    },
+    {
+      "id": "B01-Q10-source0-independent",
+      "question_id": "B01-Q10",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "click",
+          3,
+          4
+        ],
+        [
+          "map_ready",
+          2,
+          2
+        ]
+      ],
+      "reason": "종류별 사용자 집합과 이벤트 집합을 별도 계산"
+    },
+    {
+      "id": "B01-Q11-source0-independent",
+      "question_id": "B01-Q11",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "L04",
+          "M2",
+          "save"
+        ],
+        [
+          "L05",
+          "M2",
+          "save"
+        ]
+      ],
+      "reason": "M2의 save L04 L05"
+    },
+    {
+      "id": "B01-Q12-source0-independent",
+      "question_id": "B01-Q12",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          3
+        ]
+      ],
+      "reason": "search 회원 M1 M2 M3"
+    },
+    {
+      "id": "B01-Q13-source0-independent",
+      "question_id": "B01-Q13",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "M1",
+          1
+        ],
+        [
+          "M2",
+          2
+        ]
+      ],
+      "reason": "M1의 L02는 1개 M2의 L04 L05는 2개"
+    },
+    {
+      "id": "B01-Q14-source0-independent",
+      "question_id": "B01-Q14",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "save",
+          2,
+          3
+        ],
+        [
+          "search",
+          3,
+          4
+        ]
+      ],
+      "reason": "action별 회원 집합과 논리 기록 집합 계산"
+    },
+    {
+      "id": "B02-Q01-source0-independent",
+      "question_id": "B02-Q01",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "a01",
+          "web",
+          "success"
+        ],
+        [
+          "a02",
+          "mobile",
+          "success"
+        ],
+        [
+          "a03",
+          "web",
+          "fail"
+        ],
+        [
+          "a04",
+          "mobile",
+          "pending"
+        ],
+        [
+          "a05",
+          "web",
+          "success"
+        ],
+        [
+          "a06",
+          "mobile",
+          "fail"
+        ]
+      ],
+      "reason": "모든 시도 6개에서 지정 3열 투영"
+    },
+    {
+      "id": "B02-Q02-source0-independent",
+      "question_id": "B02-Q02",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "a02",
+          "u01",
+          1500
+        ]
+      ],
+      "reason": "mobile 성공은 a02 u01 1500"
+    },
+    {
+      "id": "B02-Q03-source0-independent",
+      "question_id": "B02-Q03",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          6,
+          3,
+          3
+        ]
+      ],
+      "reason": "6개 중 측정 3개 결측 3개"
+    },
+    {
+      "id": "B02-Q04-source0-independent",
+      "question_id": "B02-Q04",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "mobile",
+          1,
+          1500.0
+        ],
+        [
+          "web",
+          2,
+          1500.0
+        ]
+      ],
+      "reason": "mobile 1500 한 값; web (800+2200)/2=1500"
+    },
+    {
+      "id": "B02-Q05-source0-independent",
+      "question_id": "B02-Q05",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "mobile",
+          3,
+          1,
+          33.3
+        ],
+        [
+          "web",
+          3,
+          2,
+          66.7
+        ]
+      ],
+      "reason": "mobile 1/3×100과 web 2/3×100을 소수 첫째 자리 반올림"
+    },
+    {
+      "id": "B03-Q01-source0-independent",
+      "question_id": "B03-Q01",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "u01"
+        ],
+        [
+          "u02"
+        ],
+        [
+          "u03"
+        ]
+      ],
+      "reason": "u01 u02 u03 사용자 집합"
+    },
+    {
+      "id": "B03-Q02-source0-independent",
+      "question_id": "B03-Q02",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "u01",
+          "a01"
+        ],
+        [
+          "u01",
+          "a02"
+        ],
+        [
+          "u02",
+          "a03"
+        ],
+        [
+          "u03",
+          "a04"
+        ]
+      ],
+      "reason": "click이 존재하는 사용자·시도 쌍 4개"
+    },
+    {
+      "id": "B03-Q03-source0-independent",
+      "question_id": "B03-Q03",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "e01",
+          2,
+          1
+        ],
+        [
+          "e06",
+          2,
+          1
+        ]
+      ],
+      "reason": "e01과 e06이 각각 2회 수신되어 초과 수신은 각각 1"
+    },
+    {
+      "id": "B03-Q04-source0-independent",
+      "question_id": "B03-Q04",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          1,
+          "e01",
+          "u01",
+          "a01",
+          "click",
+          1000,
+          1010
+        ],
+        [
+          3,
+          "e02",
+          "u01",
+          "a01",
+          "ready",
+          1700,
+          1710
+        ],
+        [
+          4,
+          "e03",
+          "u01",
+          "a02",
+          "click",
+          3000,
+          3010
+        ],
+        [
+          5,
+          "e04",
+          "u01",
+          "a02",
+          "fail",
+          3600,
+          3620
+        ],
+        [
+          6,
+          "e05",
+          "u02",
+          "a03",
+          "click",
+          5000,
+          5010
+        ],
+        [
+          7,
+          "e06",
+          "u02",
+          "a03",
+          "ready",
+          6200,
+          6230
+        ],
+        [
+          9,
+          "e07",
+          "u03",
+          "a04",
+          "click",
+          7000,
+          7010
+        ]
+      ],
+      "reason": "event_id마다 Python min의 (received_ts_ms, ingest_id) 사전식 비교로 대표 선택"
+    },
+    {
+      "id": "B03-Q05-source0-independent",
+      "question_id": "B03-Q05",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          "u01",
+          "a01",
+          1000,
+          1700,
+          null,
+          "success"
+        ],
+        [
+          "u01",
+          "a02",
+          3000,
+          null,
+          3600,
+          "fail"
+        ],
+        [
+          "u02",
+          "a03",
+          5000,
+          6200,
+          null,
+          "success"
+        ],
+        [
+          "u03",
+          "a04",
+          7000,
+          null,
+          null,
+          "open"
+        ]
+      ],
+      "reason": "원시 행 SQL과 독립적으로 Python 쌍별 최소 시각과 종료 존재를 계산"
+    },
+    {
+      "id": "B03-Q06-source0-independent",
+      "question_id": "B03-Q06",
+      "fixture_id": "source-0",
+      "expected_rows": [
+        [
+          9,
+          7,
+          4,
+          3
+        ]
+      ],
+      "reason": "원시 9행 논리 이벤트 7개 시도 쌍 4개 사용자 3개"
+    }
+  ]
+}
