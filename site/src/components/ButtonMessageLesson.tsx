@@ -449,7 +449,6 @@ export default function ButtonMessageLesson({ locale = 'ko' }: { locale?: Locale
   const resolveFieldConflict = (field: Field, keepLocal: boolean) => {
     const local = currentStateRef.current;
     const previousBaseline = baselineRef.current;
-    const unresolved = conflictedFields.filter((value) => value !== field);
     try {
       const remote = readStoredLessonState();
       if (keepLocal && !sameStoredValue(remote[field], conflictRemoteRef.current[field])) {
@@ -459,6 +458,7 @@ export default function ButtonMessageLesson({ locale = 'ko' }: { locale?: Locale
       }
       const chosen = keepLocal ? local[field] : remote[field];
       const merged = mergeLessonState(previousBaseline, local, remote);
+      const unresolved = [...new Set([...conflictedFields, ...merged.conflicts])].filter((value) => value !== field);
       const stored: LessonState = { ...merged.stored, [field]: chosen };
       window.localStorage.setItem(BUTTON_LESSON_STORAGE_KEY, JSON.stringify(stored));
       const nextBaseline: LessonState = { ...stored };

@@ -148,6 +148,36 @@ function byId(tree, id) {
   return found[0];
 }
 
+for (const keepLocal of [true, false]) test(`resolving HTML with ${keepLocal ? 'local' : 'saved'} file preserves a newly discovered CSS conflict`, () => {
+  const original = seed(1);
+  let tree = render();
+  const localHtml = original.html + '\n<!-- local HTML -->';
+  const remoteHtml = original.html + '\n<!-- remote HTML -->';
+  storage.set(lesson.BUTTON_LESSON_STORAGE_KEY, JSON.stringify({ ...original, html: remoteHtml }));
+  tree = edit(tree, 'html', localHtml);
+  const localCss = original.css + '\n/* unsaved local CSS */';
+  const remoteCss = original.css + '\n/* remote CSS */';
+  const write = window.localStorage.setItem;
+  window.localStorage.setItem = () => { throw new Error('quota'); };
+  tree = edit(tree, 'css', localCss);
+  storage.set(lesson.BUTTON_LESSON_STORAGE_KEY, JSON.stringify({ ...saved(), css: remoteCss }));
+  window.localStorage.setItem = write;
+  // No storage event arrives before the learner resolves the existing HTML conflict.
+  tree = click(tree, keepLocal ? /^Save my file$/ : /^Use saved file$/);
+  assert.equal(saved().html, keepLocal ? localHtml : remoteHtml);
+  assert.equal(saved().css, remoteCss, 'unresolved CSS must not be overwritten in storage');
+  assert.equal(editor(tree, 'css').props.value, localCss, 'unsaved local CSS remains visible');
+  assert.equal(nodes(tree, n => n.props.role === 'alert').length, 1);
+  // Repeat a remote observation to ensure the new conflict retains its baseline.
+  window.dispatchEvent({ type: 'storage', key: lesson.BUTTON_LESSON_STORAGE_KEY });
+  tree = render();
+  assert.equal(editor(tree, 'css').props.value, localCss);
+  tree = click(tree, /^Save my file$/);
+  assert.equal(saved().css, localCss);
+  activeHooks = createHooks(); tree = render();
+  assert.equal(editor(tree, 'css').props.value, localCss);
+});
+
 for (const keepLocal of [true, false]) test(`conflict choice ${keepLocal ? 'local' : 'saved'} persists merged historical progress across remount`, () => {
   const original = seed(4);
   let tree = render();
