@@ -44,7 +44,7 @@ export default {
         },
         warning: {
           DEFAULT: '#9E6A03',
-          light: '#BB8009',
+          light: '#E3B341',
           bg: 'rgba(158, 106, 3, 0.15)',
         },
         error: {

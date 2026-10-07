@@ -1,0 +1,20 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import SqlPractice from '../../../../components/SqlPractice';
+---
+<DocsLayout title="SQL 실습 · B01~B03" description="표와 짧은 설명을 보며 SELECT부터 사용자·시도·이벤트 구분까지 직접 실행하는 무료 SQL 연습" currentPath="/en/learn/sql" lang="en">
+  <div lang="ko" class="mx-auto max-w-7xl px-4 py-8 sm:px-6"><SqlPractice client:load /></div>
+</DocsLayout>
+<style is:global>
+  .sql-practice { min-width: 0; color: #e2e8f0; }
+  .sql-workspace { display: grid; gap: 1.5rem; min-width: 0; }
+  .sql-data-panel { min-width: 0; border: 1px solid #334155; border-radius: .75rem; padding: 1rem; }
+  .sql-table-scroll { max-width: 100%; overflow: auto; border: 1px solid #334155; border-radius: .5rem; }
+  .sql-table-scroll table { border-collapse: collapse; width: 100%; font-size: .75rem; white-space: nowrap; }
+  .sql-table-scroll caption { text-align: left; padding: .7rem; color: #94a3b8; white-space: normal; }
+  .sql-table-scroll th, .sql-table-scroll td { text-align: left; padding: .5rem .65rem; border-bottom: 1px solid #334155; }
+  .sql-table-scroll th { color: #93c5fd; background: #151c29; }
+  .sql-table-scroll .sql-null { color: #fbbf24; font-style: italic; }
+  @media (min-width: 1200px) { .sql-workspace { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; } .sql-data-panel { position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; } }
+  @media (max-width: 640px) { .sql-practice h1 { font-size: 1.65rem; } .sql-table-scroll { max-height: 22rem; } }
+</style>

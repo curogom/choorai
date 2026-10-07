@@ -1,6 +1,6 @@
 interface Step {
   label: string;
-  status: 'completed' | 'current' | 'upcoming';
+  status: 'completed' | 'previous' | 'current' | 'upcoming';
 }
 
 interface StepperProps {
@@ -10,8 +10,8 @@ interface StepperProps {
 }
 
 const labels = {
-  ko: { navLabel: '튜토리얼 진행 단계', completed: '완료', inProgress: '진행 중', completedPrefix: '완료: ', currentPrefix: '현재 단계: ', upcomingPrefix: '예정: ' },
-  en: { navLabel: 'Tutorial progress', completed: 'Done', inProgress: 'In progress', completedPrefix: 'Done: ', currentPrefix: 'Current: ', upcomingPrefix: 'Upcoming: ' },
+  ko: { navLabel: '튜토리얼 진행 단계', completed: '완료', inProgress: '진행 중', completedPrefix: '완료: ', previousPrefix: '이전 경로 단계: ', currentPrefix: '현재 단계: ', upcomingPrefix: '예정: ' },
+  en: { navLabel: 'Tutorial progress', completed: 'Done', inProgress: 'In progress', completedPrefix: 'Done: ', previousPrefix: 'Earlier in path: ', currentPrefix: 'Current: ', upcomingPrefix: 'Upcoming: ' },
 };
 
 export default function Stepper({ steps, currentStep, locale }: StepperProps) {
@@ -70,7 +70,7 @@ export default function Stepper({ steps, currentStep, locale }: StepperProps) {
                   <span className="text-sm font-bold" aria-hidden="true">{index + 1}</span>
                 )}
                 <span className="sr-only">
-                  {step.status === 'completed' ? l.completedPrefix : step.status === 'current' ? l.currentPrefix : l.upcomingPrefix}
+                  {step.status === 'completed' ? l.completedPrefix : step.status === 'previous' ? l.previousPrefix : step.status === 'current' ? l.currentPrefix : l.upcomingPrefix}
                   {step.label}
                 </span>
               </div>

@@ -14,10 +14,10 @@ const { prev, next } = getNavigation(currentPath, lang);
 const lp = (path: string) => getLocalePath(lang, path);
 ---
 
-<nav class="flex items-center justify-between pt-8 border-t border-border" aria-label={t('pageNav.label')}>
+<nav data-challenge-nav={currentPath === "/path/60min" || currentPath.startsWith("/start/60min/") ? currentPath : undefined} data-lang={lang} class="flex items-center justify-between pt-8 border-t border-border" aria-label={t('pageNav.label')}>
   {prev ? (
     <a
-      href={lp(prev.path)}
+      data-direction="prev" href={lp(prev.path)}
       class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-border hover:bg-surface transition-colors no-underline"
     >
       <svg class="w-5 h-5 text-text-secondary group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -25,7 +25,7 @@ const lp = (path: string) => getLocalePath(lang, path);
       </svg>
       <div class="text-left">
         <span class="text-xs text-text-secondary">{t('pageNav.prev')}</span>
-        <span class="block text-sm text-white font-medium">{prev.title}</span>
+        <span data-page-title class="block text-sm text-white font-medium">{prev.title}</span>
       </div>
     </a>
   ) : (
@@ -34,12 +34,12 @@ const lp = (path: string) => getLocalePath(lang, path);
 
   {next ? (
     <a
-      href={lp(next.path)}
+      data-direction="next" href={lp(next.path)}
       class="group flex items-center gap-3 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-background transition-colors no-underline"
     >
       <div class="text-right">
         <span class="text-xs opacity-70">{t('pageNav.next')}</span>
-        <span class="block text-sm font-bold">{next.title}</span>
+        <span data-page-title class="block text-sm font-bold">{next.title}</span>
       </div>
       <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -49,3 +49,53 @@ const lp = (path: string) => getLocalePath(lang, path);
     <div />
   )}
 </nav>
+
+{(currentPath === '/path/60min' || currentPath.startsWith('/start/60min/')) && (
+  <fieldset data-challenge-tracks class="flex flex-wrap gap-4 mt-4 text-sm">
+    <legend>{lang === 'en' ? 'Choose your learning track' : '학습 트랙 선택'}</legend>
+    <label>Frontend <select data-track="frontend" class="bg-surface"><option value="react">React</option><option value="vue">Vue</option></select></label>
+    <label>Backend <select data-track="backend" class="bg-surface"><option value="fastapi">FastAPI</option><option value="hono">Hono</option></select></label>
+  </fieldset>
+  <p data-track-save-status role="status" hidden class="mt-2 text-sm text-amber-200"></p>
+)}
+<script>
+  import { getNavigation } from '../data/pageOrder';
+  import { getChallengeTracks, selectChallengeTracks } from '../data/challengePath';
+  import type { Lang } from '../i18n/ui';
+  const update = () => {
+    const tracks = getChallengeTracks();
+    document.querySelectorAll<HTMLSelectElement>('[data-track]').forEach((select) => {
+      select.value = select.dataset.track === 'frontend' ? tracks.frontend : tracks.backend;
+    });
+    document.querySelectorAll<HTMLElement>('[data-challenge-nav]').forEach((nav) => {
+      const lang = nav.dataset.lang as Lang;
+      const pages = getNavigation(nav.dataset.challengeNav!, lang, tracks);
+      for (const direction of ['prev', 'next'] as const) {
+        const link = nav.querySelector<HTMLAnchorElement>(`[data-direction="${direction}"]`);
+        const page = pages[direction];
+        if (link && page) {
+          link.href = `${lang === 'en' ? '/en' : ''}${page.path}`;
+          link.querySelector('[data-page-title]')!.textContent = page.title;
+        }
+      }
+    });
+  };
+  document.querySelectorAll<HTMLSelectElement>('[data-track]').forEach((select) => {
+    select.addEventListener('change', () => {
+      const tracks = getChallengeTracks();
+      if (select.dataset.track === 'frontend') tracks.frontend = select.value === 'vue' ? 'vue' : 'react';
+      else tracks.backend = select.value === 'hono' ? 'hono' : 'fastapi';
+      const saved = selectChallengeTracks(tracks);
+      const status = document.querySelector<HTMLElement>('[data-track-save-status]');
+      if (status) {
+        status.hidden = saved;
+        status.textContent = document.querySelector('[data-challenge-nav]')?.getAttribute('data-lang') === 'en'
+          ? 'This track choice stays in this tab, but could not be saved. Refreshing may restore the previous choice.'
+          : '선택한 트랙은 이 탭에 유지되지만 저장하지 못했습니다. 새로고침하면 이전 선택으로 돌아갈 수 있습니다.';
+      }
+    });
+  });
+  window.addEventListener('60min-progress-change', update);
+  window.addEventListener('storage', update);
+  update();
+</script>

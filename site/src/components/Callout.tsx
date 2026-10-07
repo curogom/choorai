@@ -37,8 +37,8 @@ const variantConfig: Record<CalloutVariant, {
   warning: {
     bgClass: 'bg-warning/10',
     borderClass: 'border-warning/30',
-    iconClass: 'text-warning',
-    titleClass: 'text-warning',
+    iconClass: 'text-warning-light',
+    titleClass: 'text-warning-light',
     defaultTitle: '주의',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,8 +49,8 @@ const variantConfig: Record<CalloutVariant, {
   error: {
     bgClass: 'bg-error/10',
     borderClass: 'border-error/30',
-    iconClass: 'text-error',
-    titleClass: 'text-error',
+    iconClass: 'text-error-light',
+    titleClass: 'text-error-light',
     defaultTitle: '오류',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

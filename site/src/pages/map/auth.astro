@@ -143,7 +143,7 @@ import PageNavigation from '../../components/PageNavigation.astro';
         <div class="mt-4 p-4 bg-surface/50 border border-border rounded-xl">
           <p class="text-text-secondary text-sm">
             <strong class="text-white">Supabase Auth</strong>를 찾으시나요?
-            <a href="/map/database/supabase" class="text-primary hover:underline">Supabase 가이드</a>에서
+            <a href="/baas/supabase" class="text-primary hover:underline">Supabase 가이드</a>에서
             인증 연동 방법을 확인하세요.
           </p>
         </div>
@@ -215,7 +215,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             <li><strong class="text-white">Next.js</strong> → <a href="/map/auth/nextauth" class="text-primary hover:underline">NextAuth</a> (풀스택)</li>
             <li><strong class="text-white">엔터프라이즈/RBAC</strong> → <a href="/map/auth/auth0" class="text-primary hover:underline">Auth0</a></li>
             <li><strong class="text-white">모바일 + 웹</strong> → <a href="/map/auth/firebase" class="text-primary hover:underline">Firebase Auth</a></li>
-            <li><strong class="text-white">Supabase 사용 중</strong> → <a href="/map/database/supabase" class="text-primary hover:underline">Supabase Auth</a></li>
+            <li><strong class="text-white">Supabase 사용 중</strong> → <a href="/baas/supabase" class="text-primary hover:underline">Supabase Auth</a></li>
           </ul>
         </Callout>
       </section>

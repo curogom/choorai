@@ -1,5 +1,6 @@
+import { getChallengeTracks, getChallengePath, TRACK_STORAGE_KEY, type FrontendChoice, type BackendChoice } from '../data/challengePath';
 import { useState, useEffect } from 'react';
-import { calculateOverallProgress, CHALLENGE_STEPS, type StepKey } from '../lib/progressStore';
+import { calculateOverallProgress, calculateCurrentStep } from '../lib/progressStore';
 
 interface NextActionCardProps {
   locale?: string;
@@ -13,48 +14,6 @@ interface PathStep {
   description: string;
   estimatedTime: string;
   href: string;
-}
-
-type FrontendChoice = 'react' | 'vue';
-type BackendChoice = 'fastapi' | 'hono';
-
-function detectFrontendChoice(): FrontendChoice {
-  if (typeof window === 'undefined') return 'react';
-  return localStorage.getItem('checklist-60min-frontend-vue') ? 'vue' : 'react';
-}
-
-function detectBackendChoice(): BackendChoice {
-  if (typeof window === 'undefined') return 'fastapi';
-  return localStorage.getItem('checklist-60min-backend-hono') ? 'hono' : 'fastapi';
-}
-
-function getCheckedCount(stepKey: StepKey): number {
-  if (typeof window === 'undefined') return 0;
-  const saved = localStorage.getItem(`checklist-${stepKey}`);
-  if (!saved) return 0;
-  try {
-    const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed.length : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function getNextStepIndex(frontend: FrontendChoice, backend: BackendChoice): number {
-  const frontendKey: StepKey = frontend === 'vue' ? '60min-frontend-vue' : '60min-frontend-react';
-  const backendKey: StepKey = backend === 'hono' ? '60min-backend-hono' : '60min-backend-fastapi';
-
-  const ordered: StepKey[] = ['60min-step1', frontendKey, backendKey, '60min-connect', '60min-deploy'];
-
-  for (let i = 0; i < ordered.length; i++) {
-    const key = ordered[i];
-    const total = CHALLENGE_STEPS[key].totalItems;
-    const done = Math.min(getCheckedCount(key), total);
-    if (done < total) return i;
-  }
-
-  // 모든 체크리스트가 완료되면 완료 단계로 이동
-  return 5;
 }
 
 function buildStepsKo(frontend: FrontendChoice, backend: BackendChoice): PathStep[] {
@@ -131,18 +90,18 @@ export default function NextActionCard({ locale = 'ko', onStartClick }: NextActi
   const [overallProgress, setOverallProgress] = useState(0);
 
   const t = locale === 'en' ? i18n.en : i18n.ko;
-  const PATH_STEPS = locale === 'en'
+  const steps = locale === 'en'
     ? buildStepsEn(frontendChoice, backendChoice)
     : buildStepsKo(frontendChoice, backendChoice);
+  const PATH_STEPS = steps.map((step, index) => ({ ...step, href: `${locale === 'en' ? '/en' : ''}${getChallengePath({ frontend: frontendChoice, backend: backendChoice })[index]}` }));
 
   useEffect(() => {
     const update = () => {
-      const fe = detectFrontendChoice();
-      const be = detectBackendChoice();
+      const { frontend: fe, backend: be } = getChallengeTracks();
       setFrontendChoice(fe);
       setBackendChoice(be);
       setOverallProgress(calculateOverallProgress());
-      setCurrentStepIndex(getNextStepIndex(fe, be));
+      setCurrentStepIndex(calculateCurrentStep() - 1);
     };
 
     // 초기 로드
@@ -153,7 +112,7 @@ export default function NextActionCard({ locale = 'ko', onStartClick }: NextActi
 
     // 다른 탭에서의 변경 감지 (storage 이벤트)
     const handleStorage = (e: StorageEvent) => {
-      if (e.key?.startsWith('checklist-60min')) update();
+      if (e.key === null || e.key === TRACK_STORAGE_KEY || e.key?.startsWith('checklist-60min')) update();
     };
     window.addEventListener('storage', handleStorage);
 

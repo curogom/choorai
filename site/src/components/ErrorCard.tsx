@@ -16,12 +16,12 @@ const severityConfig: Record<Severity, { label: string; bgClass: string; textCla
   critical: {
     label: '심각',
     bgClass: 'bg-error/20',
-    textClass: 'text-error',
+    textClass: 'text-error-light',
   },
   warning: {
     label: '주의',
     bgClass: 'bg-warning/20',
-    textClass: 'text-warning',
+    textClass: 'text-warning-light',
   },
   info: {
     label: '정보',
@@ -68,7 +68,7 @@ export default function ErrorCard({
               <span className="text-text-secondary text-xs font-mono">코드: {errorCode}</span>
             )}
           </div>
-          <h3 className="text-error text-lg font-bold font-mono tracking-tight break-all">
+          <h3 className="text-error-light text-lg font-bold font-mono tracking-tight break-all">
             {errorMessage}
           </h3>
         </div>
@@ -78,7 +78,7 @@ export default function ErrorCard({
           {/* 원인 */}
           <div className="flex flex-col gap-2">
             <span className="text-white font-semibold text-sm flex items-center gap-2">
-              <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-warning-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               원인
