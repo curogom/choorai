@@ -122,6 +122,59 @@ test('verification failures clear that step and all dependent passes', () => {
   assert.equal(read.run.evidence['add-counter'].verifiedAt, undefined);
 });
 
+function completedMemo() {
+  let read = progress.readLearningProgress(course);
+  read = progress.updateProgramDraft(read, varied, course);
+  for (const id of course.completion.required) read = progress.recordVerification(read, id, true, course);
+  return read;
+}
+
+test('remote visits cannot revive verification invalidated by an unsaved program edit', () => {
+  let local = completedMemo();
+  let remote = progress.readLearningProgress(course);
+  const buggy = varied.replace('note is empty', 'note is not empty');
+  local = progress.draftProgram(local, buggy, course);
+  for (const id of ['fix-guard', 'add-counter']) {
+    remote = progress.visitStep(remote, id, course);
+    local = progress.reconcileLearningProgress(local, progress.readLearningProgress(course));
+    assert.equal(local.run.workspace.program, buggy);
+    assert.equal(local.run.evidence[id].verifiedAt, undefined);
+    assert.equal(local.run.evidence[id].visitedAt, remote.run.evidence[id].visitedAt);
+    assert.deepEqual(local.conflicts, []);
+    assert.equal(progress.readLearningProgress(course).run.workspace.program, varied, 'observing a visit does not save the draft');
+  }
+  local = progress.persistCurrentProgress(local);
+  const reloaded = progress.readLearningProgress(course);
+  assert.equal(program.checkMemoGuard(reloaded.run.workspace.program).passed, false);
+  assert.equal(course.completion.required.filter((id) => reloaded.run.evidence[id]?.verifiedAt).length, 1);
+  assert.equal(reloaded.run.evidence['fix-guard'].verifiedAt, undefined);
+  assert.equal(reloaded.run.evidence['add-counter'].verifiedAt, undefined);
+});
+
+for (const invalidatingTab of ['local', 'remote']) test(`concurrent verification cancellation wins over a fresh pass from the ${invalidatingTab === 'local' ? 'remote' : 'local'} tab`, () => {
+  const base = completedMemo();
+  const failure = progress.recordVerification(base, 'fix-guard', false, course);
+  // The other tab still holds the completed baseline and checks the old program again.
+  const passed = { ...base, run: { ...base.run, evidence: { ...base.run.evidence,
+    'fix-guard': { ...base.run.evidence['fix-guard'], verifiedAt: '2099-01-01T00:00:00.000Z', attempts: 2 },
+  } } };
+  const local = invalidatingTab === 'local' ? failure : passed;
+  const remote = invalidatingTab === 'local' ? passed : failure;
+  const merged = progress.reconcileLearningProgress({ ...local, baselineProgress: base.progress }, remote);
+  assert.equal(merged.run.evidence['fix-guard'].verifiedAt, undefined);
+  assert.equal(merged.run.evidence['add-counter'].verifiedAt, undefined);
+});
+
+test('independent self-check and visit metadata preserve an existing valid pass', () => {
+  const base = completedMemo();
+  const local = progress.recordSelfCheck(base, 'fix-guard', true);
+  const remote = progress.visitStep(base, 'fix-guard', course);
+  const merged = progress.reconcileLearningProgress(local, remote);
+  assert.ok(merged.run.evidence['fix-guard'].selfCheckedAt);
+  assert.ok(merged.run.evidence['fix-guard'].visitedAt);
+  assert.equal(merged.run.evidence['fix-guard'].verifiedAt, base.run.evidence['fix-guard'].verifiedAt);
+});
+
 test('the interpreter accepts only the fixed DSL, and user text remains data', () => {
   assert.equal(program.parseMemoProgram(fixed).ok, true);
   assert.equal(program.parseMemoProgram(`${fixed}\nrun: alert(1)`).ok, false);

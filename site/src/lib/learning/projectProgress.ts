@@ -1,5 +1,5 @@
 import { createMemoProjectExport, MAX_MEMO_NOTES, MAX_MEMO_NOTE_LENGTH, MAX_MEMO_PROGRAM_LENGTH, parseMemoProgram } from './memoProgram';
-import { mergeThreeWayFields, mergeThreeWayMap } from './threeWayMerge';
+import { mergeThreeWayFields } from './threeWayMerge';
 
 export const LEARNING_PROGRESS_KEY = 'choorai-learning-progress-v1';
 export const PROJECT_OUTPUT_KEY = 'choorai-project-memo-output-v2';
@@ -115,11 +115,34 @@ function withRun(read: ProgressRead, run: PathRun): LearningProgress {
   const key = `${run.pathId}@${run.contentVersion}`;
   return { ...read.progress, paths: { ...read.progress.paths, [key]: run } };
 }
+function mergeStepEvidence(base: PathRun['evidence'], local: PathRun['evidence'], remote: PathRun['evidence'], acknowledgeLocal: boolean) {
+  const value: PathRun['evidence'] = {};
+  const baseline: PathRun['evidence'] = {};
+  const ids = new Set([...Object.keys(base), ...Object.keys(local), ...Object.keys(remote)]);
+  // JSON drops undefined properties; absence must mean the same thing after reload.
+  const fields = (record?: StepEvidence): StepEvidence => ({
+    visitedAt: record?.visitedAt, selfCheckedAt: record?.selfCheckedAt,
+    verifiedAt: record?.verifiedAt, attempts: record?.attempts ?? 0,
+  });
+  for (const id of ids) {
+    const merged = mergeThreeWayFields(fields(base[id]), fields(local[id]), fields(remote[id]),
+      ['visitedAt', 'selfCheckedAt', 'verifiedAt', 'attempts'], acknowledgeLocal);
+    // Navigation and self-check metadata must not restore an invalidated pass.
+    // If a new pass races with invalidation, require another explicit check.
+    if (merged.conflicts.includes('verifiedAt') && (!local[id]?.verifiedAt || !remote[id]?.verifiedAt)) {
+      merged.value.verifiedAt = undefined;
+      if (acknowledgeLocal) merged.baseline.verifiedAt = undefined;
+    }
+    value[id] = merged.value;
+    if (acknowledgeLocal || base[id] || remote[id]) baseline[id] = merged.baseline;
+  }
+  return { value, baseline };
+}
 function mergePathRun(base: PathRun, local: PathRun, remote: PathRun, path: LearningPathShape, acknowledgeLocal: boolean) {
   const workspace = mergeThreeWayFields(base.workspace, local.workspace, remote.workspace, ['program', 'notes'], acknowledgeLocal);
   const currentStepChangedRemotely = remote.currentStepId !== base.currentStepId;
   const currentStepId = currentStepChangedRemotely ? remote.currentStepId : local.currentStepId;
-  const evidence = mergeThreeWayMap(base.evidence, local.evidence, remote.evidence, acknowledgeLocal);
+  const evidence = mergeStepEvidence(base.evidence, local.evidence, remote.evidence, acknowledgeLocal);
   const common = {
     ...remote,
     currentStepId: path.steps.some((step) => step.id === currentStepId) ? currentStepId : remote.currentStepId,

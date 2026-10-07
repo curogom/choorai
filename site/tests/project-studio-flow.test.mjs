@@ -394,3 +394,31 @@ test('VISIT-DRAFT: two remote step visits preserve an unsaved code draft until e
   assert.equal(editor(tree).props.value, fixed);
   assert.equal(JSON.parse(storage.get(progress.LEARNING_PROGRESS_KEY)).paths[key].workspace.program, fixed, 'explicit persistence acknowledges the draft');
 });
+
+test('remote visits keep invalidated memo checks incomplete in the UI and after remount', () => {
+  completeMemoRunWith100Notes();
+  let remote = progress.readLearningProgress(course);
+  let tree = render();
+  assert.equal(progressValue(tree), 100);
+  tree = clickContaining(tree, '빈 메모 조건 고치기');
+  const buggy = varied.replace('note is empty', 'note is not empty');
+  editor(tree).props.onChange({ target: { value: buggy } });
+  tree = render();
+  for (const id of ['fix-guard', 'add-counter']) {
+    remote = progress.visitStep(remote, id, course);
+    tree = emitStorage(progress.LEARNING_PROGRESS_KEY);
+    assert.equal(editor(tree).props.value, buggy);
+    assert.equal(progressValue(tree), 33);
+    assert.doesNotMatch(text(tree), /세 가지 코드 실행 과제를 모두 통과/);
+  }
+  editor(tree).props.onBlur();
+  activeHooks = createHooks();
+  tree = render();
+  assert.equal(editor(tree).props.value, buggy);
+  assert.equal(progressValue(tree), 33);
+  // A fresh successful run must still restore completion after the learner fixes it.
+  editor(tree).props.onChange({ target: { value: varied } });
+  tree = render();
+  tree = click(tree, '기능 검사 실행');
+  assert.equal(progressValue(tree), 100);
+});
