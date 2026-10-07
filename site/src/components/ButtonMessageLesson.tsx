@@ -241,8 +241,8 @@ function readStoredLessonState(): LessonState {
   return parsed;
 }
 
-function mergeLessonState(base: LessonState, local: LessonState, remote: LessonState) {
-  const files = mergeThreeWayFields(base, local, remote, ['html', 'css', 'javascript']);
+function mergeLessonState(base: LessonState, local: LessonState, remote: LessonState, acknowledgeLocal = true) {
+  const files = mergeThreeWayFields(base, local, remote, ['html', 'css', 'javascript'], acknowledgeLocal);
   const common: LessonState = {
     ...remote,
     ...files.value,
@@ -365,7 +365,8 @@ export default function ButtonMessageLesson({ locale = 'ko' }: { locale?: Locale
       try {
         const remote = readStoredLessonState();
         const local = currentStateRef.current;
-        const merged = mergeLessonState(baselineRef.current, local, remote);
+        // Reading another tab does not acknowledge this tab’s unsaved files.
+        const merged = mergeLessonState(baselineRef.current, local, remote, false);
         baselineRef.current = merged.baseline;
         conflictRemoteRef.current = Object.fromEntries(merged.conflicts.map((field) => [field, remote[field]]));
         setConflictedFields(merged.conflicts);

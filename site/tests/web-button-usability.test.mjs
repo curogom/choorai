@@ -420,3 +420,25 @@ for (const lang of ['ko','en']) test(`${lang} restored valid draft asks for a re
   assert.match(copy,lang==='en'?/Fix any code error shown above, then run the current code/:/위에 코드 오류가 있으면 먼저 고친 뒤 미리보기를 실행/);
   assert.doesNotMatch(copy,lang==='en'?/Edited since the last preview/:/마지막 실행 뒤 코드를 수정/);
 });
+
+
+test('a failed button save survives unrelated remote file edits and persists on the next save', () => {
+ const original = seed(1); let tree = render();
+ const localJavascript = original.javascript.replace('My preserved custom sentence', 'Unsaved local message');
+ const write = window.localStorage.setItem;
+ window.localStorage.setItem = () => { throw new Error('quota'); };
+ tree = edit(tree, 'javascript', localJavascript);
+ const remoteCss = original.css + '\n/* other tab */';
+ storage.set(lesson.BUTTON_LESSON_STORAGE_KEY, JSON.stringify({ ...original, css: remoteCss }));
+ window.dispatchEvent({ type: 'storage', key: lesson.BUTTON_LESSON_STORAGE_KEY }); tree = render();
+ assert.equal(editor(tree, 'javascript').props.value, localJavascript);
+ assert.equal(editor(tree, 'css').props.value, remoteCss);
+ window.localStorage.setItem = write;
+ const localHtml = original.html + '\n<!-- next edit -->';
+ tree = edit(tree, 'html', localHtml);
+ assert.equal(saved().javascript, localJavascript);
+ assert.equal(saved().css, remoteCss);
+ assert.equal(saved().html, localHtml);
+ activeHooks = createHooks(); tree = render();
+ assert.equal(editor(tree, 'javascript').props.value, localJavascript);
+});

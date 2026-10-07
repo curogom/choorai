@@ -30,8 +30,8 @@ function readStoredPractice(): PracticeProgress {
   if (raw.length > 500000) throw new Error('저장된 기록이 너무 큽니다.');
   return validatePractice(JSON.parse(raw), questions);
 }
-function mergePractice(base: PracticeProgress, local: PracticeProgress, remote: PracticeProgress) {
-  const answers = mergeThreeWayMap(base.answers, local.answers, remote.answers);
+function mergePractice(base: PracticeProgress, local: PracticeProgress, remote: PracticeProgress, acknowledgeLocal = true) {
+  const answers = mergeThreeWayMap(base.answers, local.answers, remote.answers, acknowledgeLocal);
   const stored: PracticeProgress = { ...remote, current: local.current, answers: answers.value };
   const baseline: PracticeProgress = { ...remote, answers: answers.baseline };
   const displayAnswers = { ...answers.value };
@@ -60,6 +60,18 @@ export default function SqlPractice() {
   const [hints, setHints] = useState(0);
   const [confirmReset, setConfirmReset] = useState(false);
   const [engineDetail, setEngineDetail] = useState('');
+  // Every adoption path (storage, save reconciliation, and conflict choice) must
+  // invalidate results for an answer that is no longer in the editor.
+  const applyPracticeSnapshot = (next: PracticeProgress) => {
+    const previous = stateRef.current;
+    if (previous.current !== next.current ||
+      (previous.answers[previous.current]?.text || '') !== (next.answers[next.current]?.text || '')) {
+      generation.current++;
+      engine.current?.abortActive();
+      setBusy(false); setResult(null); setNotice(''); setNoticeKind(''); setEngineDetail('');
+    }
+    stateRef.current = next; setState(next);
+  };
   useEffect(() => {
     engine.current = new SQLPracticeEngine();
     try {
@@ -83,9 +95,10 @@ export default function SqlPractice() {
       if (event.key !== SQL_PROGRESS_KEY) return;
       try {
         const remote = readStoredPractice();
-        const merged = mergePractice(baselineRef.current, stateRef.current, remote);
+        // Reading another tab does not acknowledge this tab’s unsaved edits.
+        const merged = mergePractice(baselineRef.current, stateRef.current, remote, false);
         baselineRef.current = merged.baseline;
-        stateRef.current = merged.display; setState(merged.display);
+        applyPracticeSnapshot(merged.display);
         conflictRemoteRef.current = Object.fromEntries(merged.conflicts.map((id) => [id, remote.answers[id] || null]));
         setConflictedIds(merged.conflicts);
         setSaveLabel(merged.conflicts.length
@@ -108,14 +121,14 @@ export default function SqlPractice() {
   const totalFixtures = 1 + Object.values(lesson.tables)[0].fixtures.length;
   const rubric = selfChecklist(question);
   const updateState = (next: PracticeProgress) => {
-    stateRef.current = next; setState(next);
+    applyPracticeSnapshot(next);
     if (blocked.current) return;
     try {
       const remote = readStoredPractice();
       const merged = mergePractice(baselineRef.current, next, remote);
       localStorage.setItem(SQL_PROGRESS_KEY, JSON.stringify(merged.stored));
       baselineRef.current = merged.baseline;
-      stateRef.current = merged.display; setState(merged.display);
+      applyPracticeSnapshot(merged.display);
       conflictRemoteRef.current = Object.fromEntries(merged.conflicts.map((id) => [id, remote.answers[id] || null]));
       setConflictedIds(merged.conflicts);
       setSaveLabel(merged.conflicts.length
@@ -150,7 +163,7 @@ export default function SqlPractice() {
           if (Object.prototype.hasOwnProperty.call(current.answers, unresolvedId)) displayAnswers[unresolvedId] = current.answers[unresolvedId];
         }
         baselineRef.current = { ...stored, answers: baselineAnswers };
-        stateRef.current = { ...stored, answers: displayAnswers }; setState(stateRef.current);
+        applyPracticeSnapshot({ ...stored, answers: displayAnswers });
         setSaveLabel('내 답안을 저장했습니다.');
       } else {
         const displayAnswers = { ...remote.answers };
@@ -162,7 +175,7 @@ export default function SqlPractice() {
         }
         baselineRef.current = { ...remote, answers: baselineAnswers };
         const adopted = { ...remote, current: current.current, answers: displayAnswers };
-        stateRef.current = adopted; setState(adopted);
+        applyPracticeSnapshot(adopted);
         setSaveLabel('저장된 답안을 사용했습니다.');
       }
       delete conflictRemoteRef.current[id];
